@@ -7,15 +7,29 @@
   background-color: var(--bg-cream);
 }
 
+/* First Viewport Section: Full 100svh Cover */
+.hero-viewport-section {
+  min-height: 100svh;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
 /* Top Navigation Bar */
 .editorial-nav {
   width: 100%;
   max-width: 1360px;
   margin: 0 auto;
-  padding: 24px 32px;
+  padding: 20px 32px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .editorial-logo {
@@ -39,49 +53,31 @@
   color: var(--coral-accent);
 }
 
-.nav-links-row {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.nav-link-editorial {
-  font-family: var(--font-sans);
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: color var(--transition-fast);
-}
-
-.nav-link-editorial:hover {
-  color: var(--coral-accent);
-}
-
 .nav-actions-group {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* Hero Section (Matching "The Art of Hiring" layout) */
+/* Hero Section (Fills remaining 100svh height) */
 .editorial-hero {
+  flex: 1;
   max-width: 1360px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 32px 64px;
+  padding: 8px 32px 24px;
   display: grid;
   grid-template-columns: 1.05fr 1.15fr;
   gap: 32px;
   align-items: center;
-  min-height: calc(88vh - 90px);
+  box-sizing: border-box;
+  min-height: 0;
 }
 
 .hero-text-block {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(14px, 2.2vh, 24px);
   z-index: 2;
 }
 
@@ -98,7 +94,7 @@
 }
 
 .hero-main-heading {
-  font-size: 4.6rem;
+  font-size: clamp(2.8rem, 4.2vw, 4.5rem);
   line-height: 1.06;
   font-weight: 700;
   letter-spacing: -0.035em;
@@ -164,7 +160,8 @@
   grid-column: 1;
   grid-row: 1;
   width: 100%;
-  max-width: 660px;
+  max-width: 640px;
+  max-height: min(580px, calc(100svh - 130px));
   height: auto;
   display: block;
   object-fit: contain;

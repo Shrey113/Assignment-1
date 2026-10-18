@@ -241,117 +241,111 @@ export default function App() {
         </div>
       )}
 
-      {/* Navigation Bar */}
-      <nav className="editorial-nav">
-        <a href="#" className="editorial-logo">
-          <Droplet size={26} color="#EF4E4E" fill="#EF4E4E" />
-          <div className="logo-monogram">Blood<span>Link</span></div>
-        </a>
+      {/* First Section Covering 100svh */}
+      <section className="hero-viewport-section">
+        {/* Navigation Bar */}
+        <nav className="editorial-nav">
+          <a href="#" className="editorial-logo">
+            <Droplet size={26} color="#EF4E4E" fill="#EF4E4E" />
+            <div className="logo-monogram">Blood<span>Link</span></div>
+          </a>
 
-        <div className="nav-links-row">
-          <a href="#why-donate" className="nav-link-editorial">Why Give</a>
-          <a href="#how-it-works" className="nav-link-editorial">How It Works</a>
-          <a href="#eligibility" className="nav-link-editorial">Eligibility</a>
-          <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
-          <a href="#stories" className="nav-link-editorial">Stories</a>
-          <a href="#faq" className="nav-link-editorial">FAQ</a>
-        </div>
-
-        <div className="nav-actions-group">
-          <button
-            id="nav-request-blood"
-            onClick={() => setShowRequestModal(true)}
-            className="btn-editorial-secondary"
-            style={{ padding: '10px 20px', fontSize: '0.88rem' }}
-          >
-            Find Blood
-          </button>
-
-          <button
-            id="nav-become-donor"
-            onClick={() => setShowDonorModal(true)}
-            className="btn-editorial-primary"
-            style={{ padding: '10px 22px', fontSize: '0.88rem' }}
-          >
-            Be a Donor
-          </button>
-        </div>
-      </nav>
-
-      {/* Hero Section (Matching "The Art of Hiring" Reference Style) */}
-      <header className="editorial-hero">
-        <div className="hero-text-block">
-          <div className="hero-tagline-badge">
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4E4E', display: 'inline-block' }}></span>
-            <span>{currentVariant.tagline}</span>
-          </div>
-
-          <h1 className="hero-main-heading">
-            <span>{typedLine1}</span>
-            {!typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
-            <br />
-            {typedLine2 && <em className="hero-typed-text">{typedLine2}</em>}
-            {typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
-          </h1>
-
-          <p className="hero-lead-text">
-            {currentVariant.quote}
-          </p>
-
-          <div className="hero-action-buttons">
+          <div className="nav-actions-group">
             <button
-              id="hero-donate-btn"
+              id="nav-request-blood"
+              onClick={() => setShowRequestModal(true)}
+              className="btn-editorial-secondary"
+              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+            >
+              Find Blood
+            </button>
+
+            <button
+              id="nav-become-donor"
               onClick={() => setShowDonorModal(true)}
               className="btn-editorial-primary"
+              style={{ padding: '10px 22px', fontSize: '0.88rem' }}
             >
-              <Heart size={18} fill="#FFFFFF" />
-              <span>DONATE BLOOD</span>
-            </button>
-
-            <button
-              id="hero-how-btn"
-              onClick={() => {
-                const el = document.getElementById('how-it-works');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="btn-editorial-secondary"
-            >
-              <Play size={14} fill="currentColor" />
-              <span>HOW IT WORKS</span>
+              Be a Donor
             </button>
           </div>
+        </nav>
 
-          <div className="hero-social-trust">
-            <span>⭐️ Over 14,850 donations coordinated</span>
-            <span>•</span>
-            <span>100% Free & Voluntary</span>
+        {/* Hero Section (Matching "The Art of Hiring" Reference Style) */}
+        <header className="editorial-hero">
+          <div className="hero-text-block">
+            <div className="hero-tagline-badge">
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4E4E', display: 'inline-block' }}></span>
+              <span>{currentVariant.tagline}</span>
+            </div>
+
+            <h1 className="hero-main-heading">
+              <span>{typedLine1}</span>
+              {!typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
+              <br />
+              {typedLine2 && <em className="hero-typed-text">{typedLine2}</em>}
+              {typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
+            </h1>
+
+            <p className="hero-lead-text">
+              {currentVariant.quote}
+            </p>
+
+            <div className="hero-action-buttons">
+              <button
+                id="hero-donate-btn"
+                onClick={() => setShowDonorModal(true)}
+                className="btn-editorial-primary"
+              >
+                <Heart size={18} fill="#FFFFFF" />
+                <span>DONATE BLOOD</span>
+              </button>
+
+              <button
+                id="hero-how-btn"
+                onClick={() => {
+                  const el = document.getElementById('why-donate');
+                  el?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="btn-editorial-secondary"
+              >
+                <Play size={14} fill="currentColor" />
+                <span>HOW IT WORKS</span>
+              </button>
+            </div>
+
+            <div className="hero-social-trust">
+              <span>⭐️ Over 14,850 donations coordinated</span>
+              <span>•</span>
+              <span>100% Free & Voluntary</span>
+            </div>
           </div>
-        </div>
 
-        {/* Floating Editorial Character Illustrations (Click & Auto-Cycling, NO boxes, NO borders) */}
-        <div
-          className="hero-illustration-area clickable-hero-slider"
-          onClick={handleNextHeroIllustration}
-          role="button"
-          tabIndex={0}
-          title="Click to view next story illustration"
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              handleNextHeroIllustration();
-            }
-          }}
-        >
-          {HERO_VARIANTS.map((variant, idx) => (
-            <img
-              key={variant.src}
-              src={variant.src}
-              alt={variant.alt}
-              className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
-              loading="eager"
-            />
-          ))}
-        </div>
-      </header>
+          {/* Floating Editorial Character Illustrations (Click & Auto-Cycling, NO boxes, NO borders) */}
+          <div
+            className="hero-illustration-area clickable-hero-slider"
+            onClick={handleNextHeroIllustration}
+            role="button"
+            tabIndex={0}
+            title="Click to view next story illustration"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleNextHeroIllustration();
+              }
+            }}
+          >
+            {HERO_VARIANTS.map((variant, idx) => (
+              <img
+                key={variant.src}
+                src={variant.src}
+                alt={variant.alt}
+                className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
+                loading="eager"
+              />
+            ))}
+          </div>
+        </header>
+      </section>
 
       {/* Impact Statistics Banner */}
       <section className="stats-banner-wrap">
