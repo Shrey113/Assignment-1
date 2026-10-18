@@ -1,108 +1,85 @@
-# Document 01: Project Scope & Requirements Specification
+# Document 01: Project Scope & Simplified Requirements
 
 > **System Name:** BloodLink — DS-Based Blood Donor & Emergency Management System  
-> **Course / Context:** Data Structures & Algorithms Core Assignment  
-> **Document Status:** Finalized (Stage 01 Baseline)
+> **Course / Context:** Data Structures Core Coursework  
+> **Target:** A lightweight, highly achievable, and robust system built around core Data Structures for fast Data Storing, Fetching, and Retrieving.
 
 ---
 
 ## 1. Executive Summary & Problem Statement
 
-Blood supply logistics and emergency transfusion requests are time-critical medical operations where delays directly impact human mortality. Traditional hospital and blood bank systems frequently encounter catastrophic bottlenecks due to:
+In emergency situations, hospital staff and patients struggle to locate compatible blood units and voluntary donors in a matter of minutes. Traditional database systems often scan tables sequentially, causing delays and failing to prioritize critical trauma patients over routine elective surgeries.
 
-1. **Slow Donor Search Latency:** Linear scanning ($O(N)$) of donor databases leads to delayed outreach during acute trauma and obstetric hemorrhages.
-2. **First-Come, First-Served (FCFS) Pitfalls:** Standard database queuing treats life-threatening requests (e.g., severe accident victims, ICU surgeries) with the same priority as routine elective transfusions.
-3. **Perishable Inventory Wastage:** Blood components possess strict, short shelf-lives (Platelets: 5 days; Red Blood Cells: 35–42 days). Without First-Expiring, First-Out (FEFO) prioritization, valuable units expire on storage shelves.
-4. **Donor Fatigue & Cooldown Violations:** Lack of strict tracking leads to repeated donor contact before their mandatory 90-day recovery window.
-
-**BloodLink** solves these systemic problems by putting **Data Structures at the core of the system architecture**. Instead of relying purely on disk-bound database queries for real-time decisions, BloodLink leverages an in-memory Data Structure Engine to provide:
-- **Instantaneous ($O(1)$) Donor & Inventory Retrieval** via custom Separate-Chaining Hash Maps.
-- **Strict Emergency Triage Scheduling ($O(\log N)$)** via a Binary Max-Heap Priority Queue.
-- **Zero-Wastage Shelf-Life Management ($O(\log K)$)** via a Binary Min-Heap Priority Queue.
-- **Fair Routine Processing ($O(1)$)** via FIFO Queues.
+**BloodLink** provides a lightweight, easy-to-build solution centered around **three core Data Structures**:
+1. **Custom Hash Map ($O(1)$):** Stores donors and stock for instantaneous key-value retrieval by blood group and ID.
+2. **Priority Queue / Max-Heap ($O(\log N)$):** Sorts emergency blood requisitions so the most critical patient is always served first.
+3. **Standard FIFO Queue ($O(1)$):** Handles routine, non-emergency requests in fair first-come, first-served order.
 
 ---
 
-## 2. Project Scope Boundaries
+## 2. Finalized Project Scope
 
 ```mermaid
 graph TB
-    subgraph IN_SCOPE["In-Scope System Boundaries"]
+    subgraph IN_SCOPE["In-Scope (Fast to Build & High Impact)"]
         direction TB
-        A1[Donor Lifecycle Management & Cooldown Verification]
-        A2[In-Memory DS Triage Engine: Max-Heap & FEFO Min-Heap]
-        A3[Instant Blood Group Matching & ABO/Rh Matrix Lookup]
-        A4[Multi-Tier Emergency Request Handling]
-        A5[Blood Bank & Hospital Inventory Tracking]
-        A6[Doubly Linked Donor History & Audit Trail]
-        A7[RBAC Authentication for Donor, Requester, Admin]
+        A1[Donor Registration & 90-Day Cooldown Check]
+        A2[Instant Donor Search by Blood Group via Hash Map]
+        A3[Emergency Blood Requests Prioritized via Max-Heap]
+        A4[Routine Blood Requests Processed via FIFO Queue]
+        A5[Blood Bank Inventory Stock Management]
+        A6[Simple Compatibility Lookup Table]
+        A7[Role Views for Donor, Requester, and Administrator]
     end
 
-    subgraph OUT_OF_SCOPE["Out-of-Scope (Future Enhancements)"]
+    subgraph OUT_OF_SCOPE["Out-of-Scope (Excluded for Simplicity)"]
         direction TB
-        B1[Commercial/Financial Blood Monetization & Payment Processing]
-        B2[Physical IoT Temperature Sensor Hardware Integration]
-        B3[Live Turn-by-Turn GPS Vehicle Fleet Telematics]
-        B4[Automated Biochemical Lab Testing Machine Interfacing]
+        B1[Complex GPS & Real-Time Map Telematics]
+        B2[Payment Gateways & Commercial Transactions]
+        B3[Hardware IoT Temperature Sensors]
+        B4[Multi-hop Graph Routing Algorithms]
     end
 
-    IN_SCOPE -.->|Feeds Core Engine| OUT_OF_SCOPE
+    IN_SCOPE -.->|Streamlined Core| OUT_OF_SCOPE
     
     style IN_SCOPE fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
     style OUT_OF_SCOPE fill:#ffebee,stroke:#c62828,stroke-width:2px
 ```
 
-### 2.1 In-Scope Deliverables
-* **Donor Registry & Health Rules Engine:** Real-time validation of age ($\ge 18, \le 65$), minimum weight ($\ge 45\text{ kg}$), and automatic enforcement of the mandatory 90-day donation cooldown period.
-* **Emergency Request Prioritization Engine:** An algorithmic scoring function combining medical urgency severity, wait time elapsed, required volume deficit, and geographical distance into an in-memory Max-Heap.
-* **Compatibility Verification:** Algorithmic verification between 8 ABO/Rh blood groups using constant-time $O(1)$ bitmask matrix lookups.
-* **Blood Bank Inventory Management:** Component tracking using a First-Expiring, First-Out (FEFO) Min-Heap to automatically dispatch older safe units first.
-* **Donation History Audit Ledger:** Maintaining individual donor historical records in a Doubly Linked List for rapid bi-directional traversal and medical auditing.
-* **Inter-Hospital & Blood Bank Network Routing:** Modeling medical facilities as a Weighted Graph to compute shortest paths for emergency blood bag transfers.
-* **User Roles & Authorization:** Segregated access controls and specialized operational dashboards for Donors, Requesters, and Administrators.
+### 2.1 In-Scope Capabilities
+* **Donor Management:** Registration, viewing profile, 90-day cooldown validation, and one-click availability toggle.
+* **Instant Donor Lookup ($O(1)$):** Requesters search compatible donors by blood group in constant time using a custom Hash Map.
+* **Emergency Prioritization ($O(\log N)$):** Emergency requisitions are scored (`CRITICAL` = 300, `URGENT` = 200, `ROUTINE` = 100 + wait time) and ranked inside a Binary Max-Heap.
+* **Routine Processing ($O(1)$):** Non-critical requisitions are served fairly via a FIFO Queue.
+* **Stock & Donation Logging:** Blood banks add new donations and decrement stock upon request fulfillment.
+* **Data Storing, Fetching & Retrieving:** Dual-layer pipeline ensuring persistent storage in MySQL and instant algorithmic access in memory.
 
-### 2.2 Out-of-Scope (Boundaries for Assignment 1)
-* **Commercial Financial Transactions:** Under national and international blood donation statutes, voluntary blood donation cannot be commercialized; thus, no payment gateways or billing modules are included.
-* **Hardware IoT Sensor Telemetry:** Real-time physical refrigerator temperature readings are simulated through entity status attributes rather than live IoT hardware protocols.
-* **Live GPS Navigation:** Vehicle routing is determined through graph shortest-path algorithms over distance/time weights rather than live satellite tracking integrations.
-
----
-
-## 3. High-Level System Objectives
-
-1. **Algorithmic Predictability:** Achieve predictable sub-millisecond execution times for search, insertion, and priority extraction regardless of dataset scale.
-2. **Zero Blood Starvation:** Balance urgent emergency preemption with fair background servicing of routine requests to prevent starvation of non-critical patients.
-3. **Traceability & Integrity:** Guarantee tamper-proof tracking of every blood unit from collection through screening to transfusion.
-4. **Resilient Data Decoupling:** Decouple the persistent storage layer (MySQL) from the real-time operational layer (In-Memory Data Structure Engine).
+### 2.2 Out-of-Scope (Deliberately Excluded to Save Development Time)
+* Complex graph algorithms (Dijkstra) or live road traffic APIs.
+* Commercial payments or monetized blood exchange.
+* Physical IoT refrigerator sensor telemetry.
 
 ---
 
-## 4. Functional Requirements (FR)
+## 3. Functional Requirements (FR)
 
-| Req ID | Module | Functional Description | DS Mapping |
+| Req ID | Module | Functional Description | DS Operation |
 | :--- | :--- | :--- | :--- |
-| **FR-01** | Donor Registry | Register donor with KYC, contact, address, blood group, medical vitals, and last donation timestamp. | Hash Map ($O(1)$) |
-| **FR-02** | Eligibility Gate | Automatically compute donor eligibility (age, weight, 90-day cooldown) upon request dispatch. | Hash Map + Node Attribute Check ($O(1)$) |
-| **FR-03** | Blood Request Creation | Requesters submit blood requirements with urgency tags, unit volume, patient condition, and target hospital. | Max-Heap / FIFO Queue |
-| **FR-04** | Dynamic Triage Scoring | Calculate composite emergency priority score based on medical severity level and waiting time. | Mathematical Evaluation Function |
-| **FR-05** | Emergency Dispatch | Pop highest-urgency request and allocate compatible units from nearest blood bank. | Max-Heap `extractMax()` ($O(\log N)$) |
-| **FR-06** | FEFO Stock Allocation | Blood banks dispatch the safe unit with the closest expiration date to eliminate wastage. | Min-Heap `extractMin()` ($O(\log K)$) |
-| **FR-07** | Donor History Log | Record chronological donation logs per donor with bidirectional navigation. | Doubly Linked List ($O(1)$ push) |
-| **FR-08** | Inter-Facility Routing | Find shortest path between recipient hospital and candidate blood banks with required blood stock. | Graph Dijkstra / BFS ($O(V^2)$ or $O(E + V \log V)$) |
-| **FR-09** | Compatibility Validation | Validate compatibility between donor blood group and patient blood group. | 8x8 Boolean Compatibility Matrix ($O(1)$) |
-| **FR-10** | Admin Inventory Control | View inventory counts, trigger stock alerts, and inspect priority request heap. | Hash Map Aggregation + Heap Inspection |
+| **FR-01** | Donor Registration | Store donor with name, blood group, contact, city, age, weight. | Hash Map `put()` ($O(1)$) |
+| **FR-02** | Donor Search | Retrieve available donors by blood group instantly. | Hash Map `get()` ($O(1)$) |
+| **FR-03** | Cooldown Verification | Check if donor has completed 90 days since their last donation date. | Date comparison ($O(1)$) |
+| **FR-04** | Emergency Requisition | Submit critical blood request and rank it in the priority queue. | Max-Heap `insert()` ($O(\log N)$) |
+| **FR-05** | Routine Requisition | Submit routine blood request in standard first-come, first-served queue. | FIFO Queue `enqueue()` ($O(1)$) |
+| **FR-06** | Next Emergency Extraction | Admin retrieves the highest priority emergency request. | Max-Heap `extractMax()` ($O(\log N)$) |
+| **FR-07** | Stock Tracking | Fetch and update available blood units count per blood group. | Hash Map `get()` / `put()` ($O(1)$) |
+| **FR-08** | Request Fulfillment | Admin matches request with stock, decrements inventory, and marks fulfilled. | Status update & stock decrement |
+| **FR-09** | Compatibility Check | Validate whether donor blood group is compatible with recipient blood group. | Dictionary lookup ($O(1)$) |
 
 ---
 
-## 5. Non-Functional Requirements (NFR)
+## 4. Non-Functional Requirements (NFR)
 
-* **Performance & Latency:**
-  * Donor search lookup: $< 2\text{ ms}$ (utilizing in-memory Hash Table).
-  * Emergency priority queue extraction: $< 5\text{ ms}$ ($O(\log N)$ binary heap operations).
-  * Compatibility verification: $< 0.1\text{ ms}$ (matrix table lookup).
-* **Reliability & Consistency:**
-  * Atomicity in blood unit reservation: A single blood unit can never be allocated to two concurrent requests (mutual exclusion on inventory nodes).
-* **Data Integrity & Auditability:**
-  * Immutability of past donation records in the donor's history chain.
-* **Scalability:**
-  * System must support an active pool of $100,000+$ registered donors and $10,000+$ concurrent blood requests without degradation in heap extraction speed.
+* **Simplicity & Speed of Development:** Clean, straightforward JavaScript classes that can be implemented and tested in a few hours.
+* **Sub-Millisecond Read Latency:** In-memory donor searches and stock checks resolve in $< 1\text{ ms}$.
+* **Data Durability:** Every creation and status change is persisted in MySQL while remaining in-sync with memory structures.
+* **Clear Codebase:** Easy-to-read code with zero over-engineering or convoluted dependencies.

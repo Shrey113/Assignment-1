@@ -1,23 +1,27 @@
-# Document 04: User Roles, RBAC & Algorithmic Workflows
+# Document 04: User Roles, RBAC & Simplified Workflows
 
-> **Scope:** Definition of User Roles (`Donor`, `Requester`, `Administrator`), Access Control Policies, and End-to-End Operational Workflows in **BloodLink**.
+> **Focus:** Clear, Pragmatic User Roles, Role-Based Access Control, and Fast-to-Build Operational Workflows with Seamless Data Storing, Fetching, and Retrieving.
 
 ---
 
-## 1. User Roles & Personas
+## 1. User Roles & System Interaction
+
+To keep implementation fast and straightforward, the system focuses on **three core roles** with intuitive, well-defined responsibilities:
 
 ```mermaid
 graph LR
-    subgraph ROLES["BloodLink User Ecosystem"]
-        D[Donor Persona\nVoluntary Giver]
-        R[Requester Persona\nHospital / Patient Kin]
-        A[Administrator Persona\nBlood Bank / Health Authority]
+    subgraph ROLES["User Roles"]
+        D[Donor\nVoluntary Contributor]
+        R[Requester\nPatient / Hospital Staff]
+        A[Administrator\nBlood Bank Operator]
     end
 
-    subgraph ACTIONS["Primary System Engagements"]
-        D -->|Maintains Availability, Views History| DS_H[Doubly Linked History]
-        R -->|Raises Emergency/Routine Demands| DS_Q[Max-Heap / FIFO Queue]
-        A -->|Monitors Inventory, Dispatches Units| DS_I[FEFO Min-Heap & Graph]
+    subgraph DATA_FLOW["Data Fetch & Store Actions"]
+        D -->|Store Profile / Fetch History| HM1[Donor Hash Map]
+        R -->|Store Emergency Request| PQ[Priority Queue]
+        R -->|Store Routine Request| FQ[Standard FIFO Queue]
+        A -->|Retrieve Next Emergency| PQ
+        A -->|Fetch & Update Inventory| HM2[Stock Hash Map]
     end
 
     style D fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
@@ -26,72 +30,111 @@ graph LR
 ```
 
 ### 1.1 Role: `Donor`
-* **Definition:** An individual who voluntarily participates in the blood supply network.
-* **Core Responsibilities & Capabilities:**
-  * Complete personal profile registration, contact credentials, and initial medical self-assessment.
-  * Toggle availability status (`Available` vs `Temporarily Unavailable`).
-  * Check algorithmic eligibility status in real-time (automatically evaluated against the 90-day cooldown window from their last recorded donation).
-  * View their personal chronological donation timeline, retrieved by traversing their **Doubly Linked List** of `DonationRecord` nodes.
-  * Receive emergency notifications when a matching critical blood request is within proximity.
-  * Download an authenticated Donor ID Card and participation certificates.
+* **Purpose:** Individuals willing to donate blood.
+* **Core Actions (Fast to Build):**
+  * **Register / Store:** Submit registration form (name, blood group, contact, city, age, weight). Stored in MySQL and indexed in the **Donor Hash Map** ($O(1)$).
+  * **Retrieve / Fetch:** View personal profile, donation eligibility status (automatically checks if last donation date was $\ge 90$ days ago), and past donation history.
+  * **Update:** Simple one-click toggle to set availability (`Available` / `Unavailable`).
 
 ### 1.2 Role: `Requester`
-* **Definition:** An attending physician, hospital triage coordinator, or patient family member in immediate need of blood units.
-* **Core Responsibilities & Capabilities:**
-  * Raise an urgent or routine blood request specifying the required blood group, patient details, unit count, and hospital destination.
-  * Select urgency classification (`Routine`, `Urgent`, `Emergency`, `Critical`).
-  * Monitor request progress in real time as it moves through the **Binary Max-Heap Triage Engine** or **Circular FIFO Queue**.
-  * View matched voluntary donors or assigned blood bank facilities.
-  * Confirm unit arrival or cancel the request if medical circumstances change.
+* **Purpose:** Patients, family members, or doctors needing blood units.
+* **Core Actions (Fast to Build):**
+  * **Create / Store Request:** Fill a simple form with patient name, required blood group, hospital, units needed, and urgency level (`CRITICAL`, `URGENT`, `ROUTINE`).
+    * **Critical / Urgent Requests:** Stored into the in-memory **Priority Queue (Max-Heap)** ($O(\log N)$).
+    * **Routine Requests:** Stored into the in-memory **Standard Queue (FIFO)** ($O(1)$).
+  * **Fetch / Retrieve Status:** Check the status of their request (`PENDING`, `MATCHED`, `FULFILLED`).
+  * **Instant Donor Search:** Search available donors by blood group in $O(1)$ time via the **Donor Hash Map**.
 
 ### 1.3 Role: `Administrator`
-* **Definition:** Authorized blood bank supervisor, laboratory technician, or regional healthcare dispatch officer.
-* **Core Responsibilities & Capabilities:**
-  * Review and verify laboratory screening results (HIV, Hepatitis B/C, Syphilis, Malaria) for freshly harvested blood bags.
-  * Approve tested blood units into active storage, automatically inserting them into the blood group's **FEFO Min-Heap** based on expiration date.
-  * Monitor the active **Binary Max-Heap** priority queue to oversee critical triage allocations and prevent clinical starvation.
-  * Initiate and oversee inter-facility blood transfers using the **Weighted Graph Logistics Engine** (Dijkstra shortest-route paths).
-  * Supervise inventory levels, trigger low-stock camp drives, and audit expired blood bag disposals.
+* **Purpose:** Blood bank staff managing emergency allocation and stock.
+* **Core Actions (Fast to Build):**
+  * **Fetch Next Emergency:** Retrieve the most critical pending request from the **Priority Queue** with a single click (`extractMax()`).
+  * **Fetch & Update Stock:** View blood unit counts per group from the **Stock Hash Map** ($O(1)$). Increment stock on new donation; decrement on fulfillment.
+  * **Fulfill Requests:** Match the top emergency request with available stock, update MySQL status to `FULFILLED`, and sync the in-memory queue.
 
 ---
 
 ## 2. Role-Based Access Control (RBAC) Matrix
 
-| System Resource / Entity | Donor Role | Requester Role | Administrator Role |
+A simple, practical permissions structure that avoids complex role hierarchies:
+
+| Feature / Data Entity | Donor | Requester | Administrator |
 | :--- | :---: | :---: | :---: |
-| **Donor Self Profile** | `CREATE`, `READ`, `UPDATE` | `READ` (Masked Contact) | `READ`, `UPDATE`, `DEACTIVATE` |
-| **Donor Medical History (DLL)** | `READ` (Own History) | `NO_ACCESS` | `READ`, `AUDIT`, `APPEND` |
-| **Blood Request Creation** | `NO_ACCESS` | `CREATE`, `READ` (Own), `CANCEL` | `CREATE`, `READ` (All), `CANCEL` |
-| **Emergency Priority Queue (Max-Heap)** | `NO_ACCESS` | `READ` (Position / Status Only) | `READ`, `PEEK`, `EXTRACT`, `OVERRIDE` |
-| **Routine Request Queue (FIFO)** | `NO_ACCESS` | `READ` (Position / Status Only) | `READ`, `DEQUEUE`, `MANAGE` |
-| **Blood Bank Inventory (FEFO Heaps)** | `NO_ACCESS` | `READ` (Stock Count Only) | `CREATE`, `READ`, `DISPATCH`, `DISCARD` |
-| **Logistics Routing (Graph)** | `NO_ACCESS` | `READ` (Delivery ETA) | `EXECUTE_ROUTING`, `MANAGE_NODES` |
-| **Compatibility Matrix Inspection** | `READ` | `READ` | `READ`, `UPDATE_CONFIG` |
+| **Register & Manage Own Profile** | ✅ Create / Read / Update | ❌ | ✅ Full Access |
+| **Search Donors by Blood Group** | ❌ | ✅ Read ($O(1)$ Hash Map) | ✅ Read ($O(1)$ Hash Map) |
+| **Create Blood Request** | ❌ | ✅ Create & View Own | ✅ Create & View All |
+| **View Emergency Priority Queue** | ❌ | ❌ (Own status only) | ✅ Read & Extract Top ($O(\log N)$) |
+| **View Routine Request Queue** | ❌ | ❌ (Own status only) | ✅ Read & Dequeue ($O(1)$) |
+| **Update Blood Bank Inventory** | ❌ | ❌ | ✅ Add / Decrement Stock |
+| **Record New Blood Donation** | ❌ | ❌ | ✅ Create & Update Cooldown |
 
 ---
 
-## 3. End-to-End Operational Workflows
+## 3. Data Fetching, Storing, and Retrieving Architecture
 
-### 3.1 Blood Request Lifecycle State Machine
+To ensure fast development and reliable code, all entities follow a consistent **Dual-Layer Data Pipeline**:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant UI as Frontend (React UI)
+    participant API as Backend (Express API)
+    participant DS as In-Memory DS Engine
+    participant DB as MySQL Database
+
+    rect rgb(240, 248, 255)
+    Note over UI,DB: 1. STORING DATA (e.g. New Blood Request)
+    UI->>API: POST /api/requests (BloodGroup, Urgency, Units)
+    API->>DB: INSERT INTO blood_requests ...
+    DB-->>API: Saved with requestId
+    API->>DS: priorityQueue.insert(request) OR queue.enqueue(request)
+    API-->>UI: 201 Created (Instant Confirmation)
+    end
+
+    rect rgb(255, 245, 238)
+    Note over UI,DB: 2. FETCHING / RETRIEVING DATA (e.g. Search Donors or Get Next Emergency)
+    UI->>API: GET /api/donors/search?group=O+
+    API->>DS: donorHashMap.get("O+") -> O(1) Lookup
+    DS-->>API: Returns matching donor array
+    API-->>UI: 200 OK with instant donor list
+    end
+```
+
+### Explanation of the 3 Data Phases:
+1. **Storing Data:**
+   * Incoming data is validated in Express.
+   * Saved permanently to MySQL to prevent data loss.
+   * Inserted into the active in-memory Data Structure (Hash Map, Priority Queue, or FIFO Queue) for fast algorithmic access.
+2. **Retrieving Data:**
+   * Real-time read operations (search donors, check blood stock, pull highest emergency) query the **in-memory Data Structures** first.
+   * This yields instant ($O(1)$ or $O(\log N)$) responses without heavy SQL queries.
+3. **Startup Hydration:**
+   * When the Node.js server starts, a simple `initDataStructures()` function runs:
+     `SELECT * FROM donors` $\to$ populates `donorHashMap`.
+     `SELECT * FROM blood_stock` $\to$ populates `stockHashMap`.
+     `SELECT * FROM blood_requests WHERE status='PENDING'` $\to$ inserts into `priorityQueue` / `fifoQueue`.
+
+---
+
+## 4. Simplified Operational Workflows
+
+### 4.1 Blood Request Lifecycle (Fast to Build)
 
 ```mermaid
 stateDiagram-v2
-    [*] --> SUBMITTED : Requester submits form
+    [*] --> SUBMITTED : Requester submits request
     
-    state Urgency_Evaluation <<choice>>
-    SUBMITTED --> Urgency_Evaluation : System scores urgency
+    state Check_Urgency <<choice>>
+    SUBMITTED --> Check_Urgency
     
-    Urgency_Evaluation --> MAX_HEAP_TRIAGE : Urgency is EMERGENCY / CRITICAL
-    Urgency_Evaluation --> FIFO_QUEUE : Urgency is ROUTINE
+    Check_Urgency --> PRIORITY_QUEUE : Urgency = CRITICAL or URGENT
+    Check_Urgency --> ROUTINE_QUEUE : Urgency = ROUTINE
     
-    MAX_HEAP_TRIAGE --> MATCHED : Priority extraction matches stock / donors
-    FIFO_QUEUE --> MATCHED : Dequeued in FCFS order
+    PRIORITY_QUEUE --> FULFILLED : Admin extracts top & assigns stock
+    ROUTINE_QUEUE --> FULFILLED : Processed in FIFO order
     
-    MATCHED --> DISPATCHED : Units released from FEFO Min-Heap
-    DISPATCHED --> FULFILLED : Confirmed delivered & transfused
-    
-    SUBMITTED --> CANCELLED : Cancelled by requester
-    MAX_HEAP_TRIAGE --> CANCELLED : Clinical condition changed
+    SUBMITTED --> CANCELLED : Cancelled by user
+    PRIORITY_QUEUE --> CANCELLED : Cancelled
     
     FULFILLED --> [*]
     CANCELLED --> [*]
@@ -99,64 +142,57 @@ stateDiagram-v2
 
 ---
 
-### 3.2 Emergency Triage & Dispatch Sequence
+### 4.2 Emergency Request & Triage Workflow (Sequence)
+
+A streamlined 6-step flow that is easy to write in Node.js and easy to wire to a React button:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Req as Requester (Hospital Triage)
-    participant API as BloodLink API Gateway
-    participant DS_Heap as Max-Heap Priority Queue
-    participant DS_Compat as Compatibility Matrix (8x8)
-    participant DS_Inv as Inventory Hash Map & FEFO Heap
-    participant DS_Graph as Logistics Graph (Dijkstra)
-    actor Admin as Blood Bank Admin
+    actor Req as Requester
+    actor Admin as Admin
+    participant Server as Express Server
+    participant DS as DS Engine (Heap & Hash Map)
+    participant DB as MySQL Database
 
-    Req->>API: POST /api/requests (Urgency: CRITICAL, Group: O-, Units: 2)
-    API->>API: Compute Dynamic Priority Score (Score: 4250)
-    API->>DS_Heap: insert(BloodRequestNode)
-    Note over DS_Heap: Request placed in Max-Heap (Heapify-Up O(log N))
+    Req->>Server: POST /api/requests (Urgency: "CRITICAL", Group: "A+")
+    Server->>DB: INSERT into blood_requests
+    Server->>DS: emergencyHeap.insert(request) [O(log N)]
+    Server-->>Req: Request Queued with High Priority
 
-    DS_Heap-->>API: extractMax() returns top emergency
-    API->>DS_Compat: checkCompatibility("O-", availableGroups)
-    DS_Compat-->>API: Compatible groups = ["O-"] (O(1))
+    Admin->>Server: GET /api/admin/next-emergency
+    Server->>DS: emergencyHeap.extractMax() [O(log N)]
+    DS-->>Server: Top Emergency Request
+    Server->>DS: stockHashMap.get("A+") [O(1)]
+    DS-->>Server: Available Units = 4
+    Server-->>Admin: Show Emergency Request + Stock Available
 
-    API->>DS_Inv: lookupBloodStock("O-")
-    DS_Inv-->>API: Blood Bank #BB-10 has 3 safe units
-    
-    API->>DS_Inv: getFefoUnit("BB-10", "O-")
-    Note over DS_Inv: Extract 2 earliest-expiring bags from Min-Heap (O(log K))
-
-    API->>DS_Graph: computeShortestRoute(BB-10, TargetHospital)
-    Note over DS_Graph: Dijkstra shortest path calculation O((V+E) log V)
-    DS_Graph-->>API: Optimal Route via Central Expy (ETA: 14 mins)
-
-    API->>Admin: Alert Dispatch Officer with Bag IDs & Route
-    Admin->>API: Confirm Handover & Transit Departure
-    API->>Req: Notify Requester: Units Dispatched (ETA: 14 mins)
+    Admin->>Server: POST /api/admin/fulfill-request (requestId)
+    Server->>DS: stockHashMap.decrement("A+", 1)
+    Server->>DB: UPDATE blood_requests SET status='FULFILLED'
+    Server-->>Admin: Confirmation: Request Fulfilled
 ```
 
 ---
 
-### 3.3 Donor Eligibility & Donation History Workflow
+### 4.3 Donor Registration & Availability Workflow
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Donor as Voluntary Donor
-    participant API as BloodLink Engine
-    participant Registry as Donor Hash Map
-    participant History as Doubly Linked List
+    participant Server as Express Server
+    participant DS as Donor Hash Map
+    participant DB as MySQL Database
 
-    Donor->>API: Check Donation Eligibility
-    API->>Registry: lookupDonor(donorId) -> O(1)
-    Registry-->>API: DonorRecord { lastDonation: "2026-07-01", weight: 68kg }
-    API->>API: Check Days Elapsed: 109 days >= 90 days? -> TRUE
-    API-->>Donor: Status: "ELIGIBLE TO DONATE"
+    Donor->>Server: POST /api/donors/register (Name, "O+", Phone, City)
+    Server->>DB: INSERT into donors
+    Server->>DS: donorMap.put(donorId, donorData) [O(1)]
+    Server->>DS: bloodGroupMap.add("O+", donorId) [O(1)]
+    Server-->>Donor: Registration Successful!
 
-    Donor->>API: Completes Blood Donation Camp Event
-    API->>History: pushHead(new DonationRecord("2026-10-18", 450ml, "PASSED"))
-    Note over History: Instant O(1) prepend to Doubly Linked List
-    API->>Registry: updateLastDonationDate("2026-10-18")
-    API-->>Donor: Updated History Available & Certificate Issued
+    Donor->>Server: PATCH /api/donors/toggle-availability
+    Server->>DB: UPDATE donors SET is_available = !is_available
+    Server->>DS: donorMap.updateAvailability(donorId) [O(1)]
+    Server-->>Donor: Availability status updated
 ```

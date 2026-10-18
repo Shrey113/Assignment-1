@@ -1,15 +1,18 @@
-# BloodLink: Data Structure-Driven Blood Donor & Emergency Management System
+# BloodLink: DS-Based Blood Donor & Emergency Management System
 
-> **Academic Coursework / Engineering Specification: Stage 01 — Project Foundation & Requirements**  
-> *Target Domain*: Algorithmic Blood Supply Chain, Real-time Emergency Triage, and Donor Management.
+> **Stage 01: Project Foundation & Requirements Specification**  
+> **Philosophy:** High algorithmic value with practical, fast-to-build implementations centered on **Data Storing, Fetching, and Retrieving**.
 
 ---
 
 ## 📌 Document Overview
 
-This directory contains the foundational specifications, algorithmic blueprints, entity schemas, role-based workflows, and repository blueprints for **BloodLink**. 
+This directory contains the foundational specifications, algorithmic blueprints, entity schemas, and streamlined workflows for **BloodLink**.
 
-Unlike conventional web management systems that rely strictly on sequential database queries, **BloodLink is designed from first principles around core Computer Science Data Structures**. High-urgency hospital requests and life-saving donor matching demand predictable, microsecond-level algorithmic time complexities ($O(1)$ lookup, $O(\log N)$ priority scheduling).
+The architecture prioritizes **three core Data Structures** that are easy to build in JavaScript while providing microsecond performance:
+1. **Custom Hash Map:** Instant $O(1)$ donor lookup by blood group/ID and stock tracking.
+2. **Priority Queue (Binary Max-Heap):** $O(\log N)$ prioritization of critical emergency blood requests.
+3. **Standard FIFO Queue:** $O(1)$ fair first-come, first-served processing of routine requests.
 
 ```mermaid
 graph TD
@@ -32,18 +35,18 @@ graph TD
 
 | File | Document Title | Primary Focus & Highlights |
 | :--- | :--- | :--- |
-| **[01_project_scope.md](file:///a:/Nirma/DS/Assignment%201/docs/01_project_scope.md)** | **Project Scope & Requirements** | Problem statement, primary objectives, functional & non-functional requirements, in-scope vs. out-of-scope boundaries. |
-| **[02_data_structures_architecture.md](file:///a:/Nirma/DS/Assignment%201/docs/02_data_structures_architecture.md)** | **Data Structures Flow & Architecture** | **The Core Foundation**: Custom Hash Maps, Binary Max-Heap (Emergency Triage), Binary Min-Heap (FEFO Inventory Expiry), FIFO Queues, Doubly Linked Lists, Weighted City Graphs, and Complexity Tables. |
-| **[03_entity_definitions.md](file:///a:/Nirma/DS/Assignment%201/docs/03_entity_definitions.md)** | **Core Entity Definitions** | Technical specifications for the 6 core entities: `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request`. Includes Mermaid Class & ER diagrams. |
-| **[04_user_roles_and_workflows.md](file:///a:/Nirma/DS/Assignment%201/docs/04_user_roles_and_workflows.md)** | **User Roles, RBAC & Workflows** | Deep dive into `Donor`, `Requester`, and `Administrator` roles; Role-Based Access Control (RBAC) matrix; Request Lifecycle State Machine and Emergency Triage Sequence. |
-| **[05_system_architecture_and_folder_structure.md](file:///a:/Nirma/DS/Assignment%201/docs/05_system_architecture_and_folder_structure.md)** | **Architecture & Repository Structure** | Full-stack architectural breakdown, in-memory DS engine separation, directory tree layout, and version control guidelines. |
+| **[01_project_scope.md](file:///a:/Nirma/DS/Assignment%201/docs/01_project_scope.md)** | **Project Scope & Requirements** | Problem statement, achievable boundaries, functional requirements for data storing, fetching, and retrieving. |
+| **[02_data_structures_architecture.md](file:///a:/Nirma/DS/Assignment%201/docs/02_data_structures_architecture.md)** | **Data Structures Flow & Engine** | Streamlined custom Hash Map ($O(1)$), Binary Max-Heap ($O(\log N)$), FIFO Queue ($O(1)$), and Compatibility Dictionary with simple code contracts. |
+| **[03_entity_definitions.md](file:///a:/Nirma/DS/Assignment%201/docs/03_entity_definitions.md)** | **Core Entity Definitions** | Technical specifications and schemas for `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request` with clean ERD and Class diagrams. |
+| **[04_user_roles_and_workflows.md](file:///a:/Nirma/DS/Assignment%201/docs/04_user_roles_and_workflows.md)** | **User Roles, RBAC & Workflows** | Fast-to-build workflows for `Donor`, `Requester`, and `Administrator` detailing clear Data Storing, Fetching, and Retrieving sequences. |
+| **[05_system_architecture_and_folder_structure.md](file:///a:/Nirma/DS/Assignment%201/docs/05_system_architecture_and_folder_structure.md)** | **Architecture & Codebase Layout** | Minimal full-stack design, startup in-memory data hydration, and clean folder tree. |
 
 ---
 
-## 🎯 Stage 01 Deliverables Checklist
+## 🎯 Stage 01 Deliverables Summary
 
-- [x] **Finalize Project Scope**: Clear boundaries defined for emergency triage, inventory tracking, and donor dispatch.
-- [x] **Core Entity Definitions**: Fully specified attributes, constraints, relationships, and DS mappings for the 6 required entities.
-- [x] **Decide User Roles**: Detailed permissions, workflows, and journeys for Donors, Requesters, and Administrators.
-- [x] **Data Structure Priority**: Engineered custom Hash Maps, Max-Heap, Min-Heap, FIFO Queue, Doubly Linked List, and Graph algorithms.
-- [x] **Repository Structure & Git Setup**: Initialized Git repository with clean `.gitignore` and folder hierarchy.
+- [x] **Streamlined Project Scope**: Practical boundaries focused on speed of development and high reliability.
+- [x] **6 Core Entities Defined**: Minimal, clean fields optimized for easy MySQL storage and fast frontend rendering.
+- [x] **User Roles & Clear Data Flow**: `Donor`, `Requester`, and `Administrator` workflows mapped to distinct Store, Fetch, and Retrieve operations.
+- [x] **3 Core Data Structures**: Practical Hash Map, Priority Queue, and Queue designs.
+- [x] **Clean Repository & Git Baseline**: Initialized Git repository and organized structure.

@@ -1,182 +1,129 @@
-# Document 05: System Architecture & Repository Folder Structure
+# Document 05: System Architecture & Simplified Folder Structure
 
-> **Scope:** Repository structure, multi-tiered architecture, in-memory DS engine integration, and Git repository guidelines for **BloodLink**.
+> **Focus:** Lightweight Full-Stack Architecture, In-Memory Data Synchronization, and Clean Project Directory Layout for Fast Development.
 
 ---
 
-## 1. Multi-Tiered System Architecture
+## 1. Simplified System Architecture
 
 ```mermaid
 graph TB
-    subgraph CLIENT_TIER["Client Layer (Frontend)"]
-        UI_L[Landing Page]
-        UI_D[Donor Dashboard & History]
-        UI_R[Emergency Requisition Interface]
-        UI_A[Admin Triage & Stock Console]
+    subgraph FRONTEND["Frontend (React + Vite)"]
+        UI_Home[Home / Search Donors Page]
+        UI_Donor[Donor Registration & Profile]
+        UI_Req[Emergency Request Form]
+        UI_Admin[Admin Triage & Stock Console]
     end
 
-    subgraph API_TIER["Application & API Gateway Layer"]
-        Router[Express.js API Router]
-        Auth[JWT / RBAC Middleware]
-        Validator[Schema Validation & Cooldown Rules]
+    subgraph BACKEND["Backend (Node.js + Express)"]
+        Router[API Routes /api/*]
+        Controllers[Controllers & Logic]
+        Hydrator[Startup Data Hydration]
     end
 
-    subgraph DS_TIER["In-Memory Data Structures Engine (Microsecond Operations)"]
-        MH["Max-Heap (Emergency Triage)"]
-        mH["Min-Heap (FEFO Stock Expiry)"]
-        HM["Separate-Chaining Hash Map (Index & Registry)"]
-        CQ["Circular FIFO Queue (Routine Requests)"]
-        DLL["Doubly Linked List (Donor History)"]
-        GR["Weighted Graph & Dijkstra (Logistics)"]
-        CM["8x8 Compatibility Bitmask Matrix"]
+    subgraph DS_ENGINE["In-Memory Data Structures Engine"]
+        HM[Custom Hash Map\nO 1 Donor & Stock Lookup]
+        PQ[Binary Max-Heap\nO log N Emergency Triage]
+        FQ[FIFO Queue\nO 1 Routine Requests]
+        CMP[Compatibility Dictionary\nO 1 Direct Lookup]
     end
 
-    subgraph PERSISTENCE_TIER["Data Persistence Layer"]
-        DB[(MySQL Relational Database)]
-        Hydrator[System Hydration on Startup]
+    subgraph DATABASE["Persistent Storage (MySQL)"]
+        DB[(MySQL Database Tables)]
     end
 
-    CLIENT_TIER <-->|RESTful JSON / HTTPS| API_TIER
-    API_TIER <-->|Direct In-Memory Reference Calls| DS_TIER
-    DS_TIER <-->|Asynchronous State Sync| DB
-    DB -.->|Warm Cache / Reconstruct DS| Hydrator
-    Hydrator -.->|Pre-populate In-Memory Models| DS_TIER
+    FRONTEND <-->|RESTful JSON API| BACKEND
+    BACKEND <-->|Direct In-Memory Calls| DS_ENGINE
+    BACKEND <-->|Persistent CRUD Queries| DATABASE
+    DATABASE -.->|Hydrate on Server Start| Hydrator
+    Hydrator -.->|Populate Initial State| DS_ENGINE
 
-    style CLIENT_TIER fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
-    style API_TIER fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style DS_TIER fill:#ffebee,stroke:#b71c1c,stroke-width:3px
-    style PERSISTENCE_TIER fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style FRONTEND fill:#e3f2fd,stroke:#1565c0,stroke-width:2px
+    style BACKEND fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style DS_ENGINE fill:#ffebee,stroke:#b71c1c,stroke-width:3px
+    style DATABASE fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
 ```
 
-### The In-Memory Hydration Pattern
-1. **Server Initialization (`bootEngine()`):**
-   - The application queries MySQL for active donors, current blood stock, and pending requests.
-   - It instantiates custom Data Structures and populates them:
-     - Donors are hashed into `DonorRegistryMap`.
-     - Blood bags are inserted into their respective Blood Bank's `FEFO Min-Heap`.
-     - Pending critical requests are inserted into the `Max-Heap Priority Queue`.
-     - Routine requests enter the `Circular FIFO Queue`.
-2. **Runtime Operations:**
-   - All critical evaluations, triage sorting, donor searching, and compatibility verifications happen entirely inside the Data Structure Engine at memory speeds ($< 1\text{ ms}$).
-3. **Persistence Sync:**
-   - State mutations (e.g., successful unit dispatch, donor registration) are logged and persisted asynchronously into MySQL.
+### The Startup Data Hydration Flow (Fast & Simple):
+When the Node.js backend starts up, a single concise function initializes the in-memory structures:
+```javascript
+// src/services/dsEngine.js
+async function initDSEngine(db) {
+  // 1. Fetch active donors and store in Hash Map
+  const [donors] = await db.query('SELECT * FROM donors WHERE is_available = true');
+  donors.forEach(donor => {
+    donorMap.put(donor.donorId, donor);
+    bloodGroupMap.add(donor.bloodGroup, donor);
+  });
+
+  // 2. Fetch pending requests and insert into Heaps/Queues
+  const [requests] = await db.query("SELECT * FROM blood_requests WHERE status = 'PENDING'");
+  requests.forEach(req => {
+    if (req.urgency === 'CRITICAL' || req.urgency === 'URGENT') {
+      emergencyHeap.insert(req);
+    } else {
+      routineQueue.enqueue(req);
+    }
+  });
+
+  // 3. Fetch stock counts into Stock Hash Map
+  const [stocks] = await db.query('SELECT bloodGroup, COUNT(*) as count FROM donations WHERE status = "SAFE" GROUP BY bloodGroup');
+  stocks.forEach(s => stockMap.put(s.bloodGroup, s.count));
+
+  console.log('✅ In-Memory Data Structures successfully hydrated from MySQL.');
+}
+```
 
 ---
 
-## 2. Repository Folder Structure
-
-The project follows a clean separation of concerns, strictly isolating data structure implementations from web routing, database queries, and presentation components:
+## 2. Clean, Minimal Repository Folder Structure
 
 ```
-BloodLink/
-├── .gitignore                                # Version control exclusion rules
-├── flow.md                                   # Multi-stage assignment roadmap
-├── README.md                                 # Top-level workspace overview
+Assignment 1/
+├── .gitignore                                # Git ignore file
+├── flow.md                                   # Assignment roadmap
+├── README.md                                 # Project overview & quickstart
 │
-├── docs/                                     # Comprehensive Technical Specifications
-│   ├── README.md                             # Documentation Index & Roadmap Matrix
-│   ├── 01_project_scope.md                   # Scope, Objectives & Invariants
-│   ├── 02_data_structures_architecture.md   # Heaps, Hash Maps, Queues & Graph Deep-Dive
-│   ├── 03_entity_definitions.md              # 6 Core Entities & Relational Schemas
-│   ├── 04_user_roles_and_workflows.md        # Roles, RBAC, State Machines & Sequences
-│   └── 05_system_architecture_and_folder_structure.md # Codebase Structure & Topology
+├── docs/                                     # Stage 01 Specifications
+│   ├── README.md                             # Documentation index
+│   ├── 01_project_scope.md                   # Finalized scope & requirements
+│   ├── 02_data_structures_architecture.md   # Hash Map, Priority Queue, Queue designs
+│   ├── 03_entity_definitions.md              # 6 Core entity schemas
+│   ├── 04_user_roles_and_workflows.md        # Workflows for Storing, Fetching, Retrieving
+│   └── 05_system_architecture_and_folder_structure.md # Architecture & layout
 │
-├── src/                                      # Backend & Core Engine Source Code
-│   ├── config/                               # System configuration & environment loaders
-│   │   ├── database.js                       # MySQL connection pool configuration
-│   │   └── constants.js                      # Urgency weights, cooldown periods, thresholds
-│   │
-│   ├── core/                                 # Data Structures & Pure Algorithmic Engine
-│   │   ├── data_structures/                  # Handcrafted Custom Data Structures
+├── src/                                      # Backend Code (Node.js + Express)
+│   ├── config/
+│   │   └── db.js                             # MySQL connection configuration
+│   ├── core/
+│   │   ├── data_structures/
 │   │   │   ├── HashMap.js                    # Custom Separate-Chaining Hash Map
-│   │   │   ├── MaxHeap.js                    # Binary Max-Heap for Emergency Triage
-│   │   │   ├── MinHeap.js                    # Binary Min-Heap for FEFO Expiration
-│   │   │   ├── CircularQueue.js              # Circular FIFO Queue for Routine Requests
-│   │   │   ├── DoublyLinkedList.js           # Doubly Linked List for Donation History
-│   │   │   ├── Graph.js                      # Adjacency List Graph for Logistics
-│   │   │   └── CompatibilityMatrix.js        # 8x8 Blood Group Compatibility Matrix
-│   │   └── algorithms/                       # Domain Algorithms
-│   │       ├── triageScorer.js               # Priority evaluation calculation
-│   │       ├── dijkstraRouter.js             # Shortest delivery corridor calculation
-│   │       └── eligibilityChecker.js         # 90-day cooldown & health validation
-│   │
-│   ├── models/                               # Data Models & Schemas
-│   │   ├── Donor.js                          # Donor entity schema & validation
-│   │   ├── BloodGroup.js                     # Blood Group static catalog
-│   │   ├── Donation.js                       # Donation entity schema
-│   │   ├── BloodBank.js                      # Blood Bank entity schema
-│   │   ├── Hospital.js                       # Hospital entity schema
-│   │   └── BloodRequest.js                   # Blood Request entity schema
-│   │
-│   ├── controllers/                          # Request Handlers & API Controllers
-│   │   ├── donorController.js                # Donor registration, search, eligibility
-│   │   ├── requestController.js              # Emergency triage & routine requisition
-│   │   ├── inventoryController.js            # Stock tracking & FEFO allocations
-│   │   ├── hospitalController.js             # Hospital management
-│   │   └── adminController.js                # Queue inspection, dispatch & analytics
-│   │
-│   ├── routes/                               # Express REST API Route Declarations
-│   │   ├── donorRoutes.js                    # /api/donors/*
-│   │   ├── requestRoutes.js                  # /api/requests/*
-│   │   ├── inventoryRoutes.js                # /api/inventory/*
-│   │   └── adminRoutes.js                    # /api/admin/*
-│   │
-│   ├── services/                             # Business Logic & Orchestration
-│   │   ├── engineService.js                  # DS In-Memory Engine orchestrator
-│   │   ├── triageService.js                  # Max-Heap ingestion & queue management
-│   │   └── logisticsService.js               # Inter-facility routing coordinator
-│   │
-│   └── utils/                                # Helpers, loggers, formatters
-│       ├── logger.js                         # Structured logging
-│       └── validator.js                      # Input sanitization
+│   │   │   ├── PriorityQueue.js              # Binary Max-Heap for Emergency Triage
+│   │   │   └── Queue.js                      # Standard FIFO Queue
+│   │   └── compatibility.js                  # O(1) Blood Group Compatibility Dictionary
+│   ├── controllers/
+│   │   ├── donorController.js                # Donor register, search, toggle
+│   │   ├── requestController.js              # Request submission, triage extraction
+│   │   └── adminController.js                # Inventory stock & fulfillment
+│   ├── routes/
+│   │   ├── donorRoutes.js                    # /api/donors
+│   │   ├── requestRoutes.js                  # /api/requests
+│   │   └── adminRoutes.js                    # /api/admin
+│   └── server.js                             # Express entry point & hydration
 │
-├── client/                                   # Frontend Application (React + Vite)
-│   ├── public/                               # Static assets and icons
+├── client/                                   # Frontend Code (React + Vite)
+│   ├── public/
 │   └── src/
-│       ├── assets/                           # SVG icons, imagery
-│       ├── components/                       # Modular reusable UI widgets
-│       │   ├── common/                       # Buttons, Cards, Modals, Badges
-│       │   ├── triage/                       # Real-time Heap Visualizer widget
-│       │   └── donor/                        # Eligibility gauge & donation timeline
-│       ├── pages/                            # Top-level view pages
-│       │   ├── LandingPage.jsx               # Hero, search & call to action
-│       │   ├── DonorDashboard.jsx            # Donor profile & DLL timeline
-│       │   ├── EmergencyRequestPage.jsx      # High-urgency request submission
-│       │   └── AdminDashboard.jsx            # Queue monitoring & inventory console
-│       ├── hooks/                            # Custom React hooks
-│       └── services/                         # Client API communication services
+│       ├── components/                       # Simple reusable UI components
+│       ├── pages/
+│       │   ├── HomePage.jsx                  # Hero & Donor Search
+│       │   ├── DonorRegisterPage.jsx         # Donor Registration form
+│       │   ├── RequestBloodPage.jsx          # Emergency / Routine Request form
+│       │   └── AdminDashboard.jsx            # Emergency Queue & Stock view
+│       ├── services/
+│       │   └── api.js                        # Axios / Fetch API helpers
+│       └── App.jsx
 │
-└── tests/                                    # Automated Test Suite
-    ├── data_structures/                      # Unit tests for custom DS implementations
-    │   ├── HashMap.test.js                   # Collision handling, resize, O(1) checks
-    │   ├── MaxHeap.test.js                   # Heapify-up/down, priority order checks
-    │   ├── MinHeap.test.js                   # FEFO earliest expiration order checks
-    │   ├── CircularQueue.test.js             # Wrap-around and capacity checks
-    │   └── DoublyLinkedList.test.js          # Bidirectional traversal & node excision
-    └── integration/                          # End-to-end API & triage engine tests
-        └── emergencyTriage.test.js           # Multi-request arrival and allocation test
-```
-
----
-
-## 3. Git Repository Architecture & Branching Strategy
-
-The repository is initialized with a Git version control system following standard git flow practices:
-
-* **`main`**: Production-ready, fully tested releases. Contains stable milestone submissions.
-* **`develop`**: Integration branch for completed stage deliverables.
-* **`feature/<stage-name>`**: Topic branches for individual assignments (e.g., `feature/stage-01-requirements`, `feature/stage-02-database-design`, `feature/stage-05-custom-ds`).
-
-### Standard Commit Message Convention
-```text
-<type>(<scope>): <short summary>
-
-[optional body describing technical rationale and DS implications]
-
-Types:
-- feat: New feature or DS implementation
-- docs: Documentation and architectural blueprints
-- refactor: Algorithmic optimization without changing behavior
-- test: Unit tests for custom data structures
-- chore: Tooling, package management, config
+└── tests/                                    # Simple Test Scripts
+    └── dsTests.js                            # Unit tests for HashMap, Heap, and Queue
 ```

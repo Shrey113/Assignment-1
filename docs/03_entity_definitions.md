@@ -1,7 +1,7 @@
-# Document 03: Core Entity Definitions & Schema Specifications
+# Document 03: Core Entity Definitions & Simplified Schemas
 
-> **Scope:** Definitive technical specifications for the six core domain entities in **BloodLink**.  
-> **Entities:** `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, `Blood Request`.
+> **Scope:** Definitive technical specifications for the six core domain entities in **BloodLink**: `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request`.  
+> **Design Goal:** Clean, practical schemas that are fast to build in MySQL and simple to manipulate in JavaScript.
 
 ---
 
@@ -10,304 +10,244 @@
 ```mermaid
 erDiagram
     BLOOD_GROUP ||--o{ DONOR : "categorizes"
-    BLOOD_GROUP ||--o{ BLOOD_REQUEST : "requested_by"
+    BLOOD_GROUP ||--o{ BLOOD_REQUEST : "needed_in"
     BLOOD_GROUP ||--o{ DONATION : "contains"
     
-    DONOR ||--o{ DONATION : "makes"
-    BLOOD_BANK ||--o{ DONATION : "stores_and_manages"
+    DONOR ||--o{ DONATION : "contributes"
+    BLOOD_BANK ||--o{ DONATION : "stores"
     
-    HOSPITAL ||--o{ BLOOD_REQUEST : "raises"
-    BLOOD_BANK ||--o{ BLOOD_REQUEST : "fulfills"
+    HOSPITAL ||--o{ BLOOD_REQUEST : "originates_from"
     
     DONOR {
-        string donorId PK
+        int donorId PK
         string fullName
-        string contactNumber UK
-        string email UK
+        string bloodGroup FK
+        string contactNumber
+        string email
+        string city
         int age
         float weightKg
-        string bloodGroupId FK
         date lastDonationDate
         boolean isAvailable
-        string eligibilityStatus
     }
 
     BLOOD_GROUP {
-        string bloodGroupId PK
-        string groupName
+        string groupName PK
         string rhFactor
-        int bitmaskCode
+        string compatibleDonors
     }
 
     DONATION {
-        string donationId PK
-        string donorId FK
-        string bloodBankId FK
-        string bloodGroupId FK
-        datetime donationTimestamp
+        int donationId PK
+        int donorId FK
+        int bloodBankId FK
+        string bloodGroup FK
+        date donationDate
         int unitsCount
-        string screeningStatus
-        datetime expiryTimestamp
-        string storageStatus
+        string status
     }
 
     BLOOD_BANK {
-        string bloodBankId PK
+        int bloodBankId PK
         string name
-        string licenseNumber UK
         string city
-        float latitude
-        float longitude
+        string contactNumber
         int totalCapacityUnits
-        string emergencyContact
     }
 
     HOSPITAL {
-        string hospitalId PK
+        int hospitalId PK
         string name
-        string registrationNumber UK
-        string type
         string city
-        float latitude
-        float longitude
-        int icuBedsCount
-        string emergencyContact
+        string contactNumber
     }
 
     BLOOD_REQUEST {
-        string requestId PK
-        string hospitalId FK
-        string bloodGroupId FK
+        int requestId PK
+        string requesterName
+        int hospitalId FK
+        string bloodGroup FK
         int unitsRequired
-        string urgencyTier
-        float priorityScore
-        string clinicalReason
+        string urgency
+        int priorityScore
         string status
         datetime createdAt
-        datetime deadlineTimestamp
     }
 ```
 
 ---
 
-## 2. In-Depth Entity Technical Specifications
+## 2. Practical Entity Technical Specifications
 
 ### 2.1 Entity: `Donor`
-Represents an individual who voluntarily registers to donate blood.
+Represents an individual who registers to donate blood.
 
-* **Domain Invariants & Validation Rules:**
-  * Age must satisfy $18 \le \text{age} \le 65$.
-  * Minimum weight requirement: $\ge 45\text{ kg}$ (to prevent post-donation syncope).
-  * Minimum cooldown window: $\ge 90\text{ days}$ between whole blood donations.
-  * Contact and Email must be uniquely indexed.
-* **In-Memory DS Representation:** `DonorNode` stored in `DonorRegistryMap` (Hash Map) with an embedded pointer to `DonationHistoryList` (Doubly Linked List).
+* **Validation Rules:**
+  * Age: $18 \le \text{age} \le 65$.
+  * Weight: $\ge 45\text{ kg}$.
+  * Cooldown Check: Eligible if `lastDonationDate` is `null` OR $\ge 90\text{ days}$ prior to today.
+* **Data Storage & Retrieval:**
+  * **Stored in:** MySQL `donors` table + `donorMap` (Hash Map) by `donorId`.
+  * **Retrieved by:** Blood group search queries `bloodGroupMap.get(group)` in $O(1)$ time.
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `donorId` | `VARCHAR(36)` | No | Primary Key (UUIDv4). Unique donor identifier. |
-| `fullName` | `VARCHAR(100)` | No | Legal name of donor. |
-| `dateOfBirth` | `DATE` | No | Used to dynamically compute age ($\ge 18$ and $\le 65$). |
-| `gender` | `ENUM('M','F','Other')` | No | Biological gender for cooldown and physiological thresholds. |
-| `bloodGroupId` | `VARCHAR(10)` | No | Foreign Key referencing `Blood Group`. |
-| `contactNumber`| `VARCHAR(15)` | No | E.164 phone format; Unique index for fast mobile OTP/login. |
-| `email` | `VARCHAR(120)` | No | RFC 5322 compliant; Unique index. |
-| `city` | `VARCHAR(60)` | No | City of residence for regional clustering. |
-| `latitude` | `DECIMAL(10,7)` | Yes | Coordinates for spatial proximity routing. |
-| `longitude`| `DECIMAL(10,7)` | Yes | Coordinates for spatial proximity routing. |
-| `weightKg` | `DECIMAL(5,2)` | No | Minimum $45.00\text{ kg}$. |
-| `lastDonationDate`| `DATE` | Yes | Date of last completed donation (cooldown baseline). |
-| `isAvailable` | `BOOLEAN` | No | Donor opt-in toggle (Default: `TRUE`). |
-| `eligibilityStatus`| `ENUM(...)` | No | `'ELIGIBLE'`, `'COOLDOWN'`, `'MEDICAL_DEFERRED'`, `'INACTIVE'`. |
-| `donationCount`| `INT UNSIGNED` | No | Lifetime completed donation tally (Default: `0`). |
-| `historyHead` | `Pointer` | Yes | Pointer to head of `DonationHistoryList` (In-Memory only). |
+| `donorId` | `INT AUTO_INCREMENT` | No | Primary Key. |
+| `fullName` | `VARCHAR(100)` | No | Full name of donor. |
+| `bloodGroup` | `VARCHAR(5)` | No | e.g., `'O+'`, `'A-'`, `'AB+'`. Foreign Key. |
+| `contactNumber`| `VARCHAR(15)` | No | Phone number for contact. |
+| `email` | `VARCHAR(100)` | No | Email address. |
+| `city` | `VARCHAR(50)` | No | City for regional donor filtering. |
+| `age` | `INT` | No | Donor age (18–65). |
+| `weightKg` | `FLOAT` | No | Donor weight (minimum 45 kg). |
+| `lastDonationDate`| `DATE` | Yes | Last date blood was given (used for 90-day cooldown). |
+| `isAvailable` | `BOOLEAN` | No | Toggle: `true` (Active), `false` (Unavailable). Default `true`. |
 
 ---
 
 ### 2.2 Entity: `Blood Group`
-Represents the standard immunological classification of human blood based on ABO antigens and Rhesus (Rh) factor.
+Static reference entity classifying ABO and Rh blood groups.
 
-* **Domain Invariants:**
-  * Fixed, immutable set of 8 standard groups: `A+`, `A-`, `B+`, `B-`, `AB+`, `AB-`, `O+`, `O-`.
-  * Pre-calculated compatibility bitmasks for $O(1)$ constant-time compatibility tests.
-* **In-Memory DS Representation:** `BloodGroupCatalog` (Static Array / Enum with Bitwise LUT).
+* **Data Storage & Retrieval:**
+  * Pre-loaded table / constant catalog of the 8 standard blood groups (`A+`, `A-`, `B+`, `B-`, `AB+`, `AB-`, `O+`, `O-`).
+  * Instant $O(1)$ compatibility checks via `BLOOD_COMPATIBILITY` object.
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `bloodGroupId` | `VARCHAR(10)` | No | Primary Key (e.g., `'O_POS'`, `'O_NEG'`, `'A_POS'`). |
-| `groupName` | `VARCHAR(10)` | No | Display label (e.g., `'O+'`, `'AB-'`). |
-| `rhFactor` | `ENUM('+','-')` | No | Rhesus factor. |
-| `antigenType` | `ENUM('A','B','AB','NONE')` | No | ABO erythrocyte surface antigens. |
-| `bitmaskCode` | `TINYINT UNSIGNED`| No | 8-bit integer mask for bitwise compatibility operations. |
-| `compatibleDonorList`| `JSON / Array` | No | Array of bloodGroupIds that can safely donate to this group. |
-| `compatibleRecipientList`| `JSON / Array`| No | Array of bloodGroupIds this group can safely donate to. |
+| `groupName` | `VARCHAR(5)` | No | Primary Key (e.g., `'O+'`, `'O-'`). |
+| `rhFactor` | `ENUM('+','-')` | No | Positive or Negative Rh factor. |
+| `compatibleDonors` | `VARCHAR(100)` | No | Comma-separated compatible donor groups (e.g. `'O-,O+'`). |
 
 ---
 
 ### 2.3 Entity: `Donation`
-Represents a single collection event where whole blood or components are harvested from a donor, tested, and cataloged into blood bank inventory.
+Represents an individual donation event where a unit of blood is harvested and added to stock.
 
-* **Domain Invariants:**
-  * Cannot be created if Donor cooldown period $< 90\text{ days}$.
-  * Default volume is standard $1\text{ unit}$ ($\approx 350\text{--}450\text{ ml}$).
-  * Expiry calculation: Whole blood expires in 35 days; Platelets in 5 days from collection timestamp.
-  * Status transition: `COLLECTED` $\to$ `SCREENING` $\to$ (`APPROVED` / `REJECTED`) $\to$ `DISPATCHED` $\to$ `TRANSFUSED`.
-* **In-Memory DS Representation:** `DonationRecord` node embedded in Donor's Doubly Linked List AND referenced inside Blood Bank's FEFO Min-Heap.
+* **Data Storage & Retrieval:**
+  * **Stored in:** MySQL `donations` table.
+  * **Side Effects:** Automatically updates the donor's `lastDonationDate` to today's date and increments inventory count in `stockMap` ($O(1)$).
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `donationId` | `VARCHAR(36)` | No | Primary Key (UUIDv4) / Barcode identifier. |
-| `donorId` | `VARCHAR(36)` | No | Foreign Key referencing `Donor`. |
-| `bloodBankId` | `VARCHAR(36)` | No | Foreign Key referencing `Blood Bank` where unit is stored. |
-| `bloodGroupId` | `VARCHAR(10)` | No | Foreign Key referencing `Blood Group`. |
-| `donationTimestamp`| `DATETIME` | No | Exact timestamp of phlebotomy collection. |
-| `unitsDonated` | `INT` | No | Standard unit count (Default: `1`). |
-| `hemoglobinLevel` | `DECIMAL(4,2)`| No | Minimum $12.5\text{ g/dL}$ for safe collection. |
-| `systolicBp` | `INT` | No | Healthy range: $100\text{--}140\text{ mmHg}$. |
-| `diastolicBp` | `INT` | No | Healthy range: $60\text{--}90\text{ mmHg}$. |
-| `screeningStatus` | `ENUM(...)` | No | `'PENDING'`, `'PASSED'`, `'FAILED'`, `'CONTAMINATED'`. |
-| `expiryTimestamp` | `DATETIME` | No | Expiration date/time used as key in FEFO Min-Heap. |
-| `storageStatus` | `ENUM(...)` | No | `'QUARANTINE'`, `'IN_STORAGE'`, `'RESERVED'`, `'DISPATCHED'`, `'EXPIRED'`. |
+| `donationId` | `INT AUTO_INCREMENT` | No | Primary Key. |
+| `donorId` | `INT` | No | Foreign Key referencing `Donor`. |
+| `bloodBankId` | `INT` | No | Foreign Key referencing `Blood Bank`. |
+| `bloodGroup` | `VARCHAR(5)` | No | Foreign Key referencing `Blood Group`. |
+| `donationDate`| `DATE` | No | Date donation occurred. |
+| `unitsCount` | `INT` | No | Number of units collected (default: `1`). |
+| `status` | `ENUM('SAFE','USED','DISCARDED')` | No | Status of the donated unit. Default `'SAFE'`. |
 
 ---
 
 ### 2.4 Entity: `Blood Bank`
-Represents an authorized blood depository, storage bank, or regional processing center responsible for harvesting, testing, and storing blood bags.
+Represents a central blood storage facility managing inventory.
 
-* **Domain Invariants:**
-  * Must hold a valid government medical license number.
-  * Current stock units cannot exceed `totalCapacityUnits`.
-* **In-Memory DS Representation:** Graph Vertex in the logistics network, containing internal separate Hash Map buckets pointing to FEFO Min-Heaps for each blood group.
+* **Data Storage & Retrieval:**
+  * **Stored in:** MySQL `blood_banks` table.
+  * **In-Memory Tracking:** Current available stock is tracked in `stockMap` (Hash Map) for instant lookups.
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `bloodBankId` | `VARCHAR(36)` | No | Primary Key (UUIDv4). |
-| `name` | `VARCHAR(150)`| No | Official registered name of blood bank facility. |
-| `licenseNumber` | `VARCHAR(50)` | No | Unique medical regulatory license number. |
-| `category` | `ENUM(...)` | No | `'GOVERNMENT'`, `'RED_CROSS'`, `'PRIVATE'`, `'HOSPITAL_ATTACHED'`. |
-| `contactNumber` | `VARCHAR(15)` | No | Primary operational telephone. |
-| `emergencyHotline`| `VARCHAR(15)`| No | 24/7 emergency dispatch contact line. |
-| `city` | `VARCHAR(60)` | No | City location. |
-| `pincode` | `VARCHAR(10)` | No | Postal code. |
-| `latitude` | `DECIMAL(10,7)`| No | Spatial coordinate for distance matrix. |
-| `longitude`| `DECIMAL(10,7)`| No | Spatial coordinate for distance matrix. |
+| `bloodBankId` | `INT AUTO_INCREMENT` | No | Primary Key. |
+| `name` | `VARCHAR(100)` | No | Blood bank name. |
+| `city` | `VARCHAR(50)` | No | City location. |
+| `contactNumber`| `VARCHAR(15)` | No | Contact phone number. |
 | `totalCapacityUnits`| `INT` | No | Maximum safe storage volume. |
-| `currentStockUnits`| `INT` | No | Current aggregate safe units in stock. |
-| `hasComponentSeparator`| `BOOLEAN` | No | Capability to fractionate RBCs, plasma, platelets. |
 
 ---
 
 ### 2.5 Entity: `Hospital`
-Represents a healthcare facility, trauma center, or surgical clinic that consumes blood inventory and originates emergency blood requests.
+Represents a medical clinic or trauma center where patients receive blood transfusions.
 
-* **Domain Invariants:**
-  * Must possess registered healthcare institution ID.
-  * Maintains emergency admission capabilities and ambulance logistics coordinates.
-* **In-Memory DS Representation:** Graph Vertex in the logistics network.
+* **Data Storage & Retrieval:**
+  * **Stored in:** MySQL `hospitals` table. Simple drop-down selection on request forms.
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `hospitalId` | `VARCHAR(36)` | No | Primary Key (UUIDv4). |
-| `name` | `VARCHAR(150)`| No | Registered hospital name. |
-| `registrationNumber`| `VARCHAR(50)`| No | Unique hospital accreditation number. |
-| `type` | `ENUM(...)` | No | `'TRAUMA_LEVEL_1'`, `'GENERAL'`, `'SURGICAL'`, `'MATERNITY'`. |
-| `city` | `VARCHAR(60)` | No | City location. |
-| `address` | `TEXT` | No | Physical address for delivery dispatch. |
-| `latitude` | `DECIMAL(10,7)`| No | Spatial coordinate for distance calculations. |
-| `longitude`| `DECIMAL(10,7)`| No | Spatial coordinate for distance calculations. |
-| `icuBedsCount`| `INT` | No | Indicator of emergency surgical intensity. |
-| `emergencyPhone`| `VARCHAR(15)`| No | Immediate contact for triage confirmation. |
+| `hospitalId` | `INT AUTO_INCREMENT` | No | Primary Key. |
+| `name` | `VARCHAR(100)` | No | Hospital name. |
+| `city` | `VARCHAR(50)` | No | City location. |
+| `contactNumber`| `VARCHAR(15)` | No | Contact phone number. |
 
 ---
 
 ### 2.6 Entity: `Blood Request`
-Represents a formal clinical requisition for blood units generated by a hospital or certified requester.
+Represents an urgent or routine requisition for blood.
 
-* **Domain Invariants:**
-  * Urgency must be specified (`ROUTINE`, `URGENT`, `EMERGENCY`, `CRITICAL`).
-  * If `EMERGENCY` or `CRITICAL`, routed to Binary Max-Heap; if `ROUTINE`, routed to FIFO Queue.
-  * Priority score is dynamically maintained and updated as waiting time increases.
-* **In-Memory DS Representation:** `HeapNode` in Emergency Max-Heap OR `QueueNode` in Routine FIFO Queue.
+* **Data Storage & Retrieval:**
+  * **Stored in:** MySQL `blood_requests` table.
+  * **In-Memory Queue:**
+    * If `urgency` is `'CRITICAL'` or `'URGENT'`: Stored in **Priority Queue (Max-Heap)** ($O(\log N)$).
+    * If `urgency` is `'ROUTINE'`: Stored in **Standard Queue (FIFO)** ($O(1)$).
+  * **Retrieved by:** Admin dashboard fetches the next emergency via `priorityQueue.extractMax()`.
 
-#### Attributes Specification Table:
-| Field Name | Data Type | Nullable | Description / Invariants |
+#### Schema Table:
+| Field Name | Type | Nullable | Description / Usage |
 | :--- | :--- | :---: | :--- |
-| `requestId` | `VARCHAR(36)` | No | Primary Key (UUIDv4). |
-| `requesterId` | `VARCHAR(36)` | No | ID of user/requester creating the demand. |
-| `hospitalId` | `VARCHAR(36)` | No | Foreign Key referencing recipient `Hospital`. |
-| `patientName` | `VARCHAR(100)`| No | De-identified / anonymized patient name. |
-| `patientAge` | `INT` | No | Age of recipient patient. |
-| `bloodGroupId` | `VARCHAR(10)` | No | Foreign Key referencing required `Blood Group`. |
-| `unitsRequired` | `INT` | No | Number of bags needed ($1 \le \text{units} \le 10$). |
-| `urgencyTier` | `ENUM(...)` | No | `'ROUTINE'`, `'URGENT'`, `'EMERGENCY'`, `'CRITICAL'`. |
-| `priorityScore` | `FLOAT` | No | Computed score driving Binary Max-Heap ranking. |
-| `clinicalReason`| `VARCHAR(255)`| No | Clinical justification (e.g., "Cardiac surgery", "Post-trauma hemorrhage"). |
-| `status` | `ENUM(...)` | No | `'PENDING'`, `'TRIAGED'`, `'ALLOCATED'`, `'DISPATCHED'`, `'FULFILLED'`, `'CANCELLED'`. |
-| `createdAt` | `DATETIME` | No | Timestamp of initial requisition. |
-| `deadlineTimestamp`| `DATETIME` | Yes | Target transfusion window. |
-| `fulfilledAt` | `DATETIME` | Yes | Timestamp of fulfillment. |
+| `requestId` | `INT AUTO_INCREMENT` | No | Primary Key. |
+| `requesterName`| `VARCHAR(100)` | No | Name of person requesting. |
+| `hospitalId` | `INT` | No | Foreign Key referencing `Hospital`. |
+| `bloodGroup` | `VARCHAR(5)` | No | Blood group needed (e.g., `'O-'`). |
+| `unitsRequired`| `INT` | No | Units needed (e.g., 1 to 5 units). |
+| `urgency` | `ENUM('ROUTINE','URGENT','CRITICAL')` | No | Determines queue placement. |
+| `priorityScore`| `INT` | No | Priority score calculated at insertion. |
+| `status` | `ENUM('PENDING','FULFILLED','CANCELLED')`| No | Current state. Default `'PENDING'`. |
+| `createdAt` | `DATETIME` | No | Timestamp of creation (used as tie-breaker). |
 
 ---
 
-## 3. Class Diagram: Data Structure & Memory Layout
+## 3. Class Structure & In-Memory Representation
 
 ```mermaid
 classDiagram
-    class DonorNode {
-        +string donorId
+    class Donor {
+        +int donorId
         +string fullName
-        +string bloodGroupId
+        +string bloodGroup
+        +string city
         +date lastDonationDate
         +boolean isAvailable
-        +DonationHistoryList history
-        +boolean checkEligibility()
-        +void appendDonation(DonationRecord rec)
+        +boolean isEligible()
     }
 
-    class DonationRecord {
-        +string donationId
-        +string bloodBankId
-        +datetime donationTimestamp
-        +datetime expiryTimestamp
-        +int unitsDonated
-        +string screeningStatus
-        +DonationRecord prev
-        +DonationRecord next
-    }
-
-    class BloodRequestHeapNode {
-        +string requestId
-        +string hospitalId
-        +string bloodGroupId
+    class BloodRequest {
+        +int requestId
+        +string requesterName
+        +string bloodGroup
         +int unitsRequired
-        +int urgencyTier
+        +string urgency
+        +int priorityScore
         +datetime createdAt
-        +float priorityScore
-        +float calculateScore(float distanceKm)
+        +int calculatePriority()
     }
 
-    class BloodBankVertex {
-        +string bloodBankId
+    class Donation {
+        +int donationId
+        +int donorId
+        +string bloodGroup
+        +date donationDate
+        +int unitsCount
+    }
+
+    class BloodBank {
+        +int bloodBankId
         +string name
-        +float latitude
-        +float longitude
-        +HashMap groupInventories
-        +DonationRecord getFefoUnit(string bloodGroupId)
+        +string city
+        +int totalCapacityUnits
     }
 
-    class HospitalVertex {
-        +string hospitalId
+    class Hospital {
+        +int hospitalId
         +string name
-        +float latitude
-        +float longitude
-        +int icuBedsCount
+        +string city
     }
 
-    DonorNode "1" *-- "1" DonationRecord : points to history head
-    DonationRecord "1" o-- "1" DonationRecord : doubly linked (prev/next)
-    BloodBankVertex "1" o-- "many" DonationRecord : stores units in FEFO heap
+    Donor "1" --> "0..*" Donation : donates
+    Hospital "1" --> "0..*" BloodRequest : requests
+    BloodBank "1" --> "0..*" Donation : stores
 ```
