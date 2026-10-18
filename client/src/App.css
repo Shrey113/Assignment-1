@@ -126,13 +126,17 @@
   flex-wrap: wrap;
 }
 
-/* Floating Natural Illustration (NO border, NO box, seamless blend!) */
-.hero-illustration-area {
+/* Floating Natural Illustrations (Click & Auto-Cycling, NO border, NO box, NO controls) */
+.hero-illustration-area.clickable-hero-slider {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
+  cursor: pointer;
+  user-select: none;
+  min-height: 440px;
+  outline: none;
 }
 
 .floating-characters-art {
@@ -141,12 +145,32 @@
   height: auto;
   display: block;
   object-fit: contain;
-  /* Natural floating character art with no border, box, or frame */
-  transition: transform var(--transition-normal);
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity, transform;
 }
 
-.hero-illustration-area:hover .floating-characters-art {
-  transform: translateY(-6px) scale(1.01);
+.floating-characters-art.active-variant {
+  opacity: 1;
+  position: relative;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+
+.floating-characters-art.inactive-variant {
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.985);
+  pointer-events: none;
+}
+
+.hero-illustration-area.clickable-hero-slider:hover .active-variant {
+  transform: translateY(-6px) scale(1.015);
+}
+
+.hero-illustration-area.clickable-hero-slider:active .active-variant {
+  transform: translateY(-2px) scale(0.985);
 }
 
 /* Social proof footer row in hero */

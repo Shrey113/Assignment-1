@@ -93,9 +93,48 @@ const FAQ_ITEMS = [
   }
 ];
 
+// 5 Editorial Blood Donation Illustration Variants (Click & Auto-Cycling)
+const HERO_VARIANTS = [
+  {
+    src: '/editorial_donation_1.png',
+    alt: 'Voluntary blood donor giving thumbs-up in recliner with healthcare nurse holding blood donation pack'
+  },
+  {
+    src: '/editorial_donation_2.png',
+    alt: 'Cheerful donor enjoying post-donation refreshments in armchair with nurse giving warm congratulations'
+  },
+  {
+    src: '/editorial_donation_3.png',
+    alt: 'Two friendly young blood donor champions proudly holding stylized life drop emblem together'
+  },
+  {
+    src: '/editorial_donation_4.png',
+    alt: 'Emergency blood courier delivering insulated transport cooler box to welcoming hospital doctor'
+  },
+  {
+    src: '/editorial_donation_5.png',
+    alt: 'Recovered patient and proud voluntary blood donor shaking hands in heartfelt gratitude with doctor celebrating'
+  }
+];
+
 export default function App() {
   const [selectedBloodGroup, setSelectedBloodGroup] = useState('O+');
   const [openFaq, setOpenFaq] = useState(0);
+
+  // Hero Illustration Auto & Click Cycling State
+  const [heroVariantIndex, setHeroVariantIndex] = useState(0);
+
+  // Auto-advance illustration every 5.5 seconds, resetting on user manual click
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHeroVariantIndex((prev) => (prev + 1) % HERO_VARIANTS.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [heroVariantIndex]);
+
+  const handleNextHeroIllustration = () => {
+    setHeroVariantIndex((prev) => (prev + 1) % HERO_VARIANTS.length);
+  };
 
   // Modal dialog states
   const [showDonorModal, setShowDonorModal] = useState(false);
@@ -224,13 +263,28 @@ export default function App() {
           </div>
         </div>
 
-        {/* Floating Editorial Character Illustration (NO borders, NO boxes!) */}
-        <div className="hero-illustration-area">
-          <img 
-            src="/editorial_donation_characters.png?v=2" 
-            alt="Editorial illustration of smiling voluntary blood donor giving thumbs-up with caring nurse holding blood donation pack" 
-            className="floating-characters-art"
-          />
+        {/* Floating Editorial Character Illustrations (Click & Auto-Cycling, NO boxes, NO borders) */}
+        <div 
+          className="hero-illustration-area clickable-hero-slider"
+          onClick={handleNextHeroIllustration}
+          role="button"
+          tabIndex={0}
+          title="Click to view next story illustration"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              handleNextHeroIllustration();
+            }
+          }}
+        >
+          {HERO_VARIANTS.map((variant, idx) => (
+            <img 
+              key={variant.src}
+              src={variant.src} 
+              alt={variant.alt} 
+              className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
+              loading="eager"
+            />
+          ))}
         </div>
       </header>
 
