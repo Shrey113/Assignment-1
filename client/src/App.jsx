@@ -93,27 +93,47 @@ const FAQ_ITEMS = [
   }
 ];
 
-// 5 Editorial Blood Donation Illustration Variants (Click & Auto-Cycling)
+// 5 Editorial Blood Donation Illustration Variants (Ordered 2, 3, 4, 5, 1)
 const HERO_VARIANTS = [
   {
-    src: '/editorial_donation_1.png',
-    alt: 'Voluntary blood donor giving thumbs-up in recliner with healthcare nurse holding blood donation pack'
-  },
-  {
     src: '/editorial_donation_2.png',
-    alt: 'Cheerful donor enjoying post-donation refreshments in armchair with nurse giving warm congratulations'
+    alt: 'Voluntary female blood donor smiling in donation chair with male nurse gently monitoring blood collection unit',
+    tagline: 'Voluntary Life-Saving Network',
+    line1: 'The Art of',
+    line2: 'Giving Life.',
+    quote: 'Do you know that a single donation can breathe life into three emergency patients? BloodLink is the warm, gentle platform connecting compassionate voluntary donors with families in urgent medical need.'
   },
   {
     src: '/editorial_donation_3.png',
-    alt: 'Two friendly young blood donor champions proudly holding stylized life drop emblem together'
+    alt: 'Male emergency courier delivering red insulated blood transport box to female emergency physician with intake tablet',
+    tagline: 'Urgent Emergency Dispatch',
+    line1: 'Every Second',
+    line2: 'Counts for Life.',
+    quote: 'When every minute counts, our rapid emergency delivery network bridges voluntary donors and hospital operating rooms across 120+ partner centers within minutes.'
   },
   {
     src: '/editorial_donation_4.png',
-    alt: 'Emergency blood courier delivering insulated transport cooler box to welcoming hospital doctor'
+    alt: 'Female emergency blood courier delivering insulated transport cooler box to welcoming hospital doctor with clipboard',
+    tagline: 'Certified Cold-Chain Logistics',
+    line1: 'Guardians of',
+    line2: 'Safe Delivery.',
+    quote: 'From voluntary donation to hospital bedside, rigorous cold-chain temperature monitoring ensures every life-saving unit remains pure, certified, and ready.'
   },
   {
     src: '/editorial_donation_5.png',
-    alt: 'Recovered patient and proud voluntary blood donor shaking hands in heartfelt gratitude with doctor celebrating'
+    alt: 'Female clinical blood bank specialist handing carefully verified blood donation pack to male surgical physician in scrubs',
+    tagline: 'Clinical Precision Matching',
+    line1: 'The Precision of',
+    line2: 'Healing Hands.',
+    quote: 'Every drop undergoes rigorous safety screening and precise compatibility matching before reaching our surgical teams, bringing hope to families in critical care.'
+  },
+  {
+    src: '/editorial_donation_1.png',
+    alt: 'Voluntary male blood donor giving thumbs-up in recliner with healthcare nurse holding blood donation pack',
+    tagline: 'Community Hero Network',
+    line1: 'The Strength of',
+    line2: 'Quiet Heroes.',
+    quote: 'Ordinary people doing extraordinary kindness. Join over 4,200 verified voluntary heroes ready to answer urgent life-saving calls whenever emergency strikes.'
   }
 ];
 
@@ -121,14 +141,56 @@ export default function App() {
   const [selectedBloodGroup, setSelectedBloodGroup] = useState('O+');
   const [openFaq, setOpenFaq] = useState(0);
 
-  // Hero Illustration Auto & Click Cycling State
+  // Hero Illustration Auto & Click Cycling State (10-second timer)
   const [heroVariantIndex, setHeroVariantIndex] = useState(0);
+  const currentVariant = HERO_VARIANTS[heroVariantIndex];
 
-  // Auto-advance illustration every 5.5 seconds, resetting on user manual click
+  // Two-Line Typewriter effect: types line 1, then line 2, and removes '|' cursor upon completion
+  const [typedLine1, setTypedLine1] = useState(HERO_VARIANTS[0].line1);
+  const [typedLine2, setTypedLine2] = useState(HERO_VARIANTS[0].line2);
+  const [isTypingComplete, setIsTypingComplete] = useState(true);
+
+  useEffect(() => {
+    let char1 = 0;
+    let char2 = 0;
+    const target1 = currentVariant.line1;
+    const target2 = currentVariant.line2;
+
+    setTypedLine1('');
+    setTypedLine2('');
+    setIsTypingComplete(false);
+
+    let phase = 1;
+    const typingSpeed = 42; // ms per char
+
+    const interval = setInterval(() => {
+      if (phase === 1) {
+        if (char1 < target1.length) {
+          setTypedLine1(target1.slice(0, char1 + 1));
+          char1++;
+        } else {
+          phase = 2;
+        }
+      } else if (phase === 2) {
+        if (char2 < target2.length) {
+          setTypedLine2(target2.slice(0, char2 + 1));
+          char2++;
+        } else {
+          phase = 3;
+          setIsTypingComplete(true);
+          clearInterval(interval);
+        }
+      }
+    }, typingSpeed);
+
+    return () => clearInterval(interval);
+  }, [heroVariantIndex, currentVariant.line1, currentVariant.line2]);
+
+  // Auto-advance illustration every 10 seconds (larger interval), resetting on user manual click
   useEffect(() => {
     const timer = setInterval(() => {
       setHeroVariantIndex((prev) => (prev + 1) % HERO_VARIANTS.length);
-    }, 5500);
+    }, 10000);
     return () => clearInterval(timer);
   }, [heroVariantIndex]);
 
@@ -221,16 +283,19 @@ export default function App() {
         <div className="hero-text-block">
           <div className="hero-tagline-badge">
             <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4E4E', display: 'inline-block' }}></span>
-            <span>Voluntary Life-Saving Network</span>
+            <span>{currentVariant.tagline}</span>
           </div>
 
           <h1 className="hero-main-heading">
-            The Art of <br />
-            <em>Giving Life.</em>
+            <span>{typedLine1}</span>
+            {!typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
+            <br />
+            {typedLine2 && <em className="hero-typed-text">{typedLine2}</em>}
+            {typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
           </h1>
 
           <p className="hero-lead-text">
-            Do you know that a single donation can breathe life into three emergency patients? BloodLink is the warm, gentle platform connecting compassionate voluntary donors with families in urgent medical need.
+            {currentVariant.quote}
           </p>
 
           <div className="hero-action-buttons">
