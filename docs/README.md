@@ -1,18 +1,29 @@
 # BloodLink: DS-Based Blood Donor & Emergency Management System
 
 > **Stage 01: Project Foundation & Requirements Specification**  
-> **Philosophy:** High algorithmic value with practical, fast-to-build implementations centered on **Data Storing, Fetching, and Retrieving**.
+> **Selected Mode:** 🟡 **Medium Mode (Recommended / Balanced Academic Baseline)**  
+> **Core Principle:** Custom Data Structures (Hash Map, Binary Max-Heap, Circular Queue) with genuine algorithmic rigor, high build feasibility, and seamless **Data Storing, Fetching, and Retrieving**.
 
 ---
 
-## 📌 Document Overview
+## 📌 Architectural Mode Comparison
 
-This directory contains the foundational specifications, algorithmic blueprints, entity schemas, and streamlined workflows for **BloodLink**.
+BloodLink is architected under **Medium Mode**, chosen specifically to balance high academic marks with rapid development feasibility:
 
-The architecture prioritizes **three core Data Structures** that are easy to build in JavaScript while providing microsecond performance:
-1. **Custom Hash Map:** Instant $O(1)$ donor lookup by blood group/ID and stock tracking.
-2. **Priority Queue (Binary Max-Heap):** $O(\log N)$ prioritization of critical emergency blood requests.
-3. **Standard FIFO Queue:** $O(1)$ fair first-come, first-served processing of routine requests.
+| Feature | 🟢 Lower Mode | 🟡 Medium Mode (Selected) | 🔴 Higher Mode |
+| :--- | :--- | :--- | :--- |
+| **Donor Lookup & Stock** | JS Object / Array filter | **Custom Separate-Chaining Hash Map ($O(1)$)** | Custom Hash Map + Dynamic Rehashing |
+| **Emergency Triage** | Array `sort()` | **Binary Max-Heap Priority Queue ($O(\log N)$)** | Dual Heaps + Complex Physics Scoring |
+| **Routine Requests** | Array `push()` / `shift()` | **Circular FIFO Queue ($O(1)$)** | Multi-channel fair queue |
+| **Compatibility Match** | Simple `if/else` | **Static 8-Blood Group Dictionary ($O(1)$)** | 8x8 Bitwise Bitmask Matrix |
+| **Build Time** | 2 – 3 Hours | **4 – 6 Hours** | 12 – 16+ Hours |
+| **Teacher Explanation** | Trivial (Low marks) | **Textbook Data Structures (Top marks)** | Overly complex to explain |
+
+---
+
+## 📂 Documentation Index
+
+All Stage 01 specifications are organized inside the [`docs/`](file:///a:/Nirma/DS/Assignment%201/docs/README.md) directory:
 
 ```mermaid
 graph TD
@@ -29,24 +40,20 @@ graph TD
     style E fill:#fff3e0,stroke:#f57c00,stroke-width:2px
 ```
 
----
-
-## 📂 Documentation Index
-
-| File | Document Title | Primary Focus & Highlights |
-| :--- | :--- | :--- |
-| **[01_project_scope.md](file:///a:/Nirma/DS/Assignment%201/docs/01_project_scope.md)** | **Project Scope & Requirements** | Problem statement, achievable boundaries, functional requirements for data storing, fetching, and retrieving. |
-| **[02_data_structures_architecture.md](file:///a:/Nirma/DS/Assignment%201/docs/02_data_structures_architecture.md)** | **Data Structures Flow & Engine** | Streamlined custom Hash Map ($O(1)$), Binary Max-Heap ($O(\log N)$), FIFO Queue ($O(1)$), and Compatibility Dictionary with simple code contracts. |
-| **[03_entity_definitions.md](file:///a:/Nirma/DS/Assignment%201/docs/03_entity_definitions.md)** | **Core Entity Definitions** | Technical specifications and schemas for `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request` with clean ERD and Class diagrams. |
-| **[04_user_roles_and_workflows.md](file:///a:/Nirma/DS/Assignment%201/docs/04_user_roles_and_workflows.md)** | **User Roles, RBAC & Workflows** | Fast-to-build workflows for `Donor`, `Requester`, and `Administrator` detailing clear Data Storing, Fetching, and Retrieving sequences. |
-| **[05_system_architecture_and_folder_structure.md](file:///a:/Nirma/DS/Assignment%201/docs/05_system_architecture_and_folder_structure.md)** | **Architecture & Codebase Layout** | Minimal full-stack design, startup in-memory data hydration, and clean folder tree. |
+| Document | Primary Focus & Highlights |
+| :--- | :--- |
+| **[`01_project_scope.md`](file:///a:/Nirma/DS/Assignment%201/docs/01_project_scope.md)** | **Project Scope & Requirements**: Problem statement, Medium Mode boundaries, functional requirements, and teacher viva defense strategy. |
+| **[`02_data_structures_architecture.md`](file:///a:/Nirma/DS/Assignment%201/docs/02_data_structures_architecture.md)** | **Data Structures Flow & Engine**: Complete class blueprints for Custom Hash Map, Binary Max-Heap, Circular Queue, and Compatibility Map with index math, complexity tables, and viva Q&A. |
+| **[`03_entity_definitions.md`](file:///a:/Nirma/DS/Assignment%201/docs/03_entity_definitions.md)** | **Core Entity Definitions**: Practical schemas for `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request` with clean ERD and Class diagrams. |
+| **[`04_user_roles_and_workflows.md`](file:///a:/Nirma/DS/Assignment%201/docs/04_user_roles_and_workflows.md)** | **User Roles, RBAC & Workflows**: Practical workflows for `Donor`, `Requester`, and `Administrator` with detailed Store, Fetch, and Retrieve sequence diagrams. |
+| **[`05_system_architecture_and_folder_structure.md`](file:///a:/Nirma/DS/Assignment%201/docs/05_system_architecture_and_folder_structure.md)** | **Architecture & Codebase Layout**: Full-stack design, startup in-memory data hydration, and clean folder tree. |
 
 ---
 
 ## 🎯 Stage 01 Deliverables Summary
 
-- [x] **Streamlined Project Scope**: Practical boundaries focused on speed of development and high reliability.
-- [x] **6 Core Entities Defined**: Minimal, clean fields optimized for easy MySQL storage and fast frontend rendering.
-- [x] **User Roles & Clear Data Flow**: `Donor`, `Requester`, and `Administrator` workflows mapped to distinct Store, Fetch, and Retrieve operations.
-- [x] **3 Core Data Structures**: Practical Hash Map, Priority Queue, and Queue designs.
+- [x] **Medium Mode Finalized**: Clean balance of speed and algorithmic value.
+- [x] **6 Core Entities Defined**: Minimal schemas ready for MySQL tables and React state.
+- [x] **3 Core Data Structures Blueprint**: Custom Hash Map, Binary Max-Heap, Circular FIFO Queue with full code contracts.
+- [x] **User Workflows Established**: Clear Store, Fetch, and Retrieve pipelines for Donors, Requesters, and Admins.
 - [x] **Clean Repository & Git Baseline**: Initialized Git repository and organized structure.

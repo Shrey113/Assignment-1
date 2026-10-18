@@ -1,5 +1,6 @@
 # Document 05: System Architecture & Simplified Folder Structure
 
+> **Architecture Level:** 🟡 **Medium Mode (Recommended / Balanced Academic Baseline)**  
 > **Focus:** Lightweight Full-Stack Architecture, In-Memory Data Synchronization, and Clean Project Directory Layout for Fast Development.
 
 ---

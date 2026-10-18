@@ -1,6 +1,7 @@
 # Document 03: Core Entity Definitions & Simplified Schemas
 
 > **Scope:** Definitive technical specifications for the six core domain entities in **BloodLink**: `Donor`, `Blood Group`, `Donation`, `Blood Bank`, `Hospital`, and `Blood Request`.  
+> **Architecture Level:** 🟡 **Medium Mode (Recommended / Balanced Academic Baseline)**  
 > **Design Goal:** Clean, practical schemas that are fast to build in MySQL and simple to manipulate in JavaScript.
 
 ---

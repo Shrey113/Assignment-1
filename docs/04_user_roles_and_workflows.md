@@ -1,5 +1,6 @@
 # Document 04: User Roles, RBAC & Simplified Workflows
 
+> **Architecture Level:** 🟡 **Medium Mode (Recommended / Balanced Academic Baseline)**  
 > **Focus:** Clear, Pragmatic User Roles, Role-Based Access Control, and Fast-to-Build Operational Workflows with Seamless Data Storing, Fetching, and Retrieving.
 
 ---
