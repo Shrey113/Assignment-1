@@ -227,8 +227,8 @@ export default function App() {
         {/* Floating Editorial Character Illustration (NO borders, NO boxes!) */}
         <div className="hero-illustration-area">
           <img 
-            src="/editorial_donation_characters.png" 
-            alt="Editorial illustration of smiling voluntary blood donor and grateful recipient connected by a heart of hope" 
+            src="/editorial_donation_characters.png?v=2" 
+            alt="Editorial illustration of smiling voluntary blood donor giving thumbs-up with caring nurse holding blood donation pack" 
             className="floating-characters-art"
           />
         </div>
