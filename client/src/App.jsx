@@ -1,0 +1,835 @@
+import React, { useState } from 'react';
+import { 
+  Heart, 
+  ShieldAlert, 
+  CheckCircle2, 
+  Play, 
+  Sparkles, 
+  X, 
+  Droplet, 
+  ChevronDown, 
+  ChevronUp, 
+  ArrowRight,
+  Activity,
+  Award,
+  AlertTriangle,
+  Smile
+} from 'lucide-react';
+import './App.css';
+
+// ── Blood Groups Information ────────────────────────────────
+const BLOOD_GROUPS_INFO = {
+  'O-': {
+    title: 'O- Negative (The Universal Lifesaver)',
+    desc: 'O- red blood cells can be safely given to ANY patient in an emergency when there is no time to test their blood type. Highly vital in trauma rooms.',
+    canGiveTo: ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+    canReceiveFrom: ['O-']
+  },
+  'O+': {
+    title: 'O+ Positive (The Most Common Blood Type)',
+    desc: 'O+ is the most frequently transfused blood type across the world. Needed continuously for surgical patients and road trauma care.',
+    canGiveTo: ['O+', 'A+', 'B+', 'AB+'],
+    canReceiveFrom: ['O-', 'O+']
+  },
+  'A-': {
+    title: 'A- Negative (Rare & In High Demand)',
+    desc: 'A- patients can receive red cells only from A- or O- donors. Your donation provides an irreplaceable safety net for surgical patients.',
+    canGiveTo: ['A-', 'A+', 'AB-', 'AB+'],
+    canReceiveFrom: ['O-', 'A-']
+  },
+  'A+': {
+    title: 'A+ Positive (A True Community Pillar)',
+    desc: 'One in every three patients admitted to emergency wards can safely receive A+ blood components. A vital daily necessity for hospitals.',
+    canGiveTo: ['A+', 'AB+'],
+    canReceiveFrom: ['O-', 'O+', 'A-', 'A+']
+  },
+  'B-': {
+    title: 'B- Negative (Precious & Rare)',
+    desc: 'Only 2% of the population carries B- blood. When a B- emergency arises, matching voluntary donors make all the difference.',
+    canGiveTo: ['B-', 'B+', 'AB-', 'AB+'],
+    canReceiveFrom: ['O-', 'B-']
+  },
+  'B+': {
+    title: 'B+ Positive (Essential for Critical Care)',
+    desc: 'B+ blood is widely needed in oncology, major organ transplants, and for patients managing chronic blood conditions like Thalassemia.',
+    canGiveTo: ['B+', 'AB+'],
+    canReceiveFrom: ['O-', 'O+', 'B-', 'B+']
+  },
+  'AB-': {
+    title: 'AB- Negative (The Rarest Group)',
+    desc: 'Carried by less than 1% of the population. AB- plasma is universally compatible and crucial for pediatric trauma and burn victims.',
+    canGiveTo: ['AB-', 'AB+'],
+    canReceiveFrom: ['O-', 'A-', 'B-', 'AB-']
+  },
+  'AB+': {
+    title: 'AB+ Positive (The Universal Receiver)',
+    desc: 'Patients with AB+ can receive red blood cells from any blood type. In addition, AB+ donors are universal plasma donors for emergency recovery.',
+    canGiveTo: ['AB+'],
+    canReceiveFrom: ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+']
+  }
+};
+
+// ── FAQs Data ──────────────────────────────────────────────
+const FAQ_ITEMS = [
+  {
+    q: 'Does donating blood hurt?',
+    a: 'Not at all. You will only feel a quick, tiny pinch for a fraction of a second when the sterile needle is inserted. After that, you comfortably relax in a recliner chair for 10 minutes.'
+  },
+  {
+    q: 'How long does the entire appointment take?',
+    a: 'The actual blood collection takes only 8 to 10 minutes! Including a free mini-health checkup, relaxing, and enjoying complimentary juice and cookies, the whole visit takes around 35 minutes.'
+  },
+  {
+    q: 'How much blood is collected, and will I feel weak?',
+    a: 'Only about 350ml to 450ml is collected (less than 8% of your total blood volume). Your body naturally replenishes the lost fluid volume within 24 to 48 hours.'
+  },
+  {
+    q: 'Can I donate if I recently got a tattoo?',
+    a: 'Yes! As long as it has been at least 6 months since your tattoo or piercing was done at a certified, hygienic studio.'
+  },
+  {
+    q: 'How often can I donate blood?',
+    a: 'Healthy male donors can donate whole blood every 90 days (3 months), and healthy female donors can donate every 120 days (4 months).'
+  }
+];
+
+export default function App() {
+  const [selectedBloodGroup, setSelectedBloodGroup] = useState('O+');
+  const [openFaq, setOpenFaq] = useState(0);
+
+  // Modal dialog states
+  const [showDonorModal, setShowDonorModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  // Eligibility Calculator State
+  const [userAge, setUserAge] = useState(24);
+  const [userWeight, setUserWeight] = useState(65);
+  const [lastDonationDays, setLastDonationDays] = useState(105);
+
+  const isEligible = userAge >= 18 && userAge <= 65 && userWeight >= 45 && lastDonationDays >= 90;
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  return (
+    <div className="editorial-layout">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 999,
+          padding: '16px 26px',
+          borderRadius: '12px',
+          backgroundColor: '#1C201D',
+          color: '#FFFFFF',
+          boxShadow: '0 12px 35px rgba(0, 0, 0, 0.3)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          fontSize: '0.95rem',
+          fontWeight: 600,
+          border: '1px solid rgba(255, 255, 255, 0.15)'
+        }}>
+          <Sparkles size={20} color="#EF4E4E" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Navigation Bar */}
+      <nav className="editorial-nav">
+        <a href="#" className="editorial-logo">
+          <Droplet size={26} color="#EF4E4E" fill="#EF4E4E" />
+          <div className="logo-monogram">Blood<span>Link</span></div>
+        </a>
+
+        <div className="nav-links-row">
+          <a href="#why-donate" className="nav-link-editorial">Why Give</a>
+          <a href="#how-it-works" className="nav-link-editorial">How It Works</a>
+          <a href="#eligibility" className="nav-link-editorial">Eligibility</a>
+          <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
+          <a href="#stories" className="nav-link-editorial">Stories</a>
+          <a href="#faq" className="nav-link-editorial">FAQ</a>
+        </div>
+
+        <div className="nav-actions-group">
+          <button 
+            id="nav-request-blood"
+            onClick={() => setShowRequestModal(true)}
+            className="btn-editorial-secondary"
+            style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+          >
+            Find Blood
+          </button>
+
+          <button 
+            id="nav-become-donor"
+            onClick={() => setShowDonorModal(true)}
+            className="btn-editorial-primary"
+            style={{ padding: '10px 22px', fontSize: '0.88rem' }}
+          >
+            Be a Donor
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section (Matching "The Art of Hiring" Reference Style) */}
+      <header className="editorial-hero">
+        <div className="hero-text-block">
+          <div className="hero-tagline-badge">
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4E4E', display: 'inline-block' }}></span>
+            <span>Voluntary Life-Saving Network</span>
+          </div>
+
+          <h1 className="hero-main-heading">
+            The Art of <br />
+            <em>Giving Life.</em>
+          </h1>
+
+          <p className="hero-lead-text">
+            Do you know that a single donation can breathe life into three emergency patients? BloodLink is the warm, gentle platform connecting compassionate voluntary donors with families in urgent medical need.
+          </p>
+
+          <div className="hero-action-buttons">
+            <button 
+              id="hero-donate-btn"
+              onClick={() => setShowDonorModal(true)}
+              className="btn-editorial-primary"
+            >
+              <Heart size={18} fill="#FFFFFF" />
+              <span>DONATE BLOOD</span>
+            </button>
+
+            <button 
+              id="hero-how-btn"
+              onClick={() => {
+                const el = document.getElementById('how-it-works');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="btn-editorial-secondary"
+            >
+              <Play size={14} fill="currentColor" />
+              <span>HOW IT WORKS</span>
+            </button>
+          </div>
+
+          <div className="hero-social-trust">
+            <span>⭐️ Over 14,850 donations coordinated</span>
+            <span>•</span>
+            <span>100% Free & Voluntary</span>
+          </div>
+        </div>
+
+        {/* Floating Editorial Character Illustration (NO borders, NO boxes!) */}
+        <div className="hero-illustration-area">
+          <img 
+            src="/editorial_donation_characters.png" 
+            alt="Editorial illustration of smiling voluntary blood donor and grateful recipient connected by a heart of hope" 
+            className="floating-characters-art"
+          />
+        </div>
+      </header>
+
+      {/* Impact Statistics Banner */}
+      <section className="stats-banner-wrap">
+        <div className="stats-inner-grid">
+          <div className="stat-item-block">
+            <span className="stat-headline-num">14,850<span>+</span></span>
+            <span className="stat-title-label">Lives Touched & Saved</span>
+            <span className="stat-sub-note">Across emergency & surgical cases</span>
+          </div>
+
+          <div className="stat-item-block">
+            <span className="stat-headline-num">4,200<span>+</span></span>
+            <span className="stat-title-label">Voluntary Heroes</span>
+            <span className="stat-sub-note">Ready to answer emergency calls</span>
+          </div>
+
+          <div className="stat-item-block">
+            <span className="stat-headline-num">120<span>+</span></span>
+            <span className="stat-title-label">Partner Hospital Depots</span>
+            <span className="stat-sub-note">Coordinated in our safety network</span>
+          </div>
+
+          <div className="stat-item-block">
+            <span className="stat-headline-num">&lt; 15<span>m</span></span>
+            <span className="stat-title-label">Average Response Time</span>
+            <span className="stat-sub-note">From request to matched donor</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Your Donation Matters */}
+      <section id="why-donate" className="content-section-wrap">
+        <div className="editorial-section-head">
+          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Why Give Blood
+          </span>
+          <h2 className="editorial-section-title">Where Does Your Gift Go?</h2>
+          <p className="editorial-section-subtitle">
+            Blood cannot be manufactured or synthetically formulated. It is a genuine gift from one human being to another in their most vulnerable moment.
+          </p>
+        </div>
+
+        <div className="why-matters-grid">
+          <div className="editorial-card why-matters-card">
+            <div className="card-icon-pill" style={{ backgroundColor: 'var(--coral-soft)' }}>
+              <ShieldAlert size={26} color="#EF4E4E" />
+            </div>
+            <h3 className="card-heading-title">Accident & Emergency Trauma</h3>
+            <p className="card-paragraph-body">
+              A single road trauma or acute injury patient can require up to 40 pints of blood. Immediate transfusions stabilize blood pressure and sustain vital organs during critical operations.
+            </p>
+          </div>
+
+          <div className="editorial-card why-matters-card">
+            <div className="card-icon-pill" style={{ backgroundColor: 'var(--leaf-sage)' }}>
+              <Heart size={26} color="#2E7D32" />
+            </div>
+            <h3 className="card-heading-title">Mothers & Newborn Babies</h3>
+            <p className="card-paragraph-body">
+              Childbirth complications and postpartum hemorrhages are sudden and unpredictable. Available matching blood ensures both mother and infant return home healthy and smiling.
+            </p>
+          </div>
+
+          <div className="editorial-card why-matters-card">
+            <div className="card-icon-pill" style={{ backgroundColor: 'var(--amber-soft)' }}>
+              <Activity size={26} color="#B45309" />
+            </div>
+            <h3 className="card-heading-title">Cancer Therapy & Surgery</h3>
+            <p className="card-paragraph-body">
+              Chemotherapy treatments and major surgeries temporarily deplete red blood cells and platelets. Regular voluntary donations give cancer fighters the strength to recover.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works (Numbered Editorial Flow) */}
+      <section id="how-it-works" style={{ backgroundColor: '#FFFFFF', padding: '88px 32px', borderTop: '1px solid var(--bg-card-border)', borderBottom: '1px solid var(--bg-card-border)' }}>
+        <div className="content-section-wrap" style={{ padding: 0 }}>
+          <div className="editorial-section-head">
+            <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Simple 3-Step Journey
+            </span>
+            <h2 className="editorial-section-title">How BloodLink Works</h2>
+            <p className="editorial-section-subtitle">
+              We make voluntary donation effortless and emergency blood coordination prompt, transparent, and compassionate.
+            </p>
+          </div>
+
+          <div className="how-steps-grid">
+            <div className="step-editorial-card" style={{ backgroundColor: 'var(--bg-cream-pure)' }}>
+              <div className="step-num-display">01</div>
+              <h3 className="step-heading-text">Join the Registry in 60s</h3>
+              <p className="card-paragraph-body">
+                Fill out a simple, confidential profile with your blood type and city. Your details remain private and you stay in control.
+              </p>
+            </div>
+
+            <div className="step-editorial-card" style={{ backgroundColor: 'var(--bg-cream-pure)' }}>
+              <div className="step-num-display">02</div>
+              <h3 className="step-heading-text">Receive Urgent Alerts</h3>
+              <p className="card-paragraph-body">
+                When a verified hospital or family nearby urgently needs your exact blood group, you receive a gentle SMS or notification.
+              </p>
+            </div>
+
+            <div className="step-editorial-card" style={{ backgroundColor: 'var(--bg-cream-pure)' }}>
+              <div className="step-num-display">03</div>
+              <h3 className="step-heading-text">Donate & Save Up to 3 Lives</h3>
+              <p className="card-paragraph-body">
+                Visit a certified blood bank or camp. Spend 15 comfortable minutes relaxing in a recliner, enjoy juice, and walk out a hero.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Eligibility & Self-Check Section */}
+      <section id="eligibility" className="content-section-wrap">
+        <div className="editorial-section-head">
+          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Health Guidelines
+          </span>
+          <h2 className="editorial-section-title">Who Can Donate Blood?</h2>
+          <p className="editorial-section-subtitle">
+            Most healthy adults can safely give blood. Here is the friendly checklist to see if you can save a life today.
+          </p>
+        </div>
+
+        <div className="eligibility-editorial-box">
+          <div className="editorial-card eligibility-checklist-card">
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem' }}>General Eligibility Criteria</h3>
+
+            <ul className="checklist-items-stack">
+              <li className="check-item-row">
+                <CheckCircle2 size={22} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Age between 18 and 65:</strong> Healthy young adults and seniors in good medical health are welcome.
+                </div>
+              </li>
+              <li className="check-item-row">
+                <CheckCircle2 size={22} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Minimum Weight of 45 kg:</strong> Ensures your body easily and naturally adapts to the donation.
+                </div>
+              </li>
+              <li className="check-item-row">
+                <CheckCircle2 size={22} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>Feeling Healthy & Well Today:</strong> Free from active fever, cold, flu, or recent oral antibiotics.
+                </div>
+              </li>
+              <li className="check-item-row">
+                <CheckCircle2 size={22} color="#2E7D32" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <strong>90-Day Cooldown:</strong> At least 3 months have passed since your last whole blood donation.
+                </div>
+              </li>
+            </ul>
+
+            <button 
+              onClick={() => setShowDonorModal(true)}
+              className="btn-editorial-primary"
+              style={{ marginTop: 'auto', alignSelf: 'flex-start' }}
+            >
+              <span>Join as a Verified Donor</span>
+              <ArrowRight size={16} />
+            </button>
+          </div>
+
+          {/* Interactive Calculator */}
+          <div className="editorial-card calculator-card-wrap">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <Smile size={26} color="#EF4E4E" />
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.6rem' }}>Instant Self-Check</h3>
+            </div>
+            <p style={{ fontSize: '0.94rem', color: 'var(--text-secondary)' }}>
+              Adjust the values below to immediately see your current donation readiness:
+            </p>
+
+            <div className="calc-inputs-row">
+              <div className="calc-field-group">
+                <label className="calc-field-label">Age (18 - 65)</label>
+                <input 
+                  type="number" 
+                  min="16" 
+                  max="80" 
+                  value={userAge} 
+                  onChange={(e) => setUserAge(Number(e.target.value))}
+                  className="calc-field-control" 
+                />
+              </div>
+
+              <div className="calc-field-group">
+                <label className="calc-field-label">Weight (&gt;45 kg)</label>
+                <input 
+                  type="number" 
+                  min="30" 
+                  max="150" 
+                  value={userWeight} 
+                  onChange={(e) => setUserWeight(Number(e.target.value))}
+                  className="calc-field-control" 
+                />
+              </div>
+            </div>
+
+            <div className="calc-field-group">
+              <label className="calc-field-label">Days Since Your Last Blood Donation</label>
+              <input 
+                type="number" 
+                min="0" 
+                max="365" 
+                value={lastDonationDays} 
+                onChange={(e) => setLastDonationDays(Number(e.target.value))}
+                className="calc-field-control" 
+              />
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>If you are a first-time donor, enter 90 or more.</span>
+            </div>
+
+            <div className={`verdict-banner-pill ${isEligible ? 'verdict-safe' : 'verdict-wait'}`}>
+              {isEligible ? (
+                <>
+                  <CheckCircle2 size={20} color="#2E7D32" />
+                  <span>Wonderful news! You are medically eligible to donate blood today.</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle size={20} color="#C84B31" />
+                  <span>
+                    Currently in cooldown or limits. {userAge < 18 ? 'Must be 18+' : userWeight < 45 ? 'Weight must be at least 45kg' : 'Must wait at least 90 days between donations.'}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Blood Group Compatibility Guide */}
+      <section id="blood-types" style={{ backgroundColor: '#FFFFFF', padding: '88px 32px', borderTop: '1px solid var(--bg-card-border)', borderBottom: '1px solid var(--bg-card-border)' }}>
+        <div className="content-section-wrap" style={{ padding: 0 }}>
+          <div className="editorial-section-head">
+            <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Know Your Match
+            </span>
+            <h2 className="editorial-section-title">Blood Group Compatibility</h2>
+            <p className="editorial-section-subtitle">
+              Select your blood type to discover who you can safely help and who can help you in a medical emergency.
+            </p>
+          </div>
+
+          <div className="editorial-card compat-guide-card">
+            <div className="blood-selector-bar">
+              {Object.keys(BLOOD_GROUPS_INFO).map((group) => (
+                <button
+                  key={group}
+                  onClick={() => setSelectedBloodGroup(group)}
+                  className={`blood-pill-button ${selectedBloodGroup === group ? 'active' : ''}`}
+                >
+                  {group}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.75rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
+                {BLOOD_GROUPS_INFO[selectedBloodGroup].title}
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', maxWidth: '640px', margin: '0 auto', fontSize: '1.02rem' }}>
+                {BLOOD_GROUPS_INFO[selectedBloodGroup].desc}
+              </p>
+            </div>
+
+            <div className="compat-two-cols">
+              <div className="compat-target-box">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#2E7D32', fontWeight: 700, fontSize: '1.05rem' }}>
+                  <CheckCircle2 size={20} />
+                  <span>You Can Safely DONATE Red Cells To:</span>
+                </div>
+                <div className="pills-cloud">
+                  {BLOOD_GROUPS_INFO[selectedBloodGroup].canGiveTo.map((g) => (
+                    <span key={g} className="tag-badge-clean" style={{ backgroundColor: 'var(--leaf-sage)', color: 'var(--leaf-sage-text)', border: '1px solid var(--leaf-sage-border)' }}>
+                      ✓ {g} Patients
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="compat-target-box">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--coral-accent)', fontWeight: 700, fontSize: '1.05rem' }}>
+                  <Heart size={20} />
+                  <span>You Can Safely RECEIVE Blood From:</span>
+                </div>
+                <div className="pills-cloud">
+                  {BLOOD_GROUPS_INFO[selectedBloodGroup].canReceiveFrom.map((g) => (
+                    <span key={g} className="tag-badge-clean" style={{ backgroundColor: 'var(--coral-soft)', color: 'var(--coral-accent)', border: '1px solid var(--peach-border)' }}>
+                      ← {g} Donors
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stories of Hope */}
+      <section id="stories" className="content-section-wrap">
+        <div className="editorial-section-head">
+          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Stories of Hope
+          </span>
+          <h2 className="editorial-section-title">Lives Reborn Through Kindness</h2>
+          <p className="editorial-section-subtitle">
+            Behind every blood bag is a person who gave with an open heart, and a family whose loved one came back home.
+          </p>
+        </div>
+
+        <div className="testimonials-grid">
+          <div className="editorial-card testimonial-card-wrap">
+            <p className="quote-statement">
+              “Donating blood takes only 15 minutes of my afternoon, but knowing that a young mother walked out of the ICU because of my donation is the most humbling, beautiful feeling in the world.”
+            </p>
+            <div className="author-profile-box">
+              <div className="author-monogram">PS</div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Priya Sharma</div>
+                <div style={{ fontSize: '0.86rem', color: 'var(--text-tertiary)' }}>Software Engineer • 9-Time Voluntary Donor</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="editorial-card testimonial-card-wrap">
+            <p className="quote-statement">
+              “When my father was rushed into surgery after a highway accident, they needed rare O- blood at midnight. Two voluntary heroes from BloodLink arrived at the clinic within 25 minutes. They gave him a second chance at life.”
+            </p>
+            <div className="author-profile-box">
+              <div className="author-monogram" style={{ backgroundColor: 'var(--leaf-sage)', color: 'var(--leaf-sage-text)' }}>KN</div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-primary)' }}>Karthik Nambiar</div>
+                <div style={{ fontSize: '0.86rem', color: 'var(--text-tertiary)' }}>Grateful Son • Bengaluru</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Frequently Asked Questions */}
+      <section id="faq" className="content-section-wrap" style={{ paddingTop: 0 }}>
+        <div className="editorial-section-head">
+          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: '#EF4E4E', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+            Questions & Answers
+          </span>
+          <h2 className="editorial-section-title">Frequently Asked Questions</h2>
+          <p className="editorial-section-subtitle">
+            Everything you need to know about giving blood safely and comfortably.
+          </p>
+        </div>
+
+        <div className="faq-wrap-stack">
+          {FAQ_ITEMS.map((item, idx) => (
+            <div 
+              key={idx}
+              className="faq-single-item"
+              onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
+            >
+              <div className="faq-question-title">
+                <span>{item.q}</span>
+                {openFaq === idx ? <ChevronUp size={20} color="#EF4E4E" /> : <ChevronDown size={20} color="#8A948C" />}
+              </div>
+              {openFaq === idx && (
+                <div className="faq-body-text">
+                  {item.a}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Bottom Warm Editorial Banner */}
+      <section className="bottom-banner-frame">
+        <div className="bottom-banner-inner">
+          <span style={{ fontSize: '0.86rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#FDA4AF' }}>
+            Ready to Be a Hero?
+          </span>
+
+          <h2 className="bottom-banner-title">
+            A patient in need is waiting for someone just like you.
+          </h2>
+
+          <p className="bottom-banner-lead">
+            Join over 4,200 compassionate voluntary donors across the city. Your single blood donation today can save up to three lives tomorrow.
+          </p>
+
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button 
+              onClick={() => setShowDonorModal(true)}
+              className="btn-editorial-primary"
+              style={{ padding: '16px 36px', fontSize: '1rem' }}
+            >
+              <Heart size={20} fill="#FFFFFF" />
+              <span>Register as a Donor</span>
+            </button>
+
+            <button 
+              onClick={() => setShowRequestModal(true)}
+              className="btn-editorial-secondary"
+              style={{ padding: '16px 32px', fontSize: '1rem', color: '#FFFFFF', borderColor: 'rgba(255, 255, 255, 0.4)' }}
+            >
+              <ShieldAlert size={20} color="#FDA4AF" />
+              <span>Need Blood Urgently</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Modal 1: Register as a Blood Donor */}
+      {showDonorModal && (
+        <div className="editorial-modal-backdrop" onClick={() => setShowDonorModal(false)}>
+          <div className="editorial-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="editorial-modal-head">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Heart size={24} color="#EF4E4E" fill="#EF4E4E" />
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem' }}>Join as a Donor</h3>
+              </div>
+              <button onClick={() => setShowDonorModal(false)} className="modal-close-editorial">
+                <X size={20} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)' }}>
+              Thank you for stepping forward! We will keep your personal contact confidential and only reach out when an emergency patient nearby needs your blood group.
+            </p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setShowDonorModal(false);
+              showToast('🎉 Thank you! Your donor profile is active and ready to save lives.');
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="calc-field-group">
+                <label className="calc-field-label">Full Name</label>
+                <input required placeholder="e.g. Ramesh Kumar" className="calc-field-control" defaultValue="Ramesh Kumar" />
+              </div>
+
+              <div className="calc-inputs-row">
+                <div className="calc-field-group">
+                  <label className="calc-field-label">Your Blood Group</label>
+                  <select className="calc-field-control" defaultValue="O+">
+                    {Object.keys(BLOOD_GROUPS_INFO).map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="calc-field-group">
+                  <label className="calc-field-label">City / Area</label>
+                  <input required placeholder="Bengaluru" className="calc-field-control" defaultValue="Bengaluru" />
+                </div>
+              </div>
+
+              <div className="calc-inputs-row">
+                <div className="calc-field-group">
+                  <label className="calc-field-label">Age (18 - 65)</label>
+                  <input required type="number" min="18" max="65" defaultValue="26" className="calc-field-control" />
+                </div>
+                <div className="calc-field-group">
+                  <label className="calc-field-label">Weight (&gt;45 kg)</label>
+                  <input required type="number" min="45" defaultValue="64" className="calc-field-control" />
+                </div>
+              </div>
+
+              <div className="calc-field-group">
+                <label className="calc-field-label">Mobile Number</label>
+                <input required placeholder="+91 98765 43210" defaultValue="+91 98450 12345" className="calc-field-control" />
+              </div>
+
+              <button type="submit" className="btn-editorial-primary" style={{ marginTop: '10px' }}>
+                Complete Registration
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal 2: Request Blood Urgently */}
+      {showRequestModal && (
+        <div className="editorial-modal-backdrop" onClick={() => setShowRequestModal(false)}>
+          <div className="editorial-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="editorial-modal-head">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <ShieldAlert size={24} color="#EF4E4E" />
+                <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.45rem' }}>Request Urgent Blood</h3>
+              </div>
+              <button onClick={() => setShowRequestModal(false)} className="modal-close-editorial">
+                <X size={20} />
+              </button>
+            </div>
+
+            <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)' }}>
+              Please provide the medical details below. Our 24/7 coordination team will immediately contact verified matching voluntary donors and partner hospital blood banks.
+            </p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              setShowRequestModal(false);
+              showToast('🚨 Urgent Blood Request Received! Our coordination desk is matching available donors.');
+            }} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="calc-field-group">
+                <label className="calc-field-label">Patient Name / Hospital Ward</label>
+                <input required placeholder="e.g. ICU Bed #4 - Emergency Trauma" className="calc-field-control" defaultValue="Trauma Ward #3" />
+              </div>
+
+              <div className="calc-inputs-row">
+                <div className="calc-field-group">
+                  <label className="calc-field-label">Required Blood Group</label>
+                  <select className="calc-field-control" defaultValue="O-">
+                    {Object.keys(BLOOD_GROUPS_INFO).map(g => (
+                      <option key={g} value={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="calc-field-group">
+                  <label className="calc-field-label">Units Needed</label>
+                  <input required type="number" min="1" max="10" defaultValue="2" className="calc-field-control" />
+                </div>
+              </div>
+
+              <div className="calc-field-group">
+                <label className="calc-field-label">Hospital Name & City</label>
+                <input required placeholder="e.g. City General Hospital, Bengaluru" defaultValue="City General Hospital, Bengaluru" className="calc-field-control" />
+              </div>
+
+              <div className="calc-field-group">
+                <label className="calc-field-label">Contact Person Phone Number</label>
+                <input required placeholder="+91 98765 43210" defaultValue="+91 98220 98765" className="calc-field-control" />
+              </div>
+
+              <button type="submit" className="btn-editorial-primary" style={{ marginTop: '10px' }}>
+                Submit Emergency Request
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Editorial Footer */}
+      <footer className="editorial-footer-bar">
+        <div className="footer-top-grid">
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Droplet size={24} color="#EF4E4E" fill="#EF4E4E" />
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>BloodLink</span>
+            </div>
+            <p className="footer-brand-bio">
+              BloodLink is a dedicated voluntary blood donor coordination network built to bridge the gap between compassionate donors and emergency patients in need. 100% voluntary, certified, and non-commercial.
+            </p>
+          </div>
+
+          <div>
+            <div className="footer-col-header">Quick Links</div>
+            <ul className="footer-nav-list">
+              <li><a href="#why-donate" className="footer-nav-anchor">Why Give Blood</a></li>
+              <li><a href="#how-it-works" className="footer-nav-anchor">How It Works</a></li>
+              <li><a href="#eligibility" className="footer-nav-anchor">Eligibility Guidelines</a></li>
+              <li><a href="#blood-types" className="footer-nav-anchor">Blood Compatibility</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="footer-col-header">Get Involved</div>
+            <ul className="footer-nav-list">
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setShowDonorModal(true); }} className="footer-nav-anchor">Register as a Donor</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); setShowRequestModal(true); }} className="footer-nav-anchor">Request Blood</a></li>
+              <li><a href="#stories" className="footer-nav-anchor">Stories of Hope</a></li>
+              <li><a href="#faq" className="footer-nav-anchor">Common Questions</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <div className="footer-col-header">Emergency 24/7</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+              National Helpline:<br />
+              <strong style={{ color: '#EF4E4E', fontSize: '1.1rem' }}>1800-419-HELP</strong><br />
+              Email: care@bloodlink.org<br />
+              Available round-the-clock across all major hospital networks.
+            </div>
+          </div>
+        </div>
+
+        <div className="footer-sub-bar">
+          <div>© 2026 BloodLink. Non-Profit Voluntary Blood Network. All Rights Reserved.</div>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <span>Medical Safety Certified</span>
+            <span>Privacy Standards</span>
+            <span>Voluntary Non-Remunerated Care</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
