@@ -126,51 +126,39 @@
   flex-wrap: wrap;
 }
 
-/* Floating Natural Illustrations (Click & Auto-Cycling, NO border, NO box, NO controls) */
+/* Floating Natural Illustrations (Click & Auto-Cycling: Simple Opacity Fade In/Out) */
 .hero-illustration-area.clickable-hero-slider {
-  position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
   align-items: center;
-  justify-content: center;
+  justify-items: center;
   width: 100%;
   cursor: pointer;
   user-select: none;
-  min-height: 440px;
   outline: none;
 }
 
-.floating-characters-art {
+.clickable-hero-slider .floating-characters-art {
+  grid-column: 1;
+  grid-row: 1;
   width: 100%;
   max-width: 660px;
   height: auto;
   display: block;
   object-fit: contain;
-  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: opacity, transform;
-}
-
-.floating-characters-art.active-variant {
-  opacity: 1;
-  position: relative;
-  pointer-events: auto;
-  transform: translateY(0) scale(1);
-}
-
-.floating-characters-art.inactive-variant {
   opacity: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.985);
+  transition: opacity 0.5s ease-in-out;
   pointer-events: none;
 }
 
-.hero-illustration-area.clickable-hero-slider:hover .active-variant {
-  transform: translateY(-6px) scale(1.015);
+.clickable-hero-slider .floating-characters-art.active-variant {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.hero-illustration-area.clickable-hero-slider:active .active-variant {
-  transform: translateY(-2px) scale(0.985);
+.clickable-hero-slider .floating-characters-art.inactive-variant {
+  opacity: 0;
 }
 
 /* Social proof footer row in hero */

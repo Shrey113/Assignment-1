@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { 
-  Heart, 
-  ShieldAlert, 
-  CheckCircle2, 
-  Play, 
-  Sparkles, 
-  X, 
-  Droplet, 
-  ChevronDown, 
-  ChevronUp, 
+import React, { useState, useEffect } from 'react';
+import {
+  Heart,
+  ShieldAlert,
+  CheckCircle2,
+  Play,
+  Sparkles,
+  X,
+  Droplet,
+  ChevronDown,
+  ChevronUp,
   ArrowRight,
   Activity,
   Award,
@@ -196,7 +196,7 @@ export default function App() {
         </div>
 
         <div className="nav-actions-group">
-          <button 
+          <button
             id="nav-request-blood"
             onClick={() => setShowRequestModal(true)}
             className="btn-editorial-secondary"
@@ -205,7 +205,7 @@ export default function App() {
             Find Blood
           </button>
 
-          <button 
+          <button
             id="nav-become-donor"
             onClick={() => setShowDonorModal(true)}
             className="btn-editorial-primary"
@@ -234,7 +234,7 @@ export default function App() {
           </p>
 
           <div className="hero-action-buttons">
-            <button 
+            <button
               id="hero-donate-btn"
               onClick={() => setShowDonorModal(true)}
               className="btn-editorial-primary"
@@ -243,7 +243,7 @@ export default function App() {
               <span>DONATE BLOOD</span>
             </button>
 
-            <button 
+            <button
               id="hero-how-btn"
               onClick={() => {
                 const el = document.getElementById('how-it-works');
@@ -264,7 +264,7 @@ export default function App() {
         </div>
 
         {/* Floating Editorial Character Illustrations (Click & Auto-Cycling, NO boxes, NO borders) */}
-        <div 
+        <div
           className="hero-illustration-area clickable-hero-slider"
           onClick={handleNextHeroIllustration}
           role="button"
@@ -277,10 +277,10 @@ export default function App() {
           }}
         >
           {HERO_VARIANTS.map((variant, idx) => (
-            <img 
+            <img
               key={variant.src}
-              src={variant.src} 
-              alt={variant.alt} 
+              src={variant.src}
+              alt={variant.alt}
               className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
               loading="eager"
             />
@@ -446,7 +446,7 @@ export default function App() {
               </li>
             </ul>
 
-            <button 
+            <button
               onClick={() => setShowDonorModal(true)}
               className="btn-editorial-primary"
               style={{ marginTop: 'auto', alignSelf: 'flex-start' }}
@@ -469,38 +469,38 @@ export default function App() {
             <div className="calc-inputs-row">
               <div className="calc-field-group">
                 <label className="calc-field-label">Age (18 - 65)</label>
-                <input 
-                  type="number" 
-                  min="16" 
-                  max="80" 
-                  value={userAge} 
+                <input
+                  type="number"
+                  min="16"
+                  max="80"
+                  value={userAge}
                   onChange={(e) => setUserAge(Number(e.target.value))}
-                  className="calc-field-control" 
+                  className="calc-field-control"
                 />
               </div>
 
               <div className="calc-field-group">
                 <label className="calc-field-label">Weight (&gt;45 kg)</label>
-                <input 
-                  type="number" 
-                  min="30" 
-                  max="150" 
-                  value={userWeight} 
+                <input
+                  type="number"
+                  min="30"
+                  max="150"
+                  value={userWeight}
                   onChange={(e) => setUserWeight(Number(e.target.value))}
-                  className="calc-field-control" 
+                  className="calc-field-control"
                 />
               </div>
             </div>
 
             <div className="calc-field-group">
               <label className="calc-field-label">Days Since Your Last Blood Donation</label>
-              <input 
-                type="number" 
-                min="0" 
-                max="365" 
-                value={lastDonationDays} 
+              <input
+                type="number"
+                min="0"
+                max="365"
+                value={lastDonationDays}
                 onChange={(e) => setLastDonationDays(Number(e.target.value))}
-                className="calc-field-control" 
+                className="calc-field-control"
               />
               <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>If you are a first-time donor, enter 90 or more.</span>
             </div>
@@ -647,7 +647,7 @@ export default function App() {
 
         <div className="faq-wrap-stack">
           {FAQ_ITEMS.map((item, idx) => (
-            <div 
+            <div
               key={idx}
               className="faq-single-item"
               onClick={() => setOpenFaq(openFaq === idx ? -1 : idx)}
@@ -682,7 +682,7 @@ export default function App() {
           </p>
 
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button 
+            <button
               onClick={() => setShowDonorModal(true)}
               className="btn-editorial-primary"
               style={{ padding: '16px 36px', fontSize: '1rem' }}
@@ -691,7 +691,7 @@ export default function App() {
               <span>Register as a Donor</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setShowRequestModal(true)}
               className="btn-editorial-secondary"
               style={{ padding: '16px 32px', fontSize: '1rem', color: '#FFFFFF', borderColor: 'rgba(255, 255, 255, 0.4)' }}
