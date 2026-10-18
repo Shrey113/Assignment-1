@@ -101,8 +101,8 @@ const HERO_VARIANTS = [
     tagline: 'Community Donor Network',
     line1: 'The Art of',
     line2: 'Connecting Lives.',
-    quote: 'BloodLink instantly connects voluntary donors with patients and families in urgent medical need. One verified donor match can save up to three lives in your local community.',
-    badge: 'Verified Voluntary Donors • Ready to Connect'
+    quote: 'BloodLink directly connects voluntary donors with patients and families in urgent medical need. One voluntary donation can help save up to three lives in your local community.',
+    badge: 'Voluntary Donor Network • Ready to Help'
   },
   {
     src: '/editorial_donation_3.png',
@@ -110,8 +110,8 @@ const HERO_VARIANTS = [
     tagline: 'Urgent Emergency Alerts',
     line1: 'Fast Matches,',
     line2: 'Zero Delays.',
-    quote: 'When critical emergencies strike, BloodLink instantly alerts nearby compatible donors and coordinates rapid delivery to the hospital bedside within minutes.',
-    badge: 'Instant Emergency Alerts • Under 15m Response'
+    quote: 'When critical emergencies strike, BloodLink broadcasts instant alerts to compatible donors to coordinate life-saving blood for hospital patients without delay.',
+    badge: 'Instant Emergency Alerts • Rapid Coordination'
   },
   {
     src: '/editorial_donation_4.png',
@@ -119,7 +119,7 @@ const HERO_VARIANTS = [
     tagline: 'Direct Community Bridge',
     line1: 'Bridging Donors &',
     line2: 'Families in Need.',
-    quote: 'No more frantic phone calls or desperate social media posts. BloodLink directly matches patients with verified voluntary donors nearby ready to help.',
+    quote: 'No more frantic phone calls or desperate social media posts. BloodLink directly matches patients with voluntary donors ready to help in medical emergencies.',
     badge: 'Direct Donor-to-Patient Bridge • 100% Free'
   },
   {
@@ -128,7 +128,7 @@ const HERO_VARIANTS = [
     tagline: 'Smart Compatibility Search',
     line1: 'Find Your Match,',
     line2: 'Save a Life Today.',
-    quote: 'Our intelligent system pairs requesters with compatible donors across all 8 blood groups instantly, ensuring patients receive the exact match without lost time.',
+    quote: 'Our matching system pairs requesters with compatible voluntary donors across all 8 blood groups, ensuring patients receive the right match without lost time.',
     badge: 'Smart Compatibility Search • 8 Blood Groups'
   },
   {
@@ -137,8 +137,8 @@ const HERO_VARIANTS = [
     tagline: 'Everyday Life-Savers',
     line1: 'The Power of',
     line2: 'Community Heroes.',
-    quote: 'Join over 4,200 voluntary donors across your city. Register in 60 seconds, receive notifications when someone nearby needs your blood, and save lives.',
-    badge: '4,200+ Registered Heroes • Sign Up in 60s'
+    quote: 'Join voluntary donors across your community. Register in 60 seconds, receive alerts when someone needs your blood type, and help save lives.',
+    badge: 'Community Lifesavers • Sign Up in 60s'
   }
 ];
 
@@ -307,31 +307,31 @@ export default function App() {
 
             <div className="hero-action-buttons">
               <button
-                id="hero-donate-btn"
-                onClick={() => setShowDonorModal(true)}
+                id="hero-find-donor-btn"
+                onClick={() => setShowRequestModal(true)}
                 className="btn-editorial-primary"
               >
-                <Heart size={18} fill="#FFFFFF" />
-                <span>DONATE BLOOD</span>
+                <Droplet size={17} fill="#FFFFFF" />
+                <span>FIND A DONOR</span>
               </button>
 
               <button
-                id="hero-how-btn"
-                onClick={() => {
-                  const el = document.getElementById('why-donate');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="btn-editorial-secondary"
+                id="hero-donate-btn"
+                onClick={() => setShowDonorModal(true)}
+                className="btn-editorial-dark"
               >
-                <Play size={14} fill="currentColor" />
-                <span>HOW IT WORKS</span>
+                <Heart size={17} fill="#EF4E4E" color="#EF4E4E" />
+                <span>BE A DONOR</span>
               </button>
             </div>
 
             <div className="hero-social-trust">
-              <span>⭐️ Over 14,850 donations coordinated</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Activity size={15} color="#EF4E4E" />
+                <span>24/7 Voluntary Blood Coordination</span>
+              </span>
               <span>•</span>
-              <span>100% Free & Voluntary</span>
+              <span>100% Free & Open Platform</span>
             </div>
           </div>
 

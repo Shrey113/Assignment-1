@@ -90,6 +90,32 @@ h1, h2, h3, h4 {
   box-shadow: 0 8px 24px var(--coral-glow);
 }
 
+.btn-editorial-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  background-color: var(--text-primary);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  border-radius: 12px;
+  border: 1.5px solid var(--text-primary);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(28, 32, 29, 0.15);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn-editorial-dark:hover {
+  background-color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(28, 32, 29, 0.25);
+}
+
 .btn-editorial-secondary {
   display: inline-flex;
   align-items: center;
