@@ -93,47 +93,52 @@ const FAQ_ITEMS = [
   }
 ];
 
-// 5 Editorial Blood Donation Illustration Variants (Ordered 2, 3, 4, 5, 1)
+// 5 Editorial Blood Donation Illustration Variants (Focused on BloodLink Donor Connection)
 const HERO_VARIANTS = [
   {
     src: '/editorial_donation_2.png',
     alt: 'Voluntary female blood donor smiling in donation chair with male nurse gently monitoring blood collection unit',
-    tagline: 'Voluntary Life-Saving Network',
+    tagline: 'Community Donor Network',
     line1: 'The Art of',
-    line2: 'Giving Life.',
-    quote: 'Do you know that a single donation can breathe life into three emergency patients? BloodLink is the warm, gentle platform connecting compassionate voluntary donors with families in urgent medical need.'
+    line2: 'Connecting Lives.',
+    quote: 'BloodLink instantly connects voluntary donors with patients and families in urgent medical need. One verified donor match can save up to three lives in your local community.',
+    badge: 'Verified Voluntary Donors • Ready to Connect'
   },
   {
     src: '/editorial_donation_3.png',
     alt: 'Male emergency courier delivering red insulated blood transport box to female emergency physician with intake tablet',
-    tagline: 'Urgent Emergency Dispatch',
-    line1: 'Every Second',
-    line2: 'Counts for Life.',
-    quote: 'When every minute counts, our rapid emergency delivery network bridges voluntary donors and hospital operating rooms across 120+ partner centers within minutes.'
+    tagline: 'Urgent Emergency Alerts',
+    line1: 'Fast Matches,',
+    line2: 'Zero Delays.',
+    quote: 'When critical emergencies strike, BloodLink instantly alerts nearby compatible donors and coordinates rapid delivery to the hospital bedside within minutes.',
+    badge: 'Instant Emergency Alerts • Under 15m Response'
   },
   {
     src: '/editorial_donation_4.png',
     alt: 'Female emergency blood courier delivering insulated transport cooler box to welcoming hospital doctor with clipboard',
-    tagline: 'Certified Cold-Chain Logistics',
-    line1: 'Guardians of',
-    line2: 'Safe Delivery.',
-    quote: 'From voluntary donation to hospital bedside, rigorous cold-chain temperature monitoring ensures every life-saving unit remains pure, certified, and ready.'
+    tagline: 'Direct Community Bridge',
+    line1: 'Bridging Donors &',
+    line2: 'Families in Need.',
+    quote: 'No more frantic phone calls or desperate social media posts. BloodLink directly matches patients with verified voluntary donors nearby ready to help.',
+    badge: 'Direct Donor-to-Patient Bridge • 100% Free'
   },
   {
     src: '/editorial_donation_5.png',
     alt: 'Female clinical blood bank specialist handing carefully verified blood donation pack to male surgical physician in scrubs',
-    tagline: 'Clinical Precision Matching',
-    line1: 'The Precision of',
-    line2: 'Healing Hands.',
-    quote: 'Every drop undergoes rigorous safety screening and precise compatibility matching before reaching our surgical teams, bringing hope to families in critical care.'
+    tagline: 'Smart Compatibility Search',
+    line1: 'Find Your Match,',
+    line2: 'Save a Life Today.',
+    quote: 'Our intelligent system pairs requesters with compatible donors across all 8 blood groups instantly, ensuring patients receive the exact match without lost time.',
+    badge: 'Smart Compatibility Search • 8 Blood Groups'
   },
   {
     src: '/editorial_donation_1.png',
     alt: 'Voluntary male blood donor giving thumbs-up in recliner with healthcare nurse holding blood donation pack',
-    tagline: 'Community Hero Network',
-    line1: 'The Strength of',
-    line2: 'Quiet Heroes.',
-    quote: 'Ordinary people doing extraordinary kindness. Join over 4,200 verified voluntary heroes ready to answer urgent life-saving calls whenever emergency strikes.'
+    tagline: 'Everyday Life-Savers',
+    line1: 'The Power of',
+    line2: 'Community Heroes.',
+    quote: 'Join over 4,200 voluntary donors across your city. Register in 60 seconds, receive notifications when someone nearby needs your blood, and save lives.',
+    badge: '4,200+ Registered Heroes • Sign Up in 60s'
   }
 ];
 
@@ -250,6 +255,15 @@ export default function App() {
             <div className="logo-monogram">Blood<span>Link</span></div>
           </a>
 
+          <div className="nav-links-row">
+            <a href="#why-donate" className="nav-link-editorial">Why Give</a>
+            <a href="#how-it-works" className="nav-link-editorial">How It Works</a>
+            <a href="#eligibility" className="nav-link-editorial">Eligibility</a>
+            <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
+            <a href="#stories" className="nav-link-editorial">Stories</a>
+            <a href="#faq" className="nav-link-editorial">FAQ</a>
+          </div>
+
           <div className="nav-actions-group">
             <button
               id="nav-request-blood"
@@ -321,28 +335,41 @@ export default function App() {
             </div>
           </div>
 
-          {/* Floating Editorial Character Illustrations (Click & Auto-Cycling, NO boxes, NO borders) */}
-          <div
-            className="hero-illustration-area clickable-hero-slider"
-            onClick={handleNextHeroIllustration}
-            role="button"
-            tabIndex={0}
-            title="Click to view next story illustration"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleNextHeroIllustration();
-              }
-            }}
-          >
-            {HERO_VARIANTS.map((variant, idx) => (
-              <img
-                key={variant.src}
-                src={variant.src}
-                alt={variant.alt}
-                className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
-                loading="eager"
-              />
-            ))}
+          {/* Floating Editorial Character Illustrations with Visual Anchor Badge */}
+          <div className="hero-illustration-wrapper">
+            <div
+              className="hero-illustration-area clickable-hero-slider"
+              onClick={handleNextHeroIllustration}
+              role="button"
+              tabIndex={0}
+              title="Click to view next story illustration"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleNextHeroIllustration();
+                }
+              }}
+            >
+              {HERO_VARIANTS.map((variant, idx) => (
+                <img
+                  key={variant.src}
+                  src={variant.src}
+                  alt={variant.alt}
+                  className={`floating-characters-art ${idx === heroVariantIndex ? 'active-variant' : 'inactive-variant'}`}
+                  loading="eager"
+                />
+              ))}
+            </div>
+
+            {/* Visual Anchor Caption Pill (Ties artwork directly into BloodLink message) */}
+            <div 
+              className="illustration-caption-pill"
+              onClick={handleNextHeroIllustration}
+              title="Click to see next life-saving story"
+            >
+              <span className="caption-dot"></span>
+              <span className="caption-text">{currentVariant.badge}</span>
+              <span className="caption-action">• Tap to see next story</span>
+            </div>
           </div>
         </header>
       </section>

@@ -13,7 +13,7 @@
   height: 100svh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   box-sizing: border-box;
   position: relative;
   overflow: hidden;
@@ -24,7 +24,7 @@
   width: 100%;
   max-width: 1360px;
   margin: 0 auto;
-  padding: 20px 32px 10px;
+  padding: 16px 32px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,22 +53,43 @@
   color: var(--coral-accent);
 }
 
+.nav-links-row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-link-editorial {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: color var(--transition-fast);
+}
+
+.nav-link-editorial:hover {
+  color: var(--coral-accent);
+}
+
 .nav-actions-group {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* Hero Section (Fills remaining 100svh height) */
+/* Hero Section (Fills remaining 100svh height without large empty gap) */
 .editorial-hero {
   flex: 1;
   max-width: 1360px;
   width: 100%;
   margin: 0 auto;
-  padding: 8px 32px 24px;
+  padding: 4px 32px 20px;
   display: grid;
   grid-template-columns: 1.05fr 1.15fr;
-  gap: 32px;
+  gap: 36px;
   align-items: center;
   box-sizing: border-box;
   min-height: 0;
@@ -144,6 +165,16 @@
 }
 
 /* Floating Natural Illustrations (Click & Auto-Cycling: Simple Opacity Fade In/Out) */
+.hero-illustration-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+}
+
 .hero-illustration-area.clickable-hero-slider {
   display: grid;
   grid-template-columns: 1fr;
@@ -154,6 +185,20 @@
   cursor: pointer;
   user-select: none;
   outline: none;
+  position: relative;
+}
+
+/* Subtle warm organic backdrop glow to visually ground and connect illustration */
+.hero-illustration-area.clickable-hero-slider::before {
+  content: '';
+  position: absolute;
+  width: 82%;
+  height: 80%;
+  background: radial-gradient(ellipse at center, rgba(239, 78, 78, 0.07) 0%, rgba(255, 228, 220, 0.42) 48%, rgba(250, 246, 238, 0) 72%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(14px);
 }
 
 .clickable-hero-slider .floating-characters-art {
@@ -161,13 +206,14 @@
   grid-row: 1;
   width: 100%;
   max-width: 640px;
-  max-height: min(580px, calc(100svh - 130px));
+  max-height: min(580px, calc(100svh - 150px));
   height: auto;
   display: block;
   object-fit: contain;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
+  z-index: 1;
 }
 
 .clickable-hero-slider .floating-characters-art.active-variant {
@@ -177,6 +223,63 @@
 
 .clickable-hero-slider .floating-characters-art.inactive-variant {
   opacity: 0;
+}
+
+/* Visual Anchor Caption Pill (Ties artwork directly into BloodLink mission) */
+.illustration-caption-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(35, 40, 36, 0.1);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+  z-index: 2;
+}
+
+.illustration-caption-pill:hover {
+  background: #FFFFFF;
+  border-color: rgba(239, 78, 78, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(239, 78, 78, 0.12);
+}
+
+.caption-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--coral-accent);
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+.caption-text {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.caption-action {
+  font-weight: 500;
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
 }
 
 /* Social proof footer row in hero */
