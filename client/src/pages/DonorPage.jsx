@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
 import { AlertCircle } from 'lucide-react';
+import GUJARAT_CITIES from '../constants/gujaratCities';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -149,13 +150,18 @@ export default function DonorPage() {
                   {/* City */}
                   <div className="donor-field-group">
                     <label className="donor-field-label">City Depot</label>
-                    <input
-                      type="text"
+                    <select
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
-                      placeholder="e.g. Ahmedabad, Gujarat"
-                      className="donor-field-input"
-                    />
+                      className="donor-field-input donor-field-select"
+                    >
+                      <option value="">Select City (e.g. Ahmedabad)</option>
+                      {GUJARAT_CITIES.map((cityName) => (
+                        <option key={cityName} value={cityName}>
+                          {cityName}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
