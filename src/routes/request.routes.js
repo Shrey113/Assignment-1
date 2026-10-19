@@ -1,15 +1,9 @@
 import { Router } from 'express';
-import {
-  createRequest,
-  getRequests,
-  getRequestById
-} from '../controllers/request.controller.js';
+import { createRequest } from '../controllers/request.controller.js';
 
 const router = Router();
 
-// Routes for emergency & scheduled blood requisitions
+// Single route: Add blood request to database
 router.post('/', createRequest);
-router.get('/', getRequests);
-router.get('/:id', getRequestById);
 
 export default router;
