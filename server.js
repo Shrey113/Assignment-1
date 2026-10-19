@@ -13,8 +13,8 @@ async function bootstrap() {
 🚀 BloodLink Server is running!
 📡 URL: http://localhost:${config.port}
 🩺 Health Check: http://localhost:${config.port}/api/health
-🩸 Donors Endpoint: http://localhost:${config.port}/api/v1/donors
-📋 Requests Endpoint: http://localhost:${config.port}/api/v1/requests
+🩸 Donors Endpoint: http://localhost:${config.port}/api/donors
+📋 Requests Endpoint: http://localhost:${config.port}/api/requests
       `);
     });
   } catch (error) {
