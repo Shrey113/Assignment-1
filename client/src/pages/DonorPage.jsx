@@ -2,6 +2,15 @@ import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
 import { AlertCircle } from 'lucide-react';
 import GUJARAT_CITIES from '../constants/gujaratCities';
+import {
+  validateFullName,
+  validateEmail,
+  validatePhone,
+  validateAge,
+  validateWeight,
+  validateCity,
+  validateBloodGroup
+} from '../utils/validation';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -26,17 +35,21 @@ export default function DonorPage() {
   const [isFirstTime, setIsFirstTime] = useState(false);
   const [availableDays, setAvailableDays] = useState([]);
   const [preferredSlot, setPreferredSlot] = useState('');
-  const [ageError, setAgeError] = useState('');
+  const [errors, setErrors] = useState({});
   const [isRegistered, setIsRegistered] = useState(false);
 
-  const handleAgeChange = (e) => {
-    const val = e.target.value;
-    setAge(val);
-    if (val && (Number(val) < 18 || Number(val) > 65)) {
-      setAgeError('Eligible donor age is between 18 and 65 years');
-    } else {
-      setAgeError('');
-    }
+  // Validate individual field on blur (when user leaves input)
+  const handleBlur = (field) => {
+    let errorMsg = '';
+    if (field === 'name') errorMsg = validateFullName(name);
+    if (field === 'email') errorMsg = validateEmail(email);
+    if (field === 'phone') errorMsg = validatePhone(phone);
+    if (field === 'age') errorMsg = validateAge(age);
+    if (field === 'weight') errorMsg = validateWeight(weight);
+    if (field === 'city') errorMsg = validateCity(city);
+    if (field === 'bloodGroup') errorMsg = validateBloodGroup(bloodGroup);
+
+    setErrors((prev) => ({ ...prev, [field]: errorMsg }));
   };
 
   const toggleDay = (day) => {
@@ -47,11 +60,26 @@ export default function DonorPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (age && (Number(age) < 18 || Number(age) > 65)) {
-      setAgeError('Eligible donor age is between 18 and 65 years');
+
+    // Validate all fields on submit
+    const allErrors = {
+      name: validateFullName(name),
+      email: validateEmail(email),
+      phone: validatePhone(phone),
+      age: validateAge(age),
+      weight: validateWeight(weight),
+      city: validateCity(city),
+      bloodGroup: validateBloodGroup(bloodGroup)
+    };
+
+    setErrors(allErrors);
+
+    // If any error exists, stop form submission
+    const hasError = Object.values(allErrors).some((msg) => msg !== '');
+    if (hasError) {
       return;
     }
-    setAgeError('');
+
     setIsRegistered(true);
     setTimeout(() => setIsRegistered(false), 5000);
   };
@@ -84,10 +112,20 @@ export default function DonorPage() {
                     <input
                       type="text"
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errors.name) setErrors((prev) => ({ ...prev, name: validateFullName(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('name')}
                       placeholder="e.g. Rahul Sharma"
-                      className="donor-field-input"
+                      className={`donor-field-input ${errors.name ? 'has-error' : ''}`}
                     />
+                    {errors.name && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.name}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Email Address */}
@@ -96,10 +134,20 @@ export default function DonorPage() {
                     <input
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errors.email) setErrors((prev) => ({ ...prev, email: validateEmail(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('email')}
                       placeholder="e.g. rahul@example.com"
-                      className="donor-field-input"
+                      className={`donor-field-input ${errors.email ? 'has-error' : ''}`}
                     />
+                    {errors.email && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.email}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Contact Number */}
@@ -108,10 +156,20 @@ export default function DonorPage() {
                     <input
                       type="tel"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="e.g. +91 98765 43210"
-                      className="donor-field-input"
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (errors.phone) setErrors((prev) => ({ ...prev, phone: validatePhone(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('phone')}
+                      placeholder="e.g. 9876543210"
+                      className={`donor-field-input ${errors.phone ? 'has-error' : ''}`}
                     />
+                    {errors.phone && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.phone}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Age & Weight inline */}
@@ -121,16 +179,20 @@ export default function DonorPage() {
                       <input
                         type="number"
                         value={age}
-                        onChange={handleAgeChange}
+                        onChange={(e) => {
+                          setAge(e.target.value);
+                          if (errors.age) setErrors((prev) => ({ ...prev, age: validateAge(e.target.value) }));
+                        }}
+                        onBlur={() => handleBlur('age')}
                         placeholder="18 - 65"
-                        className={`donor-field-input ${ageError ? 'has-error' : ''}`}
+                        className={`donor-field-input ${errors.age ? 'has-error' : ''}`}
                         min="18"
                         max="65"
                       />
-                      {ageError && (
+                      {errors.age && (
                         <span className="field-hint-error">
                           <AlertCircle size={12} />
-                          <span>{ageError}</span>
+                          <span>{errors.age}</span>
                         </span>
                       )}
                     </div>
@@ -140,10 +202,20 @@ export default function DonorPage() {
                       <input
                         type="number"
                         value={weight}
-                        onChange={(e) => setWeight(e.target.value)}
+                        onChange={(e) => {
+                          setWeight(e.target.value);
+                          if (errors.weight) setErrors((prev) => ({ ...prev, weight: validateWeight(e.target.value) }));
+                        }}
+                        onBlur={() => handleBlur('weight')}
                         placeholder="≥ 45 kg"
-                        className="donor-field-input"
+                        className={`donor-field-input ${errors.weight ? 'has-error' : ''}`}
                       />
+                      {errors.weight && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.weight}</span>
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -152,8 +224,12 @@ export default function DonorPage() {
                     <label className="donor-field-label">City Depot</label>
                     <select
                       value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="donor-field-input donor-field-select"
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        if (errors.city) setErrors((prev) => ({ ...prev, city: validateCity(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('city')}
+                      className={`donor-field-input donor-field-select ${errors.city ? 'has-error' : ''}`}
                     >
                       <option value="">Select City (e.g. Ahmedabad)</option>
                       {GUJARAT_CITIES.map((cityName) => (
@@ -162,6 +238,12 @@ export default function DonorPage() {
                         </option>
                       ))}
                     </select>
+                    {errors.city && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.city}</span>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -176,12 +258,21 @@ export default function DonorPage() {
                           key={bg}
                           type="button"
                           className={`blood-type-chip ${bloodGroup === bg ? 'active' : ''}`}
-                          onClick={() => setBloodGroup(bg)}
+                          onClick={() => {
+                            setBloodGroup(bg);
+                            if (errors.bloodGroup) setErrors((prev) => ({ ...prev, bloodGroup: '' }));
+                          }}
                         >
                           {bg}
                         </button>
                       ))}
                     </div>
+                    {errors.bloodGroup && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.bloodGroup}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Last Donation Date */}

@@ -814,6 +814,11 @@
   border-color: #DC2626;
 }
 
+.donor-field-input.has-error:focus {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.16);
+}
+
 .donor-field-input.is-disabled {
   opacity: 0.55;
   background: rgba(35, 40, 36, 0.06);

@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
+import { AlertCircle } from 'lucide-react';
 import GUJARAT_CITIES from '../constants/gujaratCities';
+import {
+  validatePatientName,
+  validateHospital,
+  validateCity,
+  validateBloodGroup,
+  validateUnits,
+  validateRequiredDate
+} from '../utils/validation';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -57,11 +66,24 @@ export default function RequesterPage() {
   const [urgency, setUrgency] = useState('');
   const [requiredDate, setRequiredDate] = useState('');
   const [isImmediate, setIsImmediate] = useState(false);
-  const [dateError, setDateError] = useState('');
+  const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const minRequiredDate = getMinRequiredDate();
   const isTriageBlocked = Boolean(requiredDate && !isImmediate);
+
+  // Validate individual field on blur (when user focuses out)
+  const handleBlur = (field) => {
+    let errorMsg = '';
+    if (field === 'patientName') errorMsg = validatePatientName(patientName);
+    if (field === 'hospital') errorMsg = validateHospital(hospital);
+    if (field === 'city') errorMsg = validateCity(city);
+    if (field === 'bloodGroup') errorMsg = validateBloodGroup(bloodGroup);
+    if (field === 'units') errorMsg = validateUnits(units);
+    if (field === 'requiredDate') errorMsg = validateRequiredDate(requiredDate, isImmediate);
+
+    setErrors((prev) => ({ ...prev, [field]: errorMsg }));
+  };
 
   const handleDateChange = (e) => {
     const val = e.target.value;
@@ -69,19 +91,31 @@ export default function RequesterPage() {
     if (val) {
       setUrgency('');
     }
-    if (val && val < minRequiredDate) {
-      setDateError('Date must be from tomorrow onwards (minimum 24h notice)');
-    } else {
-      setDateError('');
-    }
+    const err = validateRequiredDate(val, isImmediate);
+    setErrors((prev) => ({ ...prev, requiredDate: err }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!isImmediate && requiredDate && requiredDate < minRequiredDate) {
-      setDateError('Date must be from tomorrow onwards (minimum 24h notice)');
+
+    // Validate all fields on submit
+    const allErrors = {
+      patientName: validatePatientName(patientName),
+      hospital: validateHospital(hospital),
+      city: validateCity(city),
+      bloodGroup: validateBloodGroup(bloodGroup),
+      units: validateUnits(units),
+      requiredDate: validateRequiredDate(requiredDate, isImmediate)
+    };
+
+    setErrors(allErrors);
+
+    // If any error exists, stop form submission
+    const hasError = Object.values(allErrors).some((msg) => msg !== '');
+    if (hasError) {
       return;
     }
+
     setIsSubmitted(true);
     setTimeout(() => setIsSubmitted(false), 5000);
   };
@@ -121,11 +155,20 @@ export default function RequesterPage() {
                     <input
                       type="text"
                       value={patientName}
-                      onChange={(e) => setPatientName(e.target.value)}
+                      onChange={(e) => {
+                        setPatientName(e.target.value);
+                        if (errors.patientName) setErrors((prev) => ({ ...prev, patientName: validatePatientName(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('patientName')}
                       placeholder="e.g. Priya Sharma"
-                      className="donor-field-input"
-                      required
+                      className={`donor-field-input ${errors.patientName ? 'has-error' : ''}`}
                     />
+                    {errors.patientName && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.patientName}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Hospital & ICU Ward */}
@@ -134,11 +177,20 @@ export default function RequesterPage() {
                     <input
                       type="text"
                       value={hospital}
-                      onChange={(e) => setHospital(e.target.value)}
+                      onChange={(e) => {
+                        setHospital(e.target.value);
+                        if (errors.hospital) setErrors((prev) => ({ ...prev, hospital: validateHospital(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('hospital')}
                       placeholder="e.g. Apollo Hospital, Trauma ICU"
-                      className="donor-field-input"
-                      required
+                      className={`donor-field-input ${errors.hospital ? 'has-error' : ''}`}
                     />
+                    {errors.hospital && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.hospital}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* City Depot */}
@@ -146,8 +198,12 @@ export default function RequesterPage() {
                     <label className="donor-field-label">City Depot / Region</label>
                     <select
                       value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      className="donor-field-input donor-field-select"
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        if (errors.city) setErrors((prev) => ({ ...prev, city: validateCity(e.target.value) }));
+                      }}
+                      onBlur={() => handleBlur('city')}
+                      className={`donor-field-input donor-field-select ${errors.city ? 'has-error' : ''}`}
                     >
                       <option value="">Select City (e.g. Ahmedabad)</option>
                       {GUJARAT_CITIES.map((cityName) => (
@@ -156,6 +212,12 @@ export default function RequesterPage() {
                         </option>
                       ))}
                     </select>
+                    {errors.city && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.city}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Required By Date */}
@@ -170,7 +232,7 @@ export default function RequesterPage() {
                             setIsImmediate(e.target.checked);
                             if (e.target.checked) {
                               setRequiredDate('');
-                              setDateError('');
+                              setErrors((prev) => ({ ...prev, requiredDate: '' }));
                             }
                           }}
                         />
@@ -182,12 +244,14 @@ export default function RequesterPage() {
                       value={requiredDate}
                       min={minRequiredDate}
                       onChange={handleDateChange}
+                      onBlur={() => handleBlur('requiredDate')}
                       disabled={isImmediate}
-                      className={`donor-field-input ${isImmediate ? 'is-disabled' : ''} ${dateError ? 'has-error' : ''}`}
+                      className={`donor-field-input ${isImmediate ? 'is-disabled' : ''} ${errors.requiredDate ? 'has-error' : ''}`}
                     />
-                    {dateError && (
+                    {errors.requiredDate && (
                       <span className="field-hint-error">
-                        <span>{dateError}</span>
+                        <AlertCircle size={12} />
+                        <span>{errors.requiredDate}</span>
                       </span>
                     )}
                   </div>
@@ -206,12 +270,21 @@ export default function RequesterPage() {
                           key={u}
                           type="button"
                           className={`requester-unit-chip ${units === u ? 'active' : ''}`}
-                          onClick={() => setUnits(u)}
+                          onClick={() => {
+                            setUnits(u);
+                            if (errors.units) setErrors((prev) => ({ ...prev, units: '' }));
+                          }}
                         >
                           {u} {u === 5 ? '+' : ''}
                         </button>
                       ))}
                     </div>
+                    {errors.units && (
+                      <span className="field-hint-error">
+                        <AlertCircle size={12} />
+                        <span>{errors.units}</span>
+                      </span>
+                    )}
                   </div>
 
                 </div>
@@ -231,12 +304,21 @@ export default function RequesterPage() {
                           key={bg}
                           type="button"
                           className={`blood-type-chip ${bloodGroup === bg ? 'active' : ''}`}
-                          onClick={() => setBloodGroup(bg)}
+                          onClick={() => {
+                            setBloodGroup(bg);
+                            if (errors.bloodGroup) setErrors((prev) => ({ ...prev, bloodGroup: '' }));
+                          }}
                         >
                           {bg}
                         </button>
                       ))}
                     </div>
+                    {errors.bloodGroup && (
+                      <span className="field-hint-error" style={{ marginTop: '4px' }}>
+                        <AlertCircle size={12} />
+                        <span>{errors.bloodGroup}</span>
+                      </span>
+                    )}
                     <div className="requester-compat-hint" style={{ marginTop: '4px' }}>
                       <span className="requester-compat-label">Safe voluntary matches:</span>
                       <strong className="requester-compat-pill">
