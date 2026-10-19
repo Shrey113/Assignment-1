@@ -658,11 +658,10 @@
 .donor-form-card {
   width: 100%;
   max-width: 830px;
-  min-height: 568px;
+  min-height: 605px;
   background: #FFFFFF;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(35, 40, 36, 0.07);
-  border-top: 3.5px solid var(--coral-accent);
   padding: 26px 30px;
   display: flex;
   flex-direction: column;
@@ -733,7 +732,7 @@
 .donor-col-right {
   padding-left: 2px;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 22px;
 }
 
 .donor-field-group {
@@ -995,10 +994,9 @@
   max-width: 680px;
   max-height: 540px;
   background: radial-gradient(ellipse at center,
-    rgba(255, 195, 175, 0.45) 0%,
-    rgba(255, 230, 215, 0.32) 45%,
-    rgba(250, 246, 238, 0) 72%
-  );
+      rgba(255, 195, 175, 0.45) 0%,
+      rgba(255, 230, 215, 0.32) 45%,
+      rgba(250, 246, 238, 0) 72%);
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
@@ -1079,13 +1077,13 @@
 .requester-urgency-stack {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   width: 100%;
 }
 
 .requester-priority-card {
   width: 100%;
-  padding: 8.5px 12px;
+  padding: 10.5px 13px;
   border-radius: var(--radius-sm);
   border: 1.5px solid rgba(35, 40, 36, 0.1);
   background: #FFFFFF;
@@ -1290,5 +1288,3 @@
   border-radius: 4px;
   letter-spacing: 0.02em;
 }
-
-
