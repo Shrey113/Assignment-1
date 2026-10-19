@@ -163,12 +163,14 @@ export default function RequesterPage() {
                       placeholder="e.g. Priya Sharma"
                       className={`donor-field-input ${errors.patientName ? 'has-error' : ''}`}
                     />
-                    {errors.patientName && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.patientName}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.patientName && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.patientName}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Hospital & ICU Ward */}
@@ -185,12 +187,14 @@ export default function RequesterPage() {
                       placeholder="e.g. Apollo Hospital, Trauma ICU"
                       className={`donor-field-input ${errors.hospital ? 'has-error' : ''}`}
                     />
-                    {errors.hospital && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.hospital}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.hospital && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.hospital}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* City Depot */}
@@ -212,12 +216,14 @@ export default function RequesterPage() {
                         </option>
                       ))}
                     </select>
-                    {errors.city && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.city}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.city && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.city}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Required By Date */}
@@ -248,12 +254,14 @@ export default function RequesterPage() {
                       disabled={isImmediate}
                       className={`donor-field-input ${isImmediate ? 'is-disabled' : ''} ${errors.requiredDate ? 'has-error' : ''}`}
                     />
-                    {errors.requiredDate && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.requiredDate}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.requiredDate && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.requiredDate}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Units Needed */}
@@ -279,12 +287,14 @@ export default function RequesterPage() {
                         </button>
                       ))}
                     </div>
-                    {errors.units && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.units}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.units && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.units}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                 </div>
@@ -313,12 +323,14 @@ export default function RequesterPage() {
                         </button>
                       ))}
                     </div>
-                    {errors.bloodGroup && (
-                      <span className="field-hint-error" style={{ marginTop: '4px' }}>
-                        <AlertCircle size={12} />
-                        <span>{errors.bloodGroup}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.bloodGroup && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.bloodGroup}</span>
+                        </span>
+                      )}
+                    </div>
                     <div className="requester-compat-hint" style={{ marginTop: '4px' }}>
                       <span className="requester-compat-label">Safe voluntary matches:</span>
                       <strong className="requester-compat-pill">

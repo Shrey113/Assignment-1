@@ -98,14 +98,22 @@
   font-size: 0.9rem;
 }
 
+.field-error-slot {
+  min-height: 16px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
 .field-hint-error {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
+  gap: 3.5px;
+  font-size: 0.70rem;
+  line-height: 1.15;
   color: #DC2626;
   font-weight: 600;
-  margin-top: 2px;
+  margin: 0;
 }
 
 .form-grid-two {
@@ -662,11 +670,11 @@
   background: #FFFFFF;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(35, 40, 36, 0.07);
-  padding: 26px 30px;
+  padding: 24px 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 17px;
+  gap: 14px;
   box-shadow: 0 16px 42px rgba(28, 32, 29, 0.08), 0 3px 12px rgba(239, 78, 78, 0.04);
   box-sizing: border-box;
 }
@@ -704,7 +712,7 @@
 .donor-fields-stack {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   flex: 1;
   justify-content: space-between;
 }
@@ -719,26 +727,27 @@
 .donor-form-col {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  justify-content: space-between;
+  gap: 6px;
+  justify-content: flex-start;
 }
 
 .donor-col-left {
   padding-right: 28px;
   border-right: 1px solid rgba(35, 40, 36, 0.08);
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 6px;
 }
 
 .donor-col-right {
   padding-left: 2px;
   justify-content: flex-start;
-  gap: 22px;
+  gap: 16px;
 }
 
 .donor-field-group {
   display: flex;
   flex-direction: column;
-  gap: 6.5px;
+  gap: 4px;
 }
 
 .donor-field-label {

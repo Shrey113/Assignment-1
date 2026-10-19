@@ -17,10 +17,10 @@ const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 const TIME_SLOTS = [
-  { id: 'morning',   label: 'Morning',   time: '8 AM – 12 PM' },
+  { id: 'morning', label: 'Morning', time: '8 AM – 12 PM' },
   { id: 'afternoon', label: 'Afternoon', time: '12 PM – 4 PM' },
-  { id: 'evening',   label: 'Evening',   time: '4 PM – 8 PM' },
-  { id: 'flexible',  label: 'Flexible',  time: 'Anytime' },
+  { id: 'evening', label: 'Evening', time: '4 PM – 8 PM' },
+  { id: 'flexible', label: 'Flexible', time: 'Anytime' },
 ];
 
 export default function DonorPage() {
@@ -120,12 +120,14 @@ export default function DonorPage() {
                       placeholder="e.g. Rahul Sharma"
                       className={`donor-field-input ${errors.name ? 'has-error' : ''}`}
                     />
-                    {errors.name && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.name}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.name && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.name}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Email Address */}
@@ -142,12 +144,14 @@ export default function DonorPage() {
                       placeholder="e.g. rahul@example.com"
                       className={`donor-field-input ${errors.email ? 'has-error' : ''}`}
                     />
-                    {errors.email && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.email}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.email && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.email}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Contact Number */}
@@ -164,12 +168,14 @@ export default function DonorPage() {
                       placeholder="e.g. 9876543210"
                       className={`donor-field-input ${errors.phone ? 'has-error' : ''}`}
                     />
-                    {errors.phone && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.phone}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.phone && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.phone}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Age & Weight inline */}
@@ -189,12 +195,14 @@ export default function DonorPage() {
                         min="18"
                         max="65"
                       />
-                      {errors.age && (
-                        <span className="field-hint-error">
-                          <AlertCircle size={12} />
-                          <span>{errors.age}</span>
-                        </span>
-                      )}
+                      <div className="field-error-slot">
+                        {errors.age && (
+                          <span className="field-hint-error">
+                            <AlertCircle size={12} />
+                            <span>{errors.age}</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="donor-field-group">
@@ -210,12 +218,14 @@ export default function DonorPage() {
                         placeholder="≥ 45 kg"
                         className={`donor-field-input ${errors.weight ? 'has-error' : ''}`}
                       />
-                      {errors.weight && (
-                        <span className="field-hint-error">
-                          <AlertCircle size={12} />
-                          <span>{errors.weight}</span>
-                        </span>
-                      )}
+                      <div className="field-error-slot">
+                        {errors.weight && (
+                          <span className="field-hint-error">
+                            <AlertCircle size={12} />
+                            <span>{errors.weight}</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -238,12 +248,14 @@ export default function DonorPage() {
                         </option>
                       ))}
                     </select>
-                    {errors.city && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.city}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.city && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.city}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -267,12 +279,14 @@ export default function DonorPage() {
                         </button>
                       ))}
                     </div>
-                    {errors.bloodGroup && (
-                      <span className="field-hint-error">
-                        <AlertCircle size={12} />
-                        <span>{errors.bloodGroup}</span>
-                      </span>
-                    )}
+                    <div className="field-error-slot">
+                      {errors.bloodGroup && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.bloodGroup}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Last Donation Date */}
