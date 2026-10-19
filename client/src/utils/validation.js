@@ -146,3 +146,21 @@ export function validateRequiredDate(date, isImmediate) {
   }
   return '';
 }
+
+// 12. Last Donation Date (Cannot be future date)
+export function validateLastDonationDate(date, isFirstTime) {
+  if (isFirstTime || !date) {
+    return '';
+  }
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  if (date > todayStr) {
+    return 'Last donation date cannot be in the future';
+  }
+  return '';
+}
+

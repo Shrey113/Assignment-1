@@ -9,7 +9,8 @@ import {
   validateAge,
   validateWeight,
   validateCity,
-  validateBloodGroup
+  validateBloodGroup,
+  validateLastDonationDate
 } from '../utils/validation';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
@@ -48,6 +49,7 @@ export default function DonorPage() {
     if (field === 'weight') errorMsg = validateWeight(weight);
     if (field === 'city') errorMsg = validateCity(city);
     if (field === 'bloodGroup') errorMsg = validateBloodGroup(bloodGroup);
+    if (field === 'lastDonationDate') errorMsg = validateLastDonationDate(lastDonationDate, isFirstTime);
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
   };
@@ -69,7 +71,8 @@ export default function DonorPage() {
       age: validateAge(age),
       weight: validateWeight(weight),
       city: validateCity(city),
-      bloodGroup: validateBloodGroup(bloodGroup)
+      bloodGroup: validateBloodGroup(bloodGroup),
+      lastDonationDate: validateLastDonationDate(lastDonationDate, isFirstTime)
     };
 
     setErrors(allErrors);
@@ -83,6 +86,10 @@ export default function DonorPage() {
     setIsRegistered(true);
     setTimeout(() => setIsRegistered(false), 5000);
   };
+
+  // Today's date YYYY-MM-DD in local time: user cannot select future dates (e.g. today is 20, cannot select 21 onwards)
+  const today = new Date();
+  const maxDonationDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
   return (
     <div className="portal-page-layout">
@@ -299,7 +306,12 @@ export default function DonorPage() {
                           checked={isFirstTime}
                           onChange={(e) => {
                             setIsFirstTime(e.target.checked);
-                            if (e.target.checked) setLastDonationDate('');
+                            if (e.target.checked) {
+                              setLastDonationDate('');
+                              if (errors.lastDonationDate) {
+                                setErrors((prev) => ({ ...prev, lastDonationDate: '' }));
+                              }
+                            }
                           }}
                         />
                         <span>First-time donor</span>
@@ -308,10 +320,30 @@ export default function DonorPage() {
                     <input
                       type="date"
                       value={lastDonationDate}
-                      onChange={(e) => setLastDonationDate(e.target.value)}
+                      max={maxDonationDate}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val && val > maxDonationDate) {
+                          setLastDonationDate(maxDonationDate);
+                        } else {
+                          setLastDonationDate(val);
+                        }
+                        if (errors.lastDonationDate) {
+                          setErrors((prev) => ({ ...prev, lastDonationDate: '' }));
+                        }
+                      }}
+                      onBlur={() => handleBlur('lastDonationDate')}
                       disabled={isFirstTime}
-                      className={`donor-field-input ${isFirstTime ? 'is-disabled' : ''}`}
+                      className={`donor-field-input ${isFirstTime ? 'is-disabled' : ''} ${errors.lastDonationDate ? 'has-error' : ''}`}
                     />
+                    <div className="field-error-slot">
+                      {errors.lastDonationDate && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{errors.lastDonationDate}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Availability Days (Multiple selection) */}
