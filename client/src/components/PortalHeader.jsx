@@ -54,7 +54,7 @@ export default function PortalHeader({ pageTitle }) {
       {/* Left: {Logo} BloodLink / Donor */}
       <div className="portal-header-left">
         <Link to="/" className="editorial-logo">
-          <Droplet size={26} color="#EF4E4E" fill="#EF4E4E" />
+          <img src="/bloodlink_logo.png" alt="BloodLink logo" className="editorial-logo-img" />
           <div className="logo-monogram">Blood<span>Link</span></div>
         </Link>
         <span className="portal-breadcrumb-sep">/</span>

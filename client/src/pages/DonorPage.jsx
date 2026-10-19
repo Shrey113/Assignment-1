@@ -1,16 +1,37 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
-import { Heart, Sparkles, AlertCircle } from 'lucide-react';
+import { AlertCircle, ShieldCheck, Lock, Stethoscope } from 'lucide-react';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+const TIME_SLOTS = [
+  { id: 'morning',   label: 'Morning',   time: '8 AM – 12 PM' },
+  { id: 'afternoon', label: 'Afternoon', time: '12 PM – 4 PM' },
+  { id: 'evening',   label: 'Evening',   time: '4 PM – 8 PM' },
+  { id: 'flexible',  label: 'Flexible',  time: 'Anytime' },
+];
+
+const TRUST_POINTS = [
+  { icon: ShieldCheck, label: 'Voluntary Donations', desc: 'You decide when and where to donate.' },
+  { icon: Lock,        label: 'Privacy-Conscious', desc: 'Your data is never shared without consent.' },
+  { icon: Stethoscope,label: 'Hospital Assessment', desc: 'Eligibility confirmed by medical staff before donation.' }
+];
+
 export default function DonorPage() {
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [gender, setGender] = useState('Male');
   const [bloodGroup, setBloodGroup] = useState('');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
   const [city, setCity] = useState('');
-  const [phone, setPhone] = useState('');
+  const [lastDonationDate, setLastDonationDate] = useState('');
+  const [isFirstTime, setIsFirstTime] = useState(false);
+  const [availableDays, setAvailableDays] = useState(['Sat', 'Sun']);
+  const [preferredSlot, setPreferredSlot] = useState('morning');
   const [ageError, setAgeError] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
 
@@ -22,6 +43,12 @@ export default function DonorPage() {
     } else {
       setAgeError('');
     }
+  };
+
+  const toggleDay = (day) => {
+    setAvailableDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
   };
 
   const handleSubmit = (e) => {
@@ -39,126 +66,258 @@ export default function DonorPage() {
     <div className="portal-page-layout">
       <PortalHeader pageTitle="Donor" />
 
-      {/* Main 100svh Content Split */}
-      <main className="portal-main-grid">
-        {/* Left Column: Form with Decreased Width & Increased Height */}
-        <div className="portal-form-column">
-          <form className="portal-card-form donor-form-vertical" onSubmit={handleSubmit}>
-            <div className="form-card-header">
-              <div className="form-card-badge">
-                <Heart size={15} color="#EF4E4E" fill="#EF4E4E" />
-                <span>Voluntary Donor Registration</span>
+      <main className="donor-split-grid">
+
+        {/* ── LEFT: Form Column (Expanded Width) ─────────────────────────── */}
+        <div className="donor-form-side">
+          <div className="donor-form-card">
+
+            {/* Card Header */}
+            <div className="donor-card-top">
+              <h2 className="donor-card-heading">Become a donor.</h2>
+              <p className="donor-card-sub">Your voluntary profile coordinates critical emergency matches.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="donor-fields-stack">
+              <div className="donor-form-columns">
+
+                {/* Left Sub-column: Personal & Contact */}
+                <div className="donor-form-col">
+                  {/* Name */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Full Name</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="e.g. Rahul Sharma"
+                      className="donor-field-input"
+                    />
+                  </div>
+
+                  {/* Email Address */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Email Address</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="e.g. rahul@example.com"
+                      className="donor-field-input"
+                    />
+                  </div>
+
+                  {/* Contact Number */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Contact Number</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="e.g. +91 98765 43210"
+                      className="donor-field-input"
+                    />
+                  </div>
+
+                  {/* Gender as 3 radios */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Gender</label>
+                    <div className="donor-gender-radios">
+                      {['Male', 'Female', 'Other'].map((g) => (
+                        <label key={g} className={`donor-radio-card ${gender === g ? 'active' : ''}`}>
+                          <input
+                            type="radio"
+                            name="donor-gender"
+                            value={g}
+                            checked={gender === g}
+                            onChange={(e) => setGender(e.target.value)}
+                            className="donor-radio-input"
+                          />
+                          <span className="donor-radio-circle"></span>
+                          <span className="donor-radio-text">{g}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Age & Weight inline */}
+                  <div className="donor-row-two">
+                    <div className="donor-field-group">
+                      <label className="donor-field-label">Age</label>
+                      <input
+                        type="number"
+                        value={age}
+                        onChange={handleAgeChange}
+                        placeholder="18 - 65"
+                        className={`donor-field-input ${ageError ? 'has-error' : ''}`}
+                        min="18"
+                        max="65"
+                      />
+                      {ageError && (
+                        <span className="field-hint-error">
+                          <AlertCircle size={12} />
+                          <span>{ageError}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="donor-field-group">
+                      <label className="donor-field-label">Weight (kg)</label>
+                      <input
+                        type="number"
+                        value={weight}
+                        onChange={(e) => setWeight(e.target.value)}
+                        placeholder="≥ 45 kg"
+                        className="donor-field-input"
+                      />
+                    </div>
+                  </div>
+
+                  {/* City */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">City Depot</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="e.g. Ahmedabad, Gujarat"
+                      className="donor-field-input"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Sub-column: Blood, Last Donation & Availability */}
+                <div className="donor-form-col">
+                  {/* Blood Group */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Blood Group</label>
+                    <div className="blood-type-grid-small donor-blood-grid">
+                      {BLOOD_GROUPS.map((bg) => (
+                        <button
+                          key={bg}
+                          type="button"
+                          className={`blood-type-chip ${bloodGroup === bg ? 'active' : ''}`}
+                          onClick={() => setBloodGroup(bg)}
+                        >
+                          {bg}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Last Donation Date */}
+                  <div className="donor-field-group">
+                    <div className="donor-label-between">
+                      <label className="donor-field-label">Last Donation Date</label>
+                      <label className="donor-checkbox-inline">
+                        <input
+                          type="checkbox"
+                          checked={isFirstTime}
+                          onChange={(e) => {
+                            setIsFirstTime(e.target.checked);
+                            if (e.target.checked) setLastDonationDate('');
+                          }}
+                        />
+                        <span>First-time donor</span>
+                      </label>
+                    </div>
+                    <input
+                      type="date"
+                      value={lastDonationDate}
+                      onChange={(e) => setLastDonationDate(e.target.value)}
+                      disabled={isFirstTime}
+                      className={`donor-field-input ${isFirstTime ? 'is-disabled' : ''}`}
+                    />
+                  </div>
+
+                  {/* Availability Days (Multiple selection) */}
+                  <div className="donor-field-group">
+                    <div className="donor-label-between">
+                      <label className="donor-field-label">Availability Days</label>
+                      <span className="donor-field-hint">Multi-select</span>
+                    </div>
+                    <div className="donor-days-grid">
+                      {DAYS.map((day) => {
+                        const isSelected = availableDays.includes(day);
+                        return (
+                          <button
+                            key={day}
+                            type="button"
+                            className={`donor-day-chip ${isSelected ? 'active' : ''}`}
+                            onClick={() => toggleDay(day)}
+                          >
+                            {day}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Preferred Time Slot */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Preferred Time Slot</label>
+                    <div className="donor-slots-grid">
+                      {TIME_SLOTS.map((slot) => {
+                        const isSelected = preferredSlot === slot.id;
+                        return (
+                          <button
+                            key={slot.id}
+                            type="button"
+                            className={`donor-slot-chip ${isSelected ? 'active' : ''}`}
+                            onClick={() => setPreferredSlot(slot.id)}
+                          >
+                            <span className="donor-slot-name">{slot.label}</span>
+                            <span className="donor-slot-time">{slot.time}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
               </div>
-            </div>
 
-            <div className="form-group-item">
-              <label>Full Legal Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Arjun Mehta"
-              />
-            </div>
-
-            <div className="form-group-item">
-              <label>Contact Phone</label>
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="e.g. +91 98765 43210"
-              />
-            </div>
-
-            <div className="form-group-item">
-              <label>Select Blood Group</label>
-              <div className="blood-type-grid-small">
-                {BLOOD_GROUPS.map((bg) => (
-                  <button
-                    key={bg}
-                    type="button"
-                    className={`blood-type-chip ${bloodGroup === bg ? 'active' : ''}`}
-                    onClick={() => setBloodGroup(bg)}
-                  >
-                    {bg}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="form-grid-two">
-              <div className="form-group-item">
-                <label>Age (Years)</label>
-                <input
-                  type="number"
-                  value={age}
-                  onChange={handleAgeChange}
-                  placeholder="e.g. 25 (18 - 65)"
-                  min="18"
-                  max="65"
-                />
-                {ageError && (
-                  <span className="field-hint-error">
-                    <AlertCircle size={12} />
-                    <span>{ageError}</span>
-                  </span>
-                )}
-              </div>
-
-              <div className="form-group-item">
-                <label>Weight (kg)</label>
-                <input
-                  type="number"
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  placeholder="e.g. 65 kg"
-                />
-              </div>
-            </div>
-
-            <div className="form-group-item">
-              <label>Preferred City Depot</label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Ahmedabad, Gujarat"
-              />
-            </div>
-
-            <div className="form-action-row" style={{ marginTop: '4px' }}>
-              <button type="submit" className="btn-editorial-primary" style={{ width: '100%' }}>
-                <Heart size={18} fill="#FFFFFF" />
-                <span>Register as Voluntary Donor</span>
+              {/* Submit & Toast */}
+              <button type="submit" className="donor-submit-btn">
+                Register as a donor
               </button>
-            </div>
-          </form>
 
-          {isRegistered && (
-            <div className="portal-success-toast">
-              <Sparkles size={18} color="#EF4E4E" />
-              <span>Welcome aboard{name ? `, ${name}` : ''}! Your voluntary donor profile is active.</span>
-            </div>
-          )}
-        </div>
-
-        {/* Right Column: Floating Editorial Art & Visual Anchor */}
-        <div className="portal-art-column">
-          <div className="portal-illustration-wrapper">
-            <div className="portal-art-backdrop-glow"></div>
-            <img
-              src="/illustrations/donor/donor_portal_art.png"
-              alt="Voluntary donor holding registration pass with supportive companion"
-              className="portal-floating-art"
-            />
-            <div className="portal-caption-badge">
-              <span className="caption-dot"></span>
-              <span className="caption-title">Voluntary Donor Network</span>
-              <span className="caption-sub">• Instant Emergency Alerts</span>
-            </div>
+              {isRegistered && (
+                <div className="portal-success-toast">
+                  <span>✓ Your voluntary donor profile is now active{name ? `, ${name}` : ''}.</span>
+                </div>
+              )}
+            </form>
           </div>
         </div>
+
+        {/* ── RIGHT: Illustration Column ─────────────────── */}
+        <div className="donor-art-side">
+          {/* Soft radial gradient background, no box */}
+          <div className="donor-art-glow-bg"></div>
+
+          <img
+            src="/illustrations/donor/donor_portal_art.png"
+            alt="Voluntary donor character"
+            className="donor-art-img"
+          />
+
+          {/* Trust points below illustration */}
+          <div className="donor-trust-row">
+            {TRUST_POINTS.map(({ icon: Icon, label, desc }) => (
+              <div className="donor-trust-item" key={label}>
+                <div className="donor-trust-icon">
+                  <Icon size={16} color="#EF4E4E" />
+                </div>
+                <div>
+                  <div className="donor-trust-label">{label}</div>
+                  <div className="donor-trust-desc">{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </main>
     </div>
   );

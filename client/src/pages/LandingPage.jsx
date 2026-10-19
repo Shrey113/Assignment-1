@@ -252,7 +252,7 @@ export default function App() {
         {/* Navigation Bar */}
         <nav className="editorial-nav">
           <a href="#" className="editorial-logo">
-            <Droplet size={26} color="#EF4E4E" fill="#EF4E4E" />
+            <img src="/bloodlink_logo.png" alt="BloodLink logo" className="editorial-logo-img" />
             <div className="logo-monogram">Blood<span>Link</span></div>
           </a>
 
@@ -921,7 +921,7 @@ export default function App() {
         <div className="footer-top-grid">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Droplet size={24} color="#EF4E4E" fill="#EF4E4E" />
+              <img src="/bloodlink_logo.png" alt="BloodLink logo" className="editorial-logo-img" style={{ width: '26px', height: '26px' }} />
               <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>BloodLink</span>
             </div>
             <p className="footer-brand-bio">
