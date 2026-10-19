@@ -658,6 +658,7 @@
 .donor-form-card {
   width: 100%;
   max-width: 830px;
+  min-height: 568px;
   background: #FFFFFF;
   border-radius: var(--radius-lg);
   border: 1px solid rgba(35, 40, 36, 0.07);
@@ -665,6 +666,7 @@
   padding: 26px 30px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 17px;
   box-shadow: 0 16px 42px rgba(28, 32, 29, 0.08), 0 3px 12px rgba(239, 78, 78, 0.04);
   box-sizing: border-box;
@@ -704,27 +706,34 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  flex: 1;
+  justify-content: space-between;
 }
 
 .donor-form-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
+  flex: 1;
 }
 
 .donor-form-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  justify-content: space-between;
 }
 
 .donor-col-left {
   padding-right: 28px;
   border-right: 1px solid rgba(35, 40, 36, 0.08);
+  justify-content: space-between;
 }
 
 .donor-col-right {
   padding-left: 2px;
+  justify-content: flex-start;
+  gap: 20px;
 }
 
 .donor-field-group {
@@ -1025,4 +1034,261 @@
   height: 100%;
   display: block;
 }
+
+/* ═════════════════════════════════════════════════════════════════
+   REQUESTER PAGE ENHANCEMENTS - Matching Clean Donor Aesthetics
+   ═════════════════════════════════════════════════════════════════ */
+
+/* ── Requester Units Grid ─────────────────── */
+.requester-units-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.requester-unit-chip {
+  padding: 10px 0;
+  text-align: center;
+  border-radius: 6px;
+  border: 1.5px solid rgba(35, 40, 36, 0.11);
+  background: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.requester-unit-chip:hover {
+  border-color: var(--coral-accent);
+  color: var(--coral-accent);
+  transform: translateY(-1px);
+}
+
+.requester-unit-chip.active {
+  background: linear-gradient(135deg, #EF4E4E 0%, #D83636 100%);
+  color: #FFFFFF;
+  border-color: #D83636;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(239, 78, 78, 0.25);
+  transform: translateY(-1px);
+}
+
+/* ── Professional Emergency Priority Triage Stack ── */
+.requester-urgency-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+}
+
+.requester-priority-card {
+  width: 100%;
+  padding: 8.5px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(35, 40, 36, 0.1);
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.requester-priority-card:hover {
+  border-color: rgba(35, 40, 36, 0.24);
+  background: #FCFAF6;
+  transform: translateY(-1px);
+}
+
+.priority-card-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.priority-radio-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(35, 40, 36, 0.22);
+  background: #FFFFFF;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+
+.priority-radio-inner {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: transparent;
+  transition: all 0.18s ease;
+}
+
+.priority-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5px;
+  min-width: 0;
+}
+
+.priority-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.priority-card-title {
+  font-family: var(--font-sans);
+  font-size: 0.79rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.priority-time-badge {
+  font-family: var(--font-sans);
+  font-size: 0.67rem;
+  font-weight: 700;
+  padding: 1.5px 6.5px;
+  border-radius: 4px;
+  background: #F3F4F6;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.priority-card-desc {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  color: var(--text-tertiary);
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Active States ── */
+.requester-priority-card.critical.active {
+  background: #FFF7F6;
+  border-color: #EF4E4E;
+  border-left: 3.5px solid #EF4E4E;
+  box-shadow: 0 3px 12px rgba(239, 78, 78, 0.12);
+}
+
+.requester-priority-card.critical.active .priority-radio-circle {
+  border-color: #EF4E4E;
+}
+
+.requester-priority-card.critical.active .priority-radio-inner {
+  background: #EF4E4E;
+}
+
+.requester-priority-card.critical.active .priority-card-title {
+  color: #DC2626;
+}
+
+.requester-priority-card.critical.active .priority-time-badge {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.requester-priority-card.critical.active .priority-card-desc {
+  color: #991B1B;
+}
+
+.requester-priority-card.urgent.active {
+  background: #FFFDF7;
+  border-color: #F59E0B;
+  border-left: 3.5px solid #F59E0B;
+  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.12);
+}
+
+.requester-priority-card.urgent.active .priority-radio-circle {
+  border-color: #F59E0B;
+}
+
+.requester-priority-card.urgent.active .priority-radio-inner {
+  background: #F59E0B;
+}
+
+.requester-priority-card.urgent.active .priority-card-title {
+  color: #D97706;
+}
+
+.requester-priority-card.urgent.active .priority-time-badge {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.requester-priority-card.urgent.active .priority-card-desc {
+  color: #92400E;
+}
+
+.requester-priority-card.scheduled.active {
+  background: #F8FAFC;
+  border-color: #64748B;
+  border-left: 3.5px solid #64748B;
+  box-shadow: 0 3px 12px rgba(100, 116, 139, 0.1);
+}
+
+.requester-priority-card.scheduled.active .priority-radio-circle {
+  border-color: #64748B;
+}
+
+.requester-priority-card.scheduled.active .priority-radio-inner {
+  background: #64748B;
+}
+
+.requester-priority-card.scheduled.active .priority-card-title {
+  color: #334155;
+}
+
+.requester-priority-card.scheduled.active .priority-time-badge {
+  background: #E2E8F0;
+  color: #475569;
+}
+
+.requester-priority-card.scheduled.active .priority-card-desc {
+  color: #64748B;
+}
+
+/* ── Requester Compatibility Inline Hint ──── */
+.requester-compat-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 11px;
+  background: #FCFAF6;
+  border: 1px dashed rgba(35, 40, 36, 0.16);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  box-sizing: border-box;
+}
+
+.requester-compat-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.requester-compat-pill {
+  font-weight: 700;
+  color: #DC2626;
+  background: #FEE2E2;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
 

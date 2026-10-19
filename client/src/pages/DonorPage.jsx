@@ -23,8 +23,8 @@ export default function DonorPage() {
   const [city, setCity] = useState('');
   const [lastDonationDate, setLastDonationDate] = useState('');
   const [isFirstTime, setIsFirstTime] = useState(false);
-  const [availableDays, setAvailableDays] = useState(['Sat', 'Sun']);
-  const [preferredSlot, setPreferredSlot] = useState('morning');
+  const [availableDays, setAvailableDays] = useState([]);
+  const [preferredSlot, setPreferredSlot] = useState('');
   const [ageError, setAgeError] = useState('');
   const [isRegistered, setIsRegistered] = useState(false);
 
