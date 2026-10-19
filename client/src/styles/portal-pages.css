@@ -159,7 +159,7 @@
 }
 
 .blood-type-chip {
-  padding: 9px 0;
+  padding: 10px 0;
   text-align: center;
   border-radius: var(--radius-sm);
   border: 1.5px solid rgba(35, 40, 36, 0.12);
@@ -662,10 +662,10 @@
   border-radius: var(--radius-lg);
   border: 1px solid rgba(35, 40, 36, 0.07);
   border-top: 3.5px solid var(--coral-accent);
-  padding: 24px 28px;
+  padding: 26px 30px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 17px;
   box-shadow: 0 16px 42px rgba(28, 32, 29, 0.08), 0 3px 12px rgba(239, 78, 78, 0.04);
   box-sizing: border-box;
 }
@@ -703,23 +703,23 @@
 .donor-fields-stack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
 }
 
 .donor-form-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
+  gap: 30px;
 }
 
 .donor-form-col {
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 16px;
 }
 
 .donor-col-left {
-  padding-right: 26px;
+  padding-right: 28px;
   border-right: 1px solid rgba(35, 40, 36, 0.08);
 }
 
@@ -730,7 +730,7 @@
 .donor-field-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6.5px;
 }
 
 .donor-field-label {
@@ -772,7 +772,7 @@
 
 .donor-field-input {
   width: 100%;
-  padding: 9.5px 13px;
+  padding: 10.5px 13px;
   background: #FCFAF6;
   border: 1.5px solid rgba(35, 40, 36, 0.1);
   border-radius: var(--radius-sm);
@@ -820,25 +820,25 @@
 /* ── Blood group inside donor card ────────── */
 .donor-blood-grid {
   grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
+  gap: 8px;
 }
 
 /* ── Age & weight side by side ───────────── */
 .donor-row-two {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 14px;
 }
 
 /* ── Availability Days (Multi-select) ─────── */
 .donor-days-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 6px;
 }
 
 .donor-day-chip {
-  padding: 8px 0;
+  padding: 9px 0;
   text-align: center;
   border-radius: 6px;
   border: 1.5px solid rgba(35, 40, 36, 0.11);
@@ -871,11 +871,11 @@
 .donor-slots-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 7px;
+  gap: 8px;
 }
 
 .donor-slot-chip {
-  padding: 7px 11px;
+  padding: 8.5px 12px;
   border-radius: 6px;
   border: 1.5px solid rgba(35, 40, 36, 0.11);
   background: #FFFFFF;
@@ -883,7 +883,7 @@
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -924,7 +924,7 @@
 /* ── Submit button (Spicy Gradient & Interaction) ────────── */
 .donor-submit-btn {
   width: 100%;
-  padding: 12px 20px;
+  padding: 13.5px 22px;
   background: linear-gradient(135deg, #EF4E4E 0%, #D93636 100%);
   color: #FFFFFF;
   font-family: var(--font-sans);
