@@ -1,0 +1,19 @@
+{
+  "name": "bloodlink-backend",
+  "version": "1.0.0",
+  "description": "BloodLink - DS Based Blood Donor & Emergency Requisition Backend API",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "db:init": "node src/config/tables.js --init",
+    "db:drop": "node src/config/tables.js --drop"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  }
+}
