@@ -17,7 +17,6 @@ export default function DonorPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [gender, setGender] = useState('Male');
   const [bloodGroup, setBloodGroup] = useState('');
   const [age, setAge] = useState('');
   const [weight, setWeight] = useState('');
@@ -68,15 +67,16 @@ export default function DonorPage() {
 
             {/* Card Header */}
             <div className="donor-card-top">
-              <h2 className="donor-card-heading">Become a donor.</h2>
+              <h2 className="donor-card-heading">Become a donor<span className="coral-dot">.</span></h2>
               <p className="donor-card-sub">Your voluntary profile coordinates critical emergency matches.</p>
             </div>
 
             <form onSubmit={handleSubmit} className="donor-fields-stack">
               <div className="donor-form-columns">
 
-                {/* Left Sub-column: Personal & Contact */}
-                <div className="donor-form-col">
+                {/* Left Column: Personal & Contact */}
+                <div className="donor-form-col donor-col-left">
+
                   {/* Name */}
                   <div className="donor-field-group">
                     <label className="donor-field-label">Full Name</label>
@@ -111,27 +111,6 @@ export default function DonorPage() {
                       placeholder="e.g. +91 98765 43210"
                       className="donor-field-input"
                     />
-                  </div>
-
-                  {/* Gender as 3 radios */}
-                  <div className="donor-field-group">
-                    <label className="donor-field-label">Gender</label>
-                    <div className="donor-gender-radios">
-                      {['Male', 'Female', 'Other'].map((g) => (
-                        <label key={g} className={`donor-radio-card ${gender === g ? 'active' : ''}`}>
-                          <input
-                            type="radio"
-                            name="donor-gender"
-                            value={g}
-                            checked={gender === g}
-                            onChange={(e) => setGender(e.target.value)}
-                            className="donor-radio-input"
-                          />
-                          <span className="donor-radio-circle"></span>
-                          <span className="donor-radio-text">{g}</span>
-                        </label>
-                      ))}
-                    </div>
                   </div>
 
                   {/* Age & Weight inline */}
@@ -180,8 +159,8 @@ export default function DonorPage() {
                   </div>
                 </div>
 
-                {/* Right Sub-column: Blood, Last Donation & Availability */}
-                <div className="donor-form-col">
+                {/* Right Column: Blood, Last Donation & Availability */}
+                <div className="donor-form-col donor-col-right">
                   {/* Blood Group */}
                   <div className="donor-field-group">
                     <label className="donor-field-label">Blood Group</label>
@@ -273,7 +252,8 @@ export default function DonorPage() {
 
               {/* Submit & Toast */}
               <button type="submit" className="donor-submit-btn">
-                Register as a donor
+                <span>Register as a voluntary donor</span>
+                <span className="btn-arrow-icon">→</span>
               </button>
 
               {isRegistered && (
@@ -285,20 +265,48 @@ export default function DonorPage() {
           </div>
         </div>
 
-        {/* ── RIGHT: Illustration Column ─── */}
+        {/* ── RIGHT: Full Clinic Scene Illustration ─── */}
         <div className="donor-art-side">
           {/* Soft ambient peach glow */}
           <div className="donor-art-glow-bg"></div>
 
-          {/* Main Character Illustration */}
+          {/* Full Clinic Scene Artwork */}
           <img
             src="/illustrations/donor/donor_portal_art.png"
-            alt="Voluntary blood donor character"
+            alt="Voluntary blood donation clinic scene"
             className="donor-art-img"
           />
         </div>
 
       </main>
+
+      {/* Layered bottom waves grounding the page */}
+      <div className="donor-bottom-waves" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+          <path
+            d="M0 35 C280 70 440 10 720 38 C1000 65 1200 18 1440 32 V70 H0 Z"
+            fill="url(#donorWaveGrad1)"
+            opacity="0.45"
+          />
+          <path
+            d="M0 50 C320 18 540 68 820 38 C1100 12 1300 58 1440 44 V70 H0 Z"
+            fill="url(#donorWaveGrad2)"
+            opacity="0.75"
+          />
+          <defs>
+            <linearGradient id="donorWaveGrad1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#FFA085" />
+              <stop offset="50%" stopColor="#EF4E4E" />
+              <stop offset="100%" stopColor="#FF7A85" />
+            </linearGradient>
+            <linearGradient id="donorWaveGrad2" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="#FEE4E2" />
+              <stop offset="50%" stopColor="#FFB8A8" />
+              <stop offset="100%" stopColor="#FEE4E2" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
     </div>
   );
 }
