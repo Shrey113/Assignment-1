@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
-import { AlertCircle, ShieldCheck, Lock, Stethoscope } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -11,12 +11,6 @@ const TIME_SLOTS = [
   { id: 'afternoon', label: 'Afternoon', time: '12 PM – 4 PM' },
   { id: 'evening',   label: 'Evening',   time: '4 PM – 8 PM' },
   { id: 'flexible',  label: 'Flexible',  time: 'Anytime' },
-];
-
-const TRUST_POINTS = [
-  { icon: ShieldCheck, label: 'Voluntary Donations', desc: 'You decide when and where to donate.' },
-  { icon: Lock,        label: 'Privacy-Conscious', desc: 'Your data is never shared without consent.' },
-  { icon: Stethoscope,label: 'Hospital Assessment', desc: 'Eligibility confirmed by medical staff before donation.' }
 ];
 
 export default function DonorPage() {
@@ -291,31 +285,77 @@ export default function DonorPage() {
           </div>
         </div>
 
-        {/* ── RIGHT: Illustration Column ─────────────────── */}
+        {/* ── RIGHT: Illustration Column (Enlarged + Floating Objective SVGs) ─── */}
         <div className="donor-art-side">
-          {/* Soft radial gradient background, no box */}
+          {/* Soft ambient peach glow */}
           <div className="donor-art-glow-bg"></div>
 
+          {/* Floating Pill Badge 1: Top-left of illustration */}
+          <div className="donor-floating-pill donor-float-top-left">
+            <span className="donor-live-dot"></span>
+            <svg className="donor-ecg-svg" viewBox="0 0 46 16" fill="none">
+              <path d="M0 8 H12 L15 2 L19 14 L23 5 L26 11 L29 8 H46" stroke="#EF4E4E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Emergency Lifeline</span>
+          </div>
+
+          {/* Floating Pill Badge 2: Top-right of illustration */}
+          <div className="donor-floating-pill donor-float-top-right">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#EF4E4E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>Hospital Verified</span>
+          </div>
+
+          {/* Enlarged Main Character Illustration */}
           <img
             src="/illustrations/donor/donor_portal_art.png"
-            alt="Voluntary donor character"
+            alt="Voluntary blood donor character"
             className="donor-art-img"
           />
 
-          {/* Trust points below illustration */}
-          <div className="donor-trust-row">
-            {TRUST_POINTS.map(({ icon: Icon, label, desc }) => (
-              <div className="donor-trust-item" key={label}>
-                <div className="donor-trust-icon">
-                  <Icon size={16} color="#EF4E4E" />
-                </div>
-                <div>
-                  <div className="donor-trust-label">{label}</div>
-                  <div className="donor-trust-desc">{desc}</div>
-                </div>
-              </div>
-            ))}
+          {/* Floating Objective Stat Badge (Replaces the 3 boxes in blank space) */}
+          <div className="donor-floating-stat-card">
+            <div className="donor-stat-icon-wrapper">
+              <svg className="donor-stat-icon-svg" viewBox="0 0 36 36" fill="none">
+                <circle cx="18" cy="18" r="16" fill="#FEE4E2" />
+                <path d="M18 8C18 8 11 16.5 11 21C11 24.866 14.134 28 18 28C21.866 28 25 24.866 25 21C25 16.5 18 8 18 8Z" fill="#EF4E4E" />
+                <path d="M15.5 21H20.5M18 18.5V23.5" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </div>
+            <div className="donor-stat-content">
+              <div className="donor-stat-title">1 Donation = 3 Lives Saved</div>
+              <div className="donor-stat-desc">Your single voluntary unit provides red cells, platelets & plasma to emergency patients.</div>
+            </div>
           </div>
+        </div>
+
+        {/* ── BACKGROUND: Scattered Decorative Objective SVGs across blank spaces ─── */}
+        <div className="donor-deco-layer" aria-hidden="true">
+          {/* Top-right corner: Radiating droplet cell */}
+          <svg className="donor-deco-svg donor-deco-tr" viewBox="0 0 100 100" fill="none">
+            <circle cx="50" cy="50" r="42" stroke="#EF4E4E" strokeWidth="1.5" strokeDasharray="4 6" opacity="0.25" />
+            <circle cx="50" cy="50" r="26" fill="#EF4E4E" opacity="0.06" />
+            <path d="M50 24 C50 24 37 40 37 49 C37 56.2 42.8 62 50 62 C57.2 62 63 56.2 63 49 C63 40 50 24 50 24 Z" fill="#EF4E4E" opacity="0.3" />
+          </svg>
+
+          {/* Bottom-left margin (under form): Lifeline Pulse wave */}
+          <svg className="donor-deco-svg donor-deco-bl" viewBox="0 0 160 40" fill="none">
+            <path d="M0 20 H40 L48 6 L56 34 L64 12 L71 26 L78 20 H160" stroke="#EF4E4E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity="0.25" />
+          </svg>
+
+          {/* Bottom-right corner: Medical Lifesaver Cross */}
+          <svg className="donor-deco-svg donor-deco-br" viewBox="0 0 64 64" fill="none">
+            <rect x="27" y="8" width="10" height="48" rx="5" fill="#EF4E4E" opacity="0.16" />
+            <rect x="8" y="27" width="48" height="10" rx="5" fill="#EF4E4E" opacity="0.16" />
+          </svg>
+
+          {/* Mid-canvas floating soft droplet */}
+          <svg className="donor-deco-svg donor-deco-mid" viewBox="0 0 44 44" fill="none">
+            <path d="M22 6C22 6 10 20 10 27C10 33.6 15.4 39 22 39C28.6 39 34 33.6 34 27C34 20 22 6 22 6Z" fill="#EF4E4E" opacity="0.2" />
+            <circle cx="18" cy="24" r="2.5" fill="#FFFFFF" opacity="0.7" />
+          </svg>
         </div>
 
       </main>
