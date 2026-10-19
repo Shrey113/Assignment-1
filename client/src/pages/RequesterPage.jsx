@@ -37,6 +37,15 @@ const URGENCY_LEVELS = [
 
 const UNIT_OPTIONS = [1, 2, 3, 4, 5];
 
+const getMinRequiredDate = () => {
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yyyy = tomorrow.getFullYear();
+  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const dd = String(tomorrow.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 export default function RequesterPage() {
   const [patientName, setPatientName] = useState('');
   const [hospital, setHospital] = useState('');
@@ -47,10 +56,31 @@ export default function RequesterPage() {
   const [urgency, setUrgency] = useState('');
   const [requiredDate, setRequiredDate] = useState('');
   const [isImmediate, setIsImmediate] = useState(false);
+  const [dateError, setDateError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const minRequiredDate = getMinRequiredDate();
+  const isTriageBlocked = Boolean(requiredDate && !isImmediate);
+
+  const handleDateChange = (e) => {
+    const val = e.target.value;
+    setRequiredDate(val);
+    if (val) {
+      setUrgency('');
+    }
+    if (val && val < minRequiredDate) {
+      setDateError('Date must be from tomorrow onwards (minimum 24h notice)');
+    } else {
+      setDateError('');
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isImmediate && requiredDate && requiredDate < minRequiredDate) {
+      setDateError('Date must be from tomorrow onwards (minimum 24h notice)');
+      return;
+    }
     setIsSubmitted(true);
     setTimeout(() => setIsSubmitted(false), 5000);
   };
@@ -132,7 +162,10 @@ export default function RequesterPage() {
                           checked={isImmediate}
                           onChange={(e) => {
                             setIsImmediate(e.target.checked);
-                            if (e.target.checked) setRequiredDate('');
+                            if (e.target.checked) {
+                              setRequiredDate('');
+                              setDateError('');
+                            }
                           }}
                         />
                         <span>Immediate (STAT)</span>
@@ -141,17 +174,25 @@ export default function RequesterPage() {
                     <input
                       type="date"
                       value={requiredDate}
-                      onChange={(e) => setRequiredDate(e.target.value)}
+                      min={minRequiredDate}
+                      onChange={handleDateChange}
                       disabled={isImmediate}
-                      className={`donor-field-input ${isImmediate ? 'is-disabled' : ''}`}
+                      className={`donor-field-input ${isImmediate ? 'is-disabled' : ''} ${dateError ? 'has-error' : ''}`}
                     />
+                    {dateError && (
+                      <span className="field-hint-error">
+                        <span>{dateError}</span>
+                      </span>
+                    )}
                   </div>
 
                   {/* Units Needed */}
                   <div className="donor-field-group">
                     <div className="donor-label-between">
                       <label className="donor-field-label">Units Needed</label>
-                      <span className="donor-field-hint">{units} {units === 1 ? 'Unit (350ml)' : 'Units (700ml+)'}</span>
+                      <span className="donor-field-hint">
+                        {units ? (units === 1 ? '1 Unit (350ml)' : `${units} Units (700ml+)`) : 'Select units'}
+                      </span>
                     </div>
                     <div className="requester-units-grid">
                       {UNIT_OPTIONS.map((u) => (
@@ -201,15 +242,16 @@ export default function RequesterPage() {
                   {/* Emergency Priority */}
                   <div className="donor-field-group">
                     <label className="donor-field-label">Emergency Priority Triage</label>
-                    <div className="requester-urgency-stack">
+                    <div className={`requester-urgency-stack ${isTriageBlocked ? 'is-blocked' : ''}`}>
                       {URGENCY_LEVELS.map((lvl) => {
                         const isSelected = urgency === lvl.id;
                         return (
                           <button
                             key={lvl.id}
                             type="button"
+                            disabled={isTriageBlocked}
                             className={`requester-priority-card ${lvl.id.toLowerCase()} ${isSelected ? 'active' : ''}`}
-                            onClick={() => setUrgency(lvl.id)}
+                            onClick={() => !isTriageBlocked && setUrgency(lvl.id)}
                           >
                             <div className="priority-card-content">
                               <span className="priority-radio-circle">

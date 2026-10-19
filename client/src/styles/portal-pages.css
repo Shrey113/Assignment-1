@@ -1079,6 +1079,20 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
+  transition: opacity 0.22s ease, filter 0.22s ease;
+}
+
+.requester-urgency-stack.is-blocked {
+  opacity: 0.38;
+  pointer-events: none;
+  cursor: not-allowed;
+  user-select: none;
+  filter: grayscale(0.2);
+}
+
+.requester-urgency-stack.is-blocked .requester-priority-card {
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .requester-priority-card {
