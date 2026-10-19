@@ -1,0 +1,601 @@
+/* ═════════════════════════════════════════════════════════════════
+   PORTAL-PAGES.CSS - 100svh Fixed Portals (Donor, Requester, Admin)
+   ═════════════════════════════════════════════════════════════════ */
+
+.portal-page-layout {
+  height: 100svh;
+  max-height: 100svh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-cream);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Main 100svh Split Grid */
+.portal-main-grid {
+  flex: 1;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 12px 32px 24px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  gap: 40px;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Left Form & Control Column */
+.portal-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+  justify-content: center;
+}
+
+/* Form Card Header (Clean & Compact) */
+.form-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(35, 40, 36, 0.06);
+  margin-bottom: 4px;
+}
+
+.form-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--coral-accent);
+}
+
+.form-card-note {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+/* Card Form Container */
+.portal-card-form {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.form-grid-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-grid-three {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  gap: 12px;
+}
+
+.form-group-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group-item label {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.form-group-item input {
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(35, 40, 36, 0.12);
+  background: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.form-group-item input:focus {
+  outline: none;
+  border-color: var(--coral-accent);
+}
+
+/* Compact Blood Group Chips */
+.blood-type-grid-small {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.blood-type-chip {
+  padding: 7px 0;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(35, 40, 36, 0.12);
+  background: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.blood-type-chip:hover {
+  border-color: var(--coral-accent);
+}
+
+.blood-type-chip.active {
+  background-color: var(--coral-accent);
+  color: #FFFFFF;
+  border-color: var(--coral-accent);
+  box-shadow: 0 2px 8px var(--coral-glow);
+}
+
+/* Urgency Selector */
+.urgency-selector-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.urgency-selector-row label {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.urgency-pill-group {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 8px;
+}
+
+.urgency-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(35, 40, 36, 0.12);
+  background: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.urgency-pill.critical.active {
+  background: #FEE2E2;
+  border-color: #EF4E4E;
+  color: #B91C1C;
+}
+
+.urgency-pill.urgent.active {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+  color: #B45309;
+}
+
+.urgency-pill.scheduled.active {
+  background: #E0E7FF;
+  border-color: #6366F1;
+  color: #3730A3;
+}
+
+/* Units Stepper Control */
+.units-stepper-control {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.unit-step-btn {
+  padding: 7px 0;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid rgba(35, 40, 36, 0.12);
+  background: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.unit-step-btn.active {
+  background: var(--text-primary);
+  color: #FFFFFF;
+  border-color: var(--text-primary);
+}
+
+/* Live Dynamic Donor Pass Preview Bar */
+.donor-pass-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.donor-pass-badge {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  background: var(--coral-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donor-pass-type {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--coral-accent);
+}
+
+.donor-pass-details {
+  flex: 1;
+}
+
+.donor-pass-name {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.donor-pass-meta {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.donor-pass-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #2E7D32;
+}
+
+.portal-success-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #1C201D;
+  color: #FFFFFF;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+/* Right Art Column */
+.portal-art-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  position: relative;
+  min-height: 0;
+}
+
+.portal-illustration-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.portal-art-backdrop-glow {
+  position: absolute;
+  width: 78%;
+  height: 78%;
+  background: radial-gradient(ellipse at center, rgba(239, 78, 78, 0.08) 0%, rgba(255, 230, 220, 0.45) 45%, rgba(250, 246, 238, 0) 72%);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(14px);
+}
+
+.portal-floating-art {
+  width: 100%;
+  max-width: 580px;
+  max-height: min(480px, calc(100svh - 180px));
+  height: auto;
+  display: block;
+  object-fit: contain;
+  z-index: 1;
+  transition: transform var(--transition-normal);
+}
+
+.portal-illustration-wrapper:hover .portal-floating-art {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.portal-caption-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(35, 40, 36, 0.1);
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  margin-top: 4px;
+  z-index: 2;
+}
+
+.portal-caption-badge .caption-title {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.portal-caption-badge .caption-sub {
+  color: var(--text-tertiary);
+  font-size: 0.78rem;
+}
+
+.eligibility-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.eligibility-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-full);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* ── Admin Dashboard Specific Styles ─────────────────────── */
+.admin-stock-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stock-compact-chip {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stock-chip-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.stock-chip-group {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.stock-chip-units {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.stock-chip-units small {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.stock-chip-bar-bg {
+  width: 100%;
+  height: 5px;
+  background: rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.stock-chip-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+}
+
+.stock-chip-bar-fill.good {
+  background-color: #2E7D32;
+}
+
+.stock-chip-bar-fill.warning {
+  background-color: #F59E0B;
+}
+
+.stock-chip-bar-fill.critical {
+  background-color: #EF4E4E;
+}
+
+/* Admin Queue Card */
+.admin-queue-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(35, 40, 36, 0.08);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+}
+
+.queue-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(35, 40, 36, 0.06);
+}
+
+.queue-head-title {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.queue-head-count {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: #FEE2E2;
+  color: #EF4E4E;
+}
+
+.queue-items-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.queue-single-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(250, 246, 238, 0.5);
+  border: 1px solid rgba(35, 40, 36, 0.06);
+  border-radius: var(--radius-sm);
+  gap: 12px;
+}
+
+.queue-row-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.queue-group-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: #1C201D;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.queue-patient-name {
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.queue-patient-name small {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.queue-patient-sub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.btn-dispatch-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--coral-accent);
+  color: #FFFFFF;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-dispatch-action:hover {
+  background: var(--coral-hover);
+  transform: translateY(-1px);
+}
+
+.dispatched-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
