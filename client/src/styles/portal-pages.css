@@ -85,6 +85,29 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
+/* Decreased Width & Increased Height Form */
+.donor-form-vertical {
+  width: 100%;
+  max-width: 470px;
+  padding: 24px 26px;
+  gap: 15px;
+}
+
+.donor-form-vertical .form-group-item input {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.field-hint-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: #DC2626;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
 .form-grid-two {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -128,25 +151,26 @@
   border-color: var(--coral-accent);
 }
 
-/* Compact Blood Group Chips */
+/* Compact Blood Group Chips - 2 rows of 4 */
 .blood-type-grid-small {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
 }
 
 .blood-type-chip {
-  padding: 7px 0;
+  padding: 10px 0;
   text-align: center;
   border-radius: var(--radius-sm);
   border: 1.5px solid rgba(35, 40, 36, 0.12);
   background: #FFFFFF;
-  font-family: var(--font-sans);
-  font-size: 0.84rem;
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 800;
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
+  letter-spacing: -0.01em;
 }
 
 .blood-type-chip:hover {
@@ -584,7 +608,6 @@
 
 .btn-dispatch-action:hover {
   background: var(--coral-hover);
-  transform: translateY(-1px);
 }
 
 .dispatched-status-pill {

@@ -71,7 +71,6 @@
   border-color: var(--coral-accent);
   color: var(--coral-accent);
   box-shadow: 0 4px 14px var(--coral-glow);
-  transform: translateY(-1px);
 }
 
 .switch-caret {

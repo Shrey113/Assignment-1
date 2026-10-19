@@ -57,7 +57,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-family: var(--font-serif);
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -86,7 +89,6 @@ h1, h2, h3, h4 {
 
 .btn-editorial-primary:hover {
   background-color: var(--coral-hover);
-  transform: translateY(-2px);
   box-shadow: 0 8px 24px var(--coral-glow);
 }
 
@@ -112,7 +114,6 @@ h1, h2, h3, h4 {
 
 .btn-editorial-dark:hover {
   background-color: #000000;
-  transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(28, 32, 29, 0.25);
 }
 
