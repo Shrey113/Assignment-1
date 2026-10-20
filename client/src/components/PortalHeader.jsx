@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplet, Home, Heart, ShieldAlert, ArrowLeftRight, ChevronDown, MapPin } from 'lucide-react';
+import { Droplet, Home, Heart, ShieldAlert, ArrowLeftRight, ChevronDown, MapPin, Building2 } from 'lucide-react';
 
 export default function PortalHeader({ pageTitle }) {
   const location = useLocation();
@@ -13,7 +13,8 @@ export default function PortalHeader({ pageTitle }) {
     currentPath === '/donor' ? 'Donor' :
     currentPath === '/requester' ? 'Requester' :
     currentPath === '/admin' ? 'Admin' :
-    currentPath === '/our-area' ? 'Our Area' : 'Portal'
+    currentPath === '/our-area' ? 'Our Area' :
+    currentPath.startsWith('/blood-banks') ? 'Blood Banks' : 'Portal'
   );
 
   // Close dropdown on outside click
@@ -31,9 +32,10 @@ export default function PortalHeader({ pageTitle }) {
   const getDropdownLinks = () => {
     const allLinks = [
       { to: '/', label: 'Home', icon: Home },
+      { to: '/our-area', label: 'Our Area (Map)', icon: MapPin, color: '#EF4E4E' },
+      { to: '/blood-banks', label: 'Blood Banks Directory', icon: Building2, color: '#EF4E4E' },
       { to: '/donor', label: 'Donor Portal', icon: Heart, color: '#EF4E4E' },
-      { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' },
-      { to: '/our-area', label: 'Our Area (Map)', icon: MapPin, color: '#EF4E4E' }
+      { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' }
     ];
     return allLinks.filter(item => item.to !== currentPath);
   };

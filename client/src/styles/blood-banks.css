@@ -1,0 +1,917 @@
+/* ==========================================================================
+   BloodLink - Blood Banks Directory & Depot Monitor Stylesheet
+   ========================================================================== */
+
+:root {
+  --bb-bg-primary: #FBF9F7;
+  --bb-bg-surface: #FFFFFF;
+  --bb-bg-card: rgba(255, 255, 255, 0.92);
+  --bb-text-primary: #1C201D;
+  --bb-text-secondary: #5C625E;
+  --bb-text-muted: #8E9690;
+  --bb-border-subtle: #EBE6E1;
+  --bb-border-strong: #D5CFC9;
+  --bb-red: #EF4E4E;
+  --bb-red-dark: #D43939;
+  --bb-red-soft: #FDE8E8;
+  --bb-green: #2E7D32;
+  --bb-green-soft: #E8F5E9;
+  --bb-amber: #B45309;
+  --bb-amber-soft: #FEF3C7;
+  --bb-blue: #1D4ED8;
+  --bb-blue-soft: #EFF6FF;
+  --bb-radius-sm: 8px;
+  --bb-radius-md: 14px;
+  --bb-radius-lg: 20px;
+  --bb-shadow-sm: 0 2px 8px rgba(28, 32, 29, 0.04);
+  --bb-shadow-md: 0 8px 24px rgba(28, 32, 29, 0.06);
+  --bb-shadow-lg: 0 16px 36px rgba(28, 32, 29, 0.08);
+}
+
+/* Page Layout Container */
+.bb-page-container {
+  min-height: 100vh;
+  background-color: var(--bb-bg-primary);
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--bb-text-primary);
+}
+
+.bb-page-content {
+  flex: 1;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px 64px 24px;
+}
+
+/* Breadcrumb Navigation */
+.bb-breadcrumb-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.bb-breadcrumb-trail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  color: var(--bb-text-muted);
+}
+
+.bb-breadcrumb-link {
+  color: var(--bb-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.bb-breadcrumb-link:hover {
+  color: var(--bb-red);
+}
+
+.bb-breadcrumb-active {
+  color: var(--bb-text-primary);
+  font-weight: 600;
+}
+
+.bb-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--bb-radius-sm);
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  color: var(--bb-text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bb-btn-back:hover {
+  background: #F4F1ED;
+  color: var(--bb-text-primary);
+  border-color: var(--bb-border-strong);
+}
+
+/* Hero Section */
+.bb-hero-banner {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6F3 100%);
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-lg);
+  padding: 32px 36px;
+  margin-bottom: 32px;
+  box-shadow: var(--bb-shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.bb-hero-banner::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(239, 78, 78, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.bb-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bb-red-soft);
+  color: var(--bb-red-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 12px;
+}
+
+.bb-hero-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--bb-text-primary);
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+}
+
+.bb-hero-title em {
+  font-style: italic;
+  color: var(--bb-red);
+}
+
+.bb-hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--bb-text-secondary);
+  margin: 0 0 24px 0;
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+/* Metric Chips Row */
+.bb-metrics-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bb-metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  padding: 10px 18px;
+  border-radius: var(--bb-radius-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.bb-metric-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FAF6F3;
+}
+
+.bb-metric-icon.red { background: var(--bb-red-soft); color: var(--bb-red); }
+.bb-metric-icon.green { background: var(--bb-green-soft); color: var(--bb-green); }
+.bb-metric-icon.blue { background: var(--bb-blue-soft); color: var(--bb-blue); }
+
+.bb-metric-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.bb-metric-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--bb-text-primary);
+  line-height: 1.1;
+}
+
+.bb-metric-label {
+  font-size: 0.76rem;
+  color: var(--bb-text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Filters & Search Toolbar */
+.bb-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  padding: 14px 18px;
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-md);
+  box-shadow: var(--bb-shadow-sm);
+}
+
+.bb-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #FAF8F5;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-sm);
+  padding: 8px 14px;
+  min-width: 280px;
+  flex: 1;
+}
+
+.bb-search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.92rem;
+  color: var(--bb-text-primary);
+  width: 100%;
+}
+
+.bb-search-input::placeholder {
+  color: var(--bb-text-muted);
+}
+
+.bb-region-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bb-filter-pill {
+  border: 1px solid var(--bb-border-subtle);
+  background: #FFFFFF;
+  color: var(--bb-text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.bb-filter-pill:hover {
+  background: #FAF6F3;
+  color: var(--bb-text-primary);
+}
+
+.bb-filter-pill.active {
+  background: var(--bb-text-primary);
+  color: #FFFFFF;
+  border-color: var(--bb-text-primary);
+}
+
+/* Grid of Cities (Directory View) */
+.bb-cities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.bb-city-card {
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-md);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--bb-shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+.bb-city-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--bb-shadow-md);
+  border-color: var(--bb-red);
+}
+
+.bb-city-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.bb-city-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--bb-text-primary);
+  margin: 0;
+}
+
+.bb-city-count-badge {
+  background: var(--bb-red-soft);
+  color: var(--bb-red-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.bb-city-stats {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  font-size: 0.88rem;
+  color: var(--bb-text-secondary);
+}
+
+.bb-city-stats strong {
+  color: var(--bb-text-primary);
+}
+
+.bb-city-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.bb-facility-tag {
+  background: #F4F1ED;
+  color: var(--bb-text-secondary);
+  font-size: 0.74rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.bb-city-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 14px;
+  border-top: 1px solid var(--bb-border-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--bb-red);
+}
+
+.bb-city-card:hover .bb-city-card-footer svg {
+  transform: translateX(4px);
+  transition: transform 0.2s ease;
+}
+
+/* Blood Bank Cards Stack (City View) */
+.bb-banks-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.bb-bank-card {
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-lg);
+  padding: 26px 30px;
+  box-shadow: var(--bb-shadow-sm);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bb-bank-card:hover {
+  border-color: var(--bb-border-strong);
+  box-shadow: var(--bb-shadow-md);
+}
+
+.bb-bank-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.bb-bank-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bb-bank-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bb-bank-id-badge {
+  background: #1C201D;
+  color: #FFFFFF;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+}
+
+.bb-bank-category-badge {
+  background: #F4F1ED;
+  color: var(--bb-text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+.bb-bank-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--bb-text-primary);
+  margin: 0;
+}
+
+.bb-bank-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--bb-text-secondary);
+}
+
+.bb-bank-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bb-btn-inspect {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bb-red);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: var(--bb-radius-sm);
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 12px rgba(239, 78, 78, 0.2);
+}
+
+.bb-btn-inspect:hover {
+  background: var(--bb-red-dark);
+  transform: translateY(-1px);
+}
+
+.bb-bank-contact-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 12px 18px;
+  background: #FAF8F5;
+  border-radius: var(--bb-radius-sm);
+  margin-bottom: 20px;
+  font-size: 0.86rem;
+}
+
+.bb-contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--bb-text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.bb-contact-item:hover {
+  color: var(--bb-red);
+}
+
+.bb-contact-item.emergency {
+  color: var(--bb-red-dark);
+  font-weight: 700;
+}
+
+/* Stock Mini Grid (Chips) */
+.bb-stock-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.bb-stock-chip {
+  background: #FAF8F5;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-sm);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bb-stock-chip.critical {
+  border-color: #FCA5A5;
+  background: #FEF2F2;
+}
+
+.bb-stock-chip.warning {
+  border-color: #FDE68A;
+  background: #FFFBEB;
+}
+
+.bb-stock-chip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bb-stock-group-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--bb-text-primary);
+}
+
+.bb-stock-units-number {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--bb-text-secondary);
+}
+
+.bb-stock-chip.critical .bb-stock-units-number {
+  color: var(--bb-red-dark);
+}
+
+.bb-stock-status-text {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--bb-text-muted);
+}
+
+.bb-stock-chip.critical .bb-stock-status-text {
+  color: var(--bb-red);
+}
+
+/* Depot Detail Page Styles */
+.bb-depot-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+
+.bb-depot-header-card {
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-lg);
+  padding: 30px 36px;
+  box-shadow: var(--bb-shadow-sm);
+}
+
+.bb-depot-header-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.bb-depot-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bb-depot-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--bb-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.bb-depot-switch-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bb-depot-select {
+  padding: 8px 14px;
+  border-radius: var(--bb-radius-sm);
+  border: 1px solid var(--bb-border-strong);
+  background: #FFFFFF;
+  color: var(--bb-text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+.bb-depot-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.bb-btn-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-strong);
+  color: var(--bb-text-primary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: var(--bb-radius-sm);
+  transition: all 0.15s ease;
+}
+
+.bb-btn-call:hover {
+  background: #F4F1ED;
+}
+
+.bb-btn-call.emergency-red {
+  background: var(--bb-red);
+  color: #FFFFFF;
+  border-color: var(--bb-red);
+  box-shadow: 0 4px 12px rgba(239, 78, 78, 0.2);
+}
+
+.bb-btn-call.emergency-red:hover {
+  background: var(--bb-red-dark);
+}
+
+/* Full 8-Group Stock Matrix */
+.bb-stock-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.bb-matrix-card {
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-md);
+  padding: 20px;
+  box-shadow: var(--bb-shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.15s ease;
+}
+
+.bb-matrix-card:hover {
+  transform: translateY(-2px);
+}
+
+.bb-matrix-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bb-matrix-group-pill {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: 800;
+  background: #FAF8F5;
+  color: var(--bb-text-primary);
+  border: 1px solid var(--bb-border-subtle);
+}
+
+.bb-matrix-card.critical .bb-matrix-group-pill {
+  background: var(--bb-red-soft);
+  color: var(--bb-red);
+  border-color: #FCA5A5;
+}
+
+.bb-matrix-units-wrap {
+  text-align: right;
+}
+
+.bb-matrix-units-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--bb-text-primary);
+  line-height: 1;
+}
+
+.bb-matrix-units-sub {
+  font-size: 0.72rem;
+  color: var(--bb-text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.bb-matrix-bar-track {
+  width: 100%;
+  height: 7px;
+  background: #EBE6E1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bb-matrix-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.bb-matrix-bar-fill.good { background: #2E7D32; }
+.bb-matrix-bar-fill.warning { background: #B45309; }
+.bb-matrix-bar-fill.critical { background: #EF4E4E; }
+
+.bb-matrix-status-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+/* Two Column Details: Hospital Requests + Local Backup Donors */
+.bb-depot-two-col {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
+}
+
+@media (max-width: 960px) {
+  .bb-depot-two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.bb-panel-card {
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-lg);
+  padding: 24px 28px;
+  box-shadow: var(--bb-shadow-sm);
+}
+
+.bb-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bb-panel-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--bb-text-primary);
+  margin: 0;
+}
+
+/* Hospital Requisitions Table / Stack */
+.bb-req-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bb-req-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #FAF8F5;
+  border-radius: var(--bb-radius-sm);
+  border: 1px solid var(--bb-border-subtle);
+  gap: 12px;
+}
+
+.bb-req-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bb-req-group {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #FFFFFF;
+  border: 1px solid var(--bb-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: var(--bb-text-primary);
+}
+
+.bb-req-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bb-req-patient {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--bb-text-primary);
+}
+
+.bb-req-hospital {
+  font-size: 0.78rem;
+  color: var(--bb-text-secondary);
+}
+
+.bb-req-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.bb-req-badge.critical { background: var(--bb-red-soft); color: var(--bb-red-dark); }
+.bb-req-badge.urgent { background: var(--bb-amber-soft); color: var(--bb-amber); }
+.bb-req-badge.scheduled { background: #F4F1ED; color: var(--bb-text-secondary); }
+
+/* Backup Donors Widget */
+.bb-donors-widget-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bb-donor-highlight-box {
+  background: linear-gradient(135deg, #FAF8F5 0%, #F5F1EB 100%);
+  border: 1px solid var(--bb-border-subtle);
+  border-radius: var(--bb-radius-md);
+  padding: 20px;
+  text-align: center;
+}
+
+.bb-donor-big-count {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--bb-red);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.bb-donor-count-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--bb-text-secondary);
+}
+
+.bb-btn-map-redirect {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #1C201D;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: var(--bb-radius-sm);
+  transition: background 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bb-btn-map-redirect:hover {
+  background: #333934;
+}

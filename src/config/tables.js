@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import { config } from './env.js';
 
-const ALLOWED_TABLES = ['donors', 'requests'];
+const ALLOWED_TABLES = ['donors', 'requests', 'blood_banks'];
 
 /**
  * Creates raw MySQL connection for administrative DDL commands.
@@ -72,8 +72,38 @@ export async function createAllTables() {
     `;
     await adminConn.query(createRequestsTableSQL);
 
-    console.log(`[Database] Database '${config.db.database}' & tables (donors, requests) verified/created successfully.`);
-    return { success: true, database: config.db.database, tables: ['donors', 'requests'] };
+    // Blood Banks Table
+    const createBloodBanksTableSQL = `
+      CREATE TABLE IF NOT EXISTS \`blood_banks\` (
+        \`id\` VARCHAR(60) PRIMARY KEY,
+        \`bank_code\` VARCHAR(20) NOT NULL,
+        \`name\` VARCHAR(150) NOT NULL,
+        \`city\` VARCHAR(100) NOT NULL,
+        \`category\` VARCHAR(60) DEFAULT 'Charitable / Red Cross',
+        \`address\` VARCHAR(255) NOT NULL,
+        \`contact_phone\` VARCHAR(30) NOT NULL,
+        \`emergency_phone\` VARCHAR(30) NOT NULL,
+        \`operating_hours\` VARCHAR(100) DEFAULT '24/7 Emergency Service',
+        \`stock_o_pos\` INT DEFAULT 0,
+        \`stock_o_neg\` INT DEFAULT 0,
+        \`stock_a_pos\` INT DEFAULT 0,
+        \`stock_a_neg\` INT DEFAULT 0,
+        \`stock_b_pos\` INT DEFAULT 0,
+        \`stock_b_neg\` INT DEFAULT 0,
+        \`stock_ab_pos\` INT DEFAULT 0,
+        \`stock_ab_neg\` INT DEFAULT 0,
+        \`total_units\` INT DEFAULT 0,
+        \`is_verified\` BOOLEAN DEFAULT TRUE,
+        \`created_at\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        \`last_updated\` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        INDEX \`idx_bank_city\` (\`city\`),
+        INDEX \`idx_bank_code\` (\`bank_code\`)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    `;
+    await adminConn.query(createBloodBanksTableSQL);
+
+    console.log(`[Database] Database '${config.db.database}' & tables (donors, requests, blood_banks) verified/created successfully.`);
+    return { success: true, database: config.db.database, tables: ['donors', 'requests', 'blood_banks'] };
   } catch (error) {
     console.error('[Database Error] Failed to create tables:', error.message);
     throw error;

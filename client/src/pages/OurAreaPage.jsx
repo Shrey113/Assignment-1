@@ -8,7 +8,8 @@ import {
   X,
   Droplet,
   Heart,
-  Maximize2
+  Maximize2,
+  Building2
 } from 'lucide-react';
 import gujaratGeoJson from '../assets/gujarat_districts_34.json';
 import '../styles/our-area.css';
@@ -702,20 +703,31 @@ export default function OurAreaPage() {
               {/* Action Shortcuts Footer */}
               <div className="inspector-footer">
                 <Link
-                  to={`/requester?city=${encodeURIComponent(selectedDistrict)}`}
+                  to={`/blood-banks/${encodeURIComponent(selectedDistrict)}`}
                   className="inspector-btn-primary"
+                  style={{ background: '#1C201D', borderColor: '#1C201D' }}
                 >
-                  <Droplet size={15} fill="#FFFFFF" />
-                  <span>Find Blood Here</span>
+                  <Building2 size={15} color="#FFFFFF" />
+                  <span>View {selectedDistrict} Blood Banks</span>
                 </Link>
 
-                <Link
-                  to={`/donor?city=${encodeURIComponent(selectedDistrict)}`}
-                  className="inspector-btn-secondary"
-                >
-                  <Heart size={15} color="var(--coral-accent)" />
-                  <span>Join as Donor</span>
-                </Link>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <Link
+                    to={`/requester?city=${encodeURIComponent(selectedDistrict)}`}
+                    className="inspector-btn-primary"
+                  >
+                    <Droplet size={14} fill="#FFFFFF" />
+                    <span>Find Donors</span>
+                  </Link>
+
+                  <Link
+                    to={`/donor?city=${encodeURIComponent(selectedDistrict)}`}
+                    className="inspector-btn-secondary"
+                  >
+                    <Heart size={14} color="var(--coral-accent)" />
+                    <span>Join Donor</span>
+                  </Link>
+                </div>
               </div>
             </>
           )}

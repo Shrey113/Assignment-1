@@ -264,7 +264,7 @@ export default function App() {
             <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
             <a href="#stories" className="nav-link-editorial">Stories</a>
             <Link id="nav-our-area" to="/our-area" className="nav-link-editorial" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Our Area</Link>
-            <Link to="/admin" className="nav-link-editorial" style={{ color: 'var(--coral-accent)' }}>Admin Portal</Link>
+            <Link to="/blood-banks" className="nav-link-editorial" style={{ color: 'var(--coral-accent)', fontWeight: 600 }}>Blood Banks</Link>
           </div>
 
           <div className="nav-actions-group">
@@ -949,6 +949,7 @@ export default function App() {
               <li><a href="#eligibility" className="footer-nav-anchor">Eligibility Guidelines</a></li>
               <li><a href="#blood-types" className="footer-nav-anchor">Blood Compatibility</a></li>
               <li><Link to="/our-area" className="footer-nav-anchor">Our Area (Gujarat Map)</Link></li>
+              <li><Link to="/blood-banks" className="footer-nav-anchor">Blood Banks Directory</Link></li>
             </ul>
           </div>
 
