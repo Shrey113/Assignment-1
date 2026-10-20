@@ -642,21 +642,7 @@ export default function OurAreaPage() {
             <>
               {/* Header */}
               <div className="inspector-header">
-                <div className="inspector-title-area">
-                  <div className="inspector-badge-row">
-                    <span className="inspector-tag district-type">District</span>
-                    {selectedDistrict === userLocationDistrict && (
-                      <span className="inspector-tag location-tag">📍 Your Location</span>
-                    )}
-                    {isVavTharad && (
-                      <span className="inspector-tag vav-tharad">✨ 34th District • Formed Oct 2025</span>
-                    )}
-                    {isMajorHub && !isVavTharad && (
-                      <span className="inspector-tag major-hub">🔥 Major Donor Hub</span>
-                    )}
-                  </div>
-                  <h2 className="inspector-district-name">{selectedDistrict}</h2>
-                </div>
+                <h2 className="inspector-district-name">{selectedDistrict}</h2>
 
                 <button
                   type="button"
