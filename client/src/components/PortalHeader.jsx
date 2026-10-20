@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Droplet, Home, Heart, ShieldAlert, ArrowLeftRight, ChevronDown } from 'lucide-react';
+import { Droplet, Home, Heart, ShieldAlert, ArrowLeftRight, ChevronDown, MapPin } from 'lucide-react';
 
 export default function PortalHeader({ pageTitle }) {
   const location = useLocation();
@@ -12,7 +12,8 @@ export default function PortalHeader({ pageTitle }) {
   const pageName = pageTitle || (
     currentPath === '/donor' ? 'Donor' :
     currentPath === '/requester' ? 'Requester' :
-    currentPath === '/admin' ? 'Admin' : 'Portal'
+    currentPath === '/admin' ? 'Admin' :
+    currentPath === '/our-area' ? 'Our Area' : 'Portal'
   );
 
   // Close dropdown on outside click
@@ -28,23 +29,13 @@ export default function PortalHeader({ pageTitle }) {
 
   // Dropdown options based on current route
   const getDropdownLinks = () => {
-    if (currentPath === '/donor') {
-      return [
-        { to: '/', label: 'Home', icon: Home },
-        { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' }
-      ];
-    }
-    if (currentPath === '/requester') {
-      return [
-        { to: '/', label: 'Home', icon: Home },
-        { to: '/donor', label: 'Donor Portal', icon: Heart, color: '#EF4E4E' }
-      ];
-    }
-    return [
+    const allLinks = [
       { to: '/', label: 'Home', icon: Home },
       { to: '/donor', label: 'Donor Portal', icon: Heart, color: '#EF4E4E' },
-      { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' }
+      { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' },
+      { to: '/our-area', label: 'Our Area (Map)', icon: MapPin, color: '#EF4E4E' }
     ];
+    return allLinks.filter(item => item.to !== currentPath);
   };
 
   const links = getDropdownLinks();

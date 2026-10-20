@@ -9,6 +9,7 @@
 @import './styles/landing.css';
 @import './styles/portal-header.css';
 @import './styles/portal-pages.css';
+@import './styles/our-area.css';
 
 /* ── Common Global Helper Utilities ─────────────────────────── */
 .text-serif {

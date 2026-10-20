@@ -14,7 +14,8 @@ import {
   Activity,
   Award,
   AlertTriangle,
-  Smile
+  Smile,
+  MapPin
 } from 'lucide-react';
 import '../App.css';
 
@@ -262,6 +263,7 @@ export default function App() {
             <a href="#eligibility" className="nav-link-editorial">Eligibility</a>
             <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
             <a href="#stories" className="nav-link-editorial">Stories</a>
+            <Link id="nav-our-area" to="/our-area" className="nav-link-editorial" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Our Area</Link>
             <Link to="/admin" className="nav-link-editorial" style={{ color: 'var(--coral-accent)' }}>Admin Portal</Link>
           </div>
 
@@ -323,6 +325,16 @@ export default function App() {
               >
                 <Heart size={17} fill="#EF4E4E" color="#EF4E4E" />
                 <span>BE A DONOR</span>
+              </Link>
+
+              <Link
+                id="hero-our-area-btn"
+                to="/our-area"
+                className="btn-editorial-secondary"
+                style={{ padding: '14px 22px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+              >
+                <MapPin size={17} color="#EF4E4E" />
+                <span>OUR AREA</span>
               </Link>
             </div>
 
@@ -936,6 +948,7 @@ export default function App() {
               <li><a href="#how-it-works" className="footer-nav-anchor">How It Works</a></li>
               <li><a href="#eligibility" className="footer-nav-anchor">Eligibility Guidelines</a></li>
               <li><a href="#blood-types" className="footer-nav-anchor">Blood Compatibility</a></li>
+              <li><Link to="/our-area" className="footer-nav-anchor">Our Area (Gujarat Map)</Link></li>
             </ul>
           </div>
 

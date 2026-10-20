@@ -7,6 +7,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
+    "dev:client": "npm run dev --prefix client",
+    "dev:all": "concurrently -k -p \"[{name}]\" -n \"BACKEND,FRONTEND\" -c \"cyan.bold,magenta.bold\" \"npm run dev\" \"npm run dev:client\"",
     "db:init": "node src/config/tables.js --init",
     "db:drop": "node src/config/tables.js --drop"
   },
@@ -15,5 +17,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mysql2": "^3.12.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
   }
 }

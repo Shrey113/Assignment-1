@@ -4,7 +4,7 @@ dotenv.config();
 
 export const config = Object.freeze({
   env: process.env.NODE_ENV || 'development',
-  port: Number(process.env.PORT) || 5000,
+  port: Number(process.env.PORT) || 5100,
   clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
   db: {
     host: process.env.DB_HOST || '127.0.0.1',

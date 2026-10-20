@@ -20,7 +20,7 @@ echo ==============================================================
 echo.
 echo   [1] Run Full Project (Backend + Frontend + Auto Open Browser)
 echo   [2] Build Project    (Client Production Bundle)
-echo   [3] Run Backend Only (Port 5000)
+echo   [3] Run Backend Only (Port 5100)
 echo   [4] Run Frontend Only(Port 5173)
 echo   [5] Initialize / Verify MySQL Tables
 echo   [6] Exit
@@ -57,26 +57,20 @@ if not exist "client\node_modules\" (
     cd client && call npm install && cd ..
 )
 
-echo [*] Launching Backend Server on http://localhost:5000 ...
-start "BloodLink - Backend API (Port 5000)" cmd /k "cd /d "%~dp0" && title BloodLink Backend [Port 5000] && npm run dev"
+echo [*] Clearing any stale processes on ports 5100, 5000, 5173...
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| findstr :5100 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| findstr :5000 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -aon 2^>nul ^| findstr :5173 ^| findstr LISTENING') do taskkill /f /pid %%a >nul 2>&1
 
-echo [*] Launching Frontend Client on http://localhost:5173 ...
-start "BloodLink - Frontend Client (Port 5173)" cmd /k "cd /d "%~dp0client" && title BloodLink Frontend [Port 5173] && npm run dev"
-
-echo [*] Waiting 3 seconds for development servers to spin up...
-timeout /t 3 /nobreak >nul
-
-echo [*] Opening application in your default browser...
-start http://localhost:5173
-
-echo.
-echo ==============================================================
-echo [OK] Both servers are running in separate terminal windows!
-echo      - Backend API : http://localhost:5000
+echo [*] Launching Backend ^& Frontend together in this single terminal...
+echo      - Backend API : http://localhost:5100
 echo      - Frontend UI : http://localhost:5173
-echo ==============================================================
 echo.
-pause
+echo [*] Opening default browser in 3 seconds...
+start "" cmd /c "timeout /t 3 /nobreak >nul && start http://localhost:5173"
+
+:: Run both Backend and Frontend inside THIS terminal (no extra CMD popup windows!)
+call npm run dev:all
 goto menu
 
 :build_project
@@ -105,7 +99,7 @@ goto menu
 :run_backend
 cls
 echo ==============================================================
-echo                 STARTING BACKEND API (PORT 5000)             
+echo                 STARTING BACKEND API (PORT 5100)             
 echo ==============================================================
 echo.
 cd /d "%~dp0"

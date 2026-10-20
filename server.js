@@ -7,7 +7,7 @@ async function bootstrap() {
     // Automatically verify/create database and tables on startup
     await createAllTables();
 
-    // Start Express HTTP Server
+    // Start Express HTTP Server on configured port
     app.listen(config.port, () => {
       console.log(`
 🚀 BloodLink Server is running!
