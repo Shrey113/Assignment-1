@@ -2,18 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import PortalHeader from '../components/PortalHeader';
 import { 
-  Building2, 
   MapPin, 
   Droplet, 
   Phone, 
   AlertCircle, 
-  CheckCircle2, 
-  Users, 
   RefreshCw,
-  Clock,
-  Sparkles,
-  Truck,
-  Activity,
   Layers
 } from 'lucide-react';
 import '../styles/blood-banks.css';
@@ -48,8 +41,6 @@ export default function BloodBankDetailPage() {
   }, [city, id]);
 
   const bank = depotData?.bank;
-  const backupDonors = depotData?.backup_donors || { donor_count: 0, o_neg_donors: 0, o_pos_donors: 0 };
-  const requisitions = depotData?.requisitions || [];
 
   return (
     <div className="bb-page-container">
@@ -110,10 +101,6 @@ export default function BloodBankDetailPage() {
                   <span>Landline: {bank.contact_phone}</span>
                 </a>
 
-                <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.84rem', color: '#5C625E' }}>
-                  <Clock size={14} color="#8E9690" />
-                  <span>Operating Status: <strong>{bank.operating_hours || '24/7 Active'}</strong></span>
-                </div>
               </div>
             </section>
 
@@ -126,9 +113,6 @@ export default function BloodBankDetailPage() {
                     Live Cold Storage Reserve Inventory
                   </h2>
                 </div>
-                <span style={{ fontSize: '0.82rem', color: '#5C625E', fontWeight: 500 }}>
-                  Real-time Units Monitor (Read-Only)
-                </span>
               </div>
 
               <div className="bb-stock-matrix-grid">
@@ -167,89 +151,6 @@ export default function BloodBankDetailPage() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Split Section: Hospital Requisitions & Local Backup Donors */}
-            <div className="bb-depot-two-col">
-              {/* Left Column: Hospital Emergency Requisitions */}
-              <div className="bb-panel-card">
-                <div className="bb-panel-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Activity size={18} color="#EF4E4E" />
-                    <h3 className="bb-panel-title">Active Hospital Priority Requisitions ({bank.city})</h3>
-                  </div>
-                  <span style={{ fontSize: '0.78rem', background: '#F4F1ED', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
-                    {requisitions.length} Active Demands
-                  </span>
-                </div>
-
-                <div className="bb-req-stack">
-                  {requisitions.map((req) => (
-                    <div key={req.id} className="bb-req-row">
-                      <div className="bb-req-left">
-                        <div className="bb-req-group">{req.blood_group}</div>
-                        <div className="bb-req-info">
-                          <div className="bb-req-patient">
-                            {req.patient_name} • <span style={{ color: '#5C625E', fontWeight: 500 }}>{req.units} Units</span>
-                          </div>
-                          <div className="bb-req-hospital">{req.hospital}</div>
-                        </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span className={`bb-req-badge ${req.urgency?.toLowerCase() || 'scheduled'}`}>
-                          {req.urgency || 'SCHEDULED'}
-                        </span>
-                        {req.status === 'Dispatched' ? (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', color: '#2E7D32', fontWeight: 600 }}>
-                            <CheckCircle2 size={13} color="#2E7D32" /> Dispatched
-                          </span>
-                        ) : (
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', color: '#5C625E', fontWeight: 600 }}>
-                            <Truck size={13} color="#8E9690" /> Courier Standby
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Column: Local Backup Voluntary Donors */}
-              <div className="bb-panel-card">
-                <div className="bb-panel-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Users size={18} color="#2E7D32" />
-                    <h3 className="bb-panel-title">Local Backup Donor Pool</h3>
-                  </div>
-                  <span style={{ fontSize: '0.78rem', color: '#8E9690' }}>{bank.city} District</span>
-                </div>
-
-                <div className="bb-donors-widget-content">
-                  <div className="bb-donor-highlight-box">
-                    <div className="bb-donor-big-count">{backupDonors.donor_count}</div>
-                    <div className="bb-donor-count-label">Registered Voluntary Donors in {bank.city}</div>
-                    <p style={{ fontSize: '0.8rem', color: '#5C625E', margin: '8px 0 0 0' }}>
-                      In case this blood bank enters critical shortage, {backupDonors.donor_count} voluntary donors are ready for immediate on-call mobilization.
-                    </p>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: '#FAF8F5', borderRadius: '8px', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#5C625E' }}>Universal O- Donors in City:</span>
-                    <strong style={{ color: '#EF4E4E' }}>{backupDonors.o_neg_donors || 0} Registered</strong>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', background: '#FAF8F5', borderRadius: '8px', fontSize: '0.85rem' }}>
-                    <span style={{ color: '#5C625E' }}>Common O+ Donors in City:</span>
-                    <strong style={{ color: '#1C201D' }}>{backupDonors.o_pos_donors || 0} Registered</strong>
-                  </div>
-
-                  <Link to="/our-area" className="bb-btn-map-redirect">
-                    <MapPin size={15} />
-                    <span>View {bank.city} Donors on Map</span>
-                  </Link>
-                </div>
               </div>
             </div>
           </div>

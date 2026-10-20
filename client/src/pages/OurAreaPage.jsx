@@ -1,15 +1,12 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   MapPin,
   Search,
   X,
-  Droplet,
-  Heart,
-  Maximize2,
-  Building2
+  Maximize2
 } from 'lucide-react';
 import gujaratGeoJson from '../assets/gujarat_districts_34.json';
 import '../styles/our-area.css';
@@ -93,6 +90,7 @@ const SEARCHABLE_ENTRIES = [
 ];
 
 export default function OurAreaPage() {
+  const navigate = useNavigate();
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const geoJsonLayerRef = useRef(null);
@@ -101,6 +99,7 @@ export default function OurAreaPage() {
 
   // Data & UI states
   const [districtStats, setDistrictStats] = useState({});
+  const [cityBanksMap, setCityBanksMap] = useState({});
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [userLocationDistrict, setUserLocationDistrict] = useState(null);
   const [selectedBloodFilter, setSelectedBloodFilter] = useState('ALL');
@@ -129,6 +128,26 @@ export default function OurAreaPage() {
       }
     }
     fetchStats();
+  }, []);
+
+  // Fetch blood banks per city for interactive map markers & inspector
+  useEffect(() => {
+    async function fetchBloodBanks() {
+      try {
+        const res = await fetch('http://localhost:5100/api/blood-banks');
+        const data = await res.json();
+        if (data.success && data.cities) {
+          const map = {};
+          data.cities.forEach((c) => {
+            map[c.city] = c;
+          });
+          setCityBanksMap(map);
+        }
+      } catch (err) {
+        console.error('Failed to fetch blood banks for map:', err);
+      }
+    }
+    fetchBloodBanks();
   }, []);
 
   // Silently detect user's current city via IP geolocation (Zero permission prompts required!)
@@ -294,6 +313,22 @@ export default function OurAreaPage() {
       setShowSuggestions(false);
     });
 
+    // Handle clicks inside popups to navigate via React Router
+    map.on('popupopen', (e) => {
+      const popupEl = e.popup.getElement();
+      if (!popupEl) return;
+      const links = popupEl.querySelectorAll('.map-popup-bank-item');
+      links.forEach((link) => {
+        link.addEventListener('click', (ev) => {
+          ev.preventDefault();
+          const targetUrl = link.getAttribute('data-url');
+          if (targetUrl) {
+            navigate(targetUrl);
+          }
+        });
+      });
+    });
+
     mapInstanceRef.current = map;
     badgesLayerRef.current = L.layerGroup().addTo(map);
 
@@ -301,7 +336,7 @@ export default function OurAreaPage() {
       map.remove();
       mapInstanceRef.current = null;
     };
-  }, []);
+  }, [navigate]);
 
   // Render & Update GeoJSON & Centroid Badges when stats, selection, or filter changes
   useEffect(() => {
@@ -389,7 +424,7 @@ export default function OurAreaPage() {
 
     geoJsonLayerRef.current = geoLayer;
 
-    // Add sleek Centroid Number Badges directly onto each district
+    // Add Dual Shape Badges (Circle for Donors & Square for Cities/Blood Banks)
     gujaratGeoJson.features.forEach((feature) => {
       const name = feature.properties.district;
       const lat = feature.properties.lat;
@@ -401,30 +436,73 @@ export default function OurAreaPage() {
         ? (dData?.totalDonors || 0)
         : (dData?.bloodGroups?.[selectedBloodFilter] || 0);
 
+      const cityBankInfo = cityBanksMap[name];
+      const banks = cityBankInfo?.banks || [];
+      const bankCount = cityBankInfo?.bank_count || banks.length || 0;
+
       const isSelected = selectedDistrict === name;
 
+      // Shape 1: Circle with Donor Count
+      // Shape 2: Square with Blood Bank Count (pure geometric shapes, zero emojis/icons)
       const badgeHtml = `
-        <div class="district-count-badge ${isSelected ? 'highlighted' : ''}">
-          ${count}
+        <div class="district-dual-badge">
+          <div class="shape-donor-circle ${isSelected ? 'highlighted' : ''}" title="${name}: ${count} Donors">
+            ${count}
+          </div>
+          <div class="shape-city-square" title="Click to view ${name} Blood Banks (${bankCount} Depots)">
+            ${bankCount}
+          </div>
         </div>
       `;
 
       const customIcon = L.divIcon({
-        className: 'district-count-marker',
+        className: 'district-dual-marker-container',
         html: badgeHtml,
-        iconSize: [24, 24],
-        iconAnchor: [12, 12]
+        iconSize: [52, 24],
+        iconAnchor: [26, 12]
       });
 
       const marker = L.marker([lat, lng], {
         icon: customIcon,
-        interactive: false
+        interactive: true
+      });
+
+      // Prepare Blood Banks popup list for on-click
+      const bankListHtml = banks.length > 0
+        ? banks.map(b => `
+            <a href="/blood-banks/${encodeURIComponent(name)}/${b.code}" class="map-popup-bank-item" data-url="/blood-banks/${encodeURIComponent(name)}/${b.code}">
+              <div class="map-popup-bank-main">
+                <span class="map-popup-bank-code">${b.code}</span>
+                <span class="map-popup-bank-name">${b.name}</span>
+              </div>
+              <span class="map-popup-bank-arrow">→</span>
+            </a>
+          `).join('')
+        : `<div style="padding: 12px; font-size: 0.8rem; color: #8E9690; text-align: center;">No blood banks listed yet.</div>`;
+
+      const popupHtml = `
+        <div class="map-city-banks-popup">
+          <div class="map-popup-header">
+            <span class="map-popup-title">${name} Blood Banks</span>
+            <span class="map-popup-badge">${banks.length} Available</span>
+          </div>
+          <div class="map-popup-list">
+            ${bankListHtml}
+          </div>
+        </div>
+      `;
+
+      marker.bindPopup(popupHtml, {
+        className: 'custom-blood-bank-popup',
+        closeButton: true,
+        autoPan: true,
+        offset: [0, -12]
       });
 
       badgesLayerRef.current.addLayer(marker);
     });
 
-  }, [districtStats, selectedBloodFilter, selectedDistrict, maxCount]);
+  }, [districtStats, cityBanksMap, selectedBloodFilter, selectedDistrict, maxCount]);
 
   // Handle Search Selection from Suggestions or Enter key
   const handleSelectSuggestion = (item) => {
@@ -616,6 +694,17 @@ export default function OurAreaPage() {
             <span>Low</span>
             <span>Max ({maxCount})</span>
           </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px', paddingTop: '8px', borderTop: '1px solid rgba(0,0,0,0.06)', fontSize: '0.72rem' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#FFFFFF', border: '1.5px solid #EF4E4E', display: 'inline-block' }}></span>
+              <span>Donors</span>
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '3px', background: '#1C201D', display: 'inline-block' }}></span>
+              <span>City Banks</span>
+            </span>
+          </div>
         </div>
 
         {/* Reset / Show All Button when a district is selected */}
@@ -698,37 +787,61 @@ export default function OurAreaPage() {
                     })}
                   </div>
                 </div>
+
+                {/* Blood Banks List in Selected District */}
+                {selectedDistrict && cityBanksMap[selectedDistrict]?.banks?.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    <div className="inspector-section-heading">
+                      <span>Verified Blood Banks</span>
+                      <span style={{ fontSize: '0.72rem', textTransform: 'none', color: '#EF4E4E', fontWeight: 700 }}>
+                        {cityBanksMap[selectedDistrict].banks.length} Depots
+                      </span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {cityBanksMap[selectedDistrict].banks.map((b) => (
+                        <Link
+                          key={b.id || b.code}
+                          to={`/blood-banks/${encodeURIComponent(selectedDistrict)}/${b.code}`}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '8px 12px',
+                            background: '#FAF8F5',
+                            border: '1px solid #EBE6E1',
+                            borderRadius: '8px',
+                            textDecoration: 'none',
+                            color: '#1C201D',
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            transition: 'all 0.15s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = '#EF4E4E';
+                            e.currentTarget.style.background = '#FFFFFF';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#EBE6E1';
+                            e.currentTarget.style.background = '#FAF8F5';
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden' }}>
+                            <span style={{ background: '#1C201D', color: '#FFFFFF', padding: '2px 6px', borderRadius: '4px', fontSize: '0.7rem', fontWeight: 800 }}>
+                              {b.code}
+                            </span>
+                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '210px' }}>
+                              {b.name}
+                            </span>
+                          </div>
+                          <span style={{ color: '#EF4E4E', marginLeft: '6px', fontSize: '0.9rem' }}>→</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Action Shortcuts Footer */}
-              <div className="inspector-footer">
-                <Link
-                  to={`/blood-banks/${encodeURIComponent(selectedDistrict)}`}
-                  className="inspector-btn-primary"
-                  style={{ background: '#1C201D', borderColor: '#1C201D' }}
-                >
-                  <Building2 size={15} color="#FFFFFF" />
-                  <span>View {selectedDistrict} Blood Banks</span>
-                </Link>
-
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <Link
-                    to={`/requester?city=${encodeURIComponent(selectedDistrict)}`}
-                    className="inspector-btn-primary"
-                  >
-                    <Droplet size={14} fill="#FFFFFF" />
-                    <span>Find Donors</span>
-                  </Link>
-
-                  <Link
-                    to={`/donor?city=${encodeURIComponent(selectedDistrict)}`}
-                    className="inspector-btn-secondary"
-                  >
-                    <Heart size={14} color="var(--coral-accent)" />
-                    <span>Join Donor</span>
-                  </Link>
-                </div>
-              </div>
             </>
           )}
         </aside>
