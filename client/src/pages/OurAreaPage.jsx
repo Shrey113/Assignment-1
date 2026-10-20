@@ -149,7 +149,7 @@ export default function OurAreaPage() {
         if (city) {
           const direct = SEARCHABLE_ENTRIES.find(
             (s) => s.label.toLowerCase() === city.toLowerCase() ||
-                   s.district.toLowerCase() === city.toLowerCase()
+              s.district.toLowerCase() === city.toLowerCase()
           );
           if (direct) matched = direct.district;
         }
@@ -175,8 +175,8 @@ export default function OurAreaPage() {
 
           const feature = gujaratGeoJson.features.find((f) => f.properties.district === matched);
           if (feature && mapInstanceRef.current) {
-            mapInstanceRef.current.flyTo([feature.properties.lat, feature.properties.lng], 8.5, {
-              duration: 1.2
+            mapInstanceRef.current.flyTo([feature.properties.lat, feature.properties.lng], 7.6, {
+              duration: 1.0
             });
           }
         }
@@ -189,7 +189,7 @@ export default function OurAreaPage() {
             const city2 = data2.city;
             const direct = SEARCHABLE_ENTRIES.find(
               (s) => s.label.toLowerCase() === (city2 || '').toLowerCase() ||
-                     s.district.toLowerCase() === (city2 || '').toLowerCase()
+                s.district.toLowerCase() === (city2 || '').toLowerCase()
             );
             if (direct) {
               setUserLocationDistrict(direct.district);
@@ -267,16 +267,18 @@ export default function OurAreaPage() {
     if (!mapContainerRef.current) return;
     if (mapInstanceRef.current) return;
 
-    // Create map with generous bounds so user is free to move, pan, and zoom
+    // Create map with completely free drag area and smooth inertia
     const map = L.map(mapContainerRef.current, {
       center: [22.4, 71.4],
       zoom: 7.2,
-      minZoom: 6.5,
+      minZoom: 5.5,
       maxZoom: 11,
-      maxBounds: GUJARAT_PAN_BOUNDS,
-      maxBoundsVisiblity: false,
       zoomControl: true,
-      attributionControl: false
+      attributionControl: false,
+      inertia: true,
+      inertiaDeceleration: 3000,
+      inertiaMaxSpeed: 1500,
+      easeLinearity: 0.2
     });
 
     // Custom lightweight attribution
@@ -368,22 +370,17 @@ export default function OurAreaPage() {
               setSelectedDistrict(name);
               setInspectorOpen(true);
               map.fitBounds(e.target.getBounds(), {
-                padding: [40, 40],
-                maxZoom: 9
+                paddingTopLeft: [40, 40],
+                paddingBottomRight: [360, 40],
+                maxZoom: 7.7
               });
             }
           }
         });
 
-        // Compact tooltip on hover
-        const dData = districtStats[name];
-        const count = selectedBloodFilter === 'ALL'
-          ? (dData?.totalDonors || 0)
-          : (dData?.bloodGroups?.[selectedBloodFilter] || 0);
-
-        const filterLabel = selectedBloodFilter === 'ALL' ? 'Total Donors' : `${selectedBloodFilter} Donors`;
+        // Tooltip on hover: show only the city/district name
         layer.bindTooltip(
-          `<strong>${name}</strong><br/>${count} ${filterLabel} • Click to inspect`,
+          name,
           { className: 'district-tooltip', direction: 'center', sticky: true }
         );
       }
@@ -442,7 +439,7 @@ export default function OurAreaPage() {
     setHighlightedIndex(-1);
 
     if (match && mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([match.properties.lat, match.properties.lng], 8.5, {
+      mapInstanceRef.current.flyTo([match.properties.lat, match.properties.lng], 7.6, {
         duration: 1.0
       });
     }
