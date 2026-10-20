@@ -40,6 +40,7 @@ export default function OurAreaPage() {
   const [districtStats, setDistrictStats] = useState({});
   const [totalDonors, setTotalDonors] = useState(0);
   const [availableDonors, setAvailableDonors] = useState(0);
+  const [currentSlot, setCurrentSlot] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedBloodFilter, setSelectedBloodFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,6 +63,7 @@ export default function OurAreaPage() {
           setDistrictStats(data.districts || {});
           setTotalDonors(data.totalDonors || 0);
           setAvailableDonors(data.availableDonors || 0);
+          setCurrentSlot(data.currentSlot || '');
         }
       } catch (err) {
         console.error('Failed to fetch district stats:', err);
@@ -321,9 +323,9 @@ export default function OurAreaPage() {
             <Users size={15} color="var(--coral-accent)" />
             <span>Total Donors: <strong>{totalDonors}</strong></span>
           </div>
-          <div className="metric-pill-item">
+          <div className="metric-pill-item" title="Dynamic real-time availability: >90 days cooldown & matching current time slot">
             <HeartHandshake size={15} color="#2E7D32" />
-            <span>Currently Available: <strong>{availableDonors}</strong></span>
+            <span>Currently Available: <strong>{availableDonors}</strong> {currentSlot && <small style={{ color: '#2E7D32', textTransform: 'capitalize', fontWeight: 600 }}>({currentSlot})</small>}</span>
           </div>
           <div className="metric-pill-item">
             <MapPin size={15} color="var(--text-secondary)" />
@@ -456,7 +458,7 @@ export default function OurAreaPage() {
                     <div className="inspector-stat-val">{currentDistrictData.totalDonors || 0}</div>
                     <div className="inspector-stat-label">Total Donors</div>
                   </div>
-                  <div className="inspector-stat-card">
+                  <div className="inspector-stat-card" title="Dynamic availability: Medically cooled down (>90 days) & active in current time slot">
                     <div className="inspector-stat-val" style={{ color: '#2E7D32' }}>
                       {currentDistrictData.availableDonors || 0}
                     </div>

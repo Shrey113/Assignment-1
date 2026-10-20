@@ -16,18 +16,19 @@ export async function registerDonor(req, res, next) {
       city,
       bloodGroup,
       lastDonatedDate,
-      isFirstTime
+      isFirstTime,
+      preferredSlot
     } = req.body;
 
     console.log('[Server Log: Donor] Received request to add donor:');
-    console.log({ name, email, phone, age, weight, city, bloodGroup, lastDonatedDate, isFirstTime });
+    console.log({ name, email, phone, age, weight, city, bloodGroup, lastDonatedDate, isFirstTime, preferredSlot });
 
     const pool = getPool();
 
     const query = `
       INSERT INTO donors (
-        name, email, phone, age, weight, city, blood_group, last_donated_date, is_first_time
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        name, email, phone, age, weight, city, blood_group, last_donated_date, is_first_time, preferred_slot, is_active
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     `;
 
     const values = [
@@ -39,7 +40,9 @@ export async function registerDonor(req, res, next) {
       city || null,
       bloodGroup || null,
       isFirstTime ? null : (lastDonatedDate || null),
-      isFirstTime ? 1 : 0
+      isFirstTime ? 1 : 0,
+      preferredSlot || 'flexible',
+      1
     ];
 
     const [result] = await pool.query(query, values);
@@ -59,22 +62,39 @@ export async function registerDonor(req, res, next) {
 
 /**
  * Fetch aggregated donor statistics for all 34 Gujarat districts.
+ * Calculates dynamic availability based on:
+ * 1. Medical Cooldown: >= 90 days since last donation (or first-time donor).
+ * 2. Real-time Slot: Preferred time slot matches current hour (or flexible 24/7).
  * Handled by: GET /api/donors/districts
  */
 export async function getDistrictStats(req, res, next) {
   try {
     const pool = getPool();
 
-    // Fetch donor summary records for district aggregation
+    // Fetch donors data needed for dynamic availability and district aggregation
     const [rows] = await pool.query(`
       SELECT 
         city,
         blood_group,
-        is_active,
+        last_donated_date,
         is_first_time,
+        preferred_slot,
         phone
       FROM donors
     `);
+
+    // Determine current local time in India (IST / local clock)
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    let currentSlot = 'off_hours';
+    if (currentHour >= 8 && currentHour < 12) {
+      currentSlot = 'morning';
+    } else if (currentHour >= 12 && currentHour < 16) {
+      currentSlot = 'afternoon';
+    } else if (currentHour >= 16 && currentHour < 20) {
+      currentSlot = 'evening';
+    }
 
     // Initialize 34 districts structure
     const districtStats = {};
@@ -83,6 +103,8 @@ export async function getDistrictStats(req, res, next) {
         district: d,
         totalDonors: 0,
         availableDonors: 0,
+        medicallyEligible: 0,
+        coolingDownDonors: 0,
         verifiedDonors: 0,
         firstTimeDonors: 0,
         bloodGroups: {
@@ -96,6 +118,7 @@ export async function getDistrictStats(req, res, next) {
 
     let overallTotal = 0;
     let overallAvailable = 0;
+    let overallCoolingDown = 0;
 
     for (const row of rows) {
       const district = resolveDistrict(row.city);
@@ -104,6 +127,8 @@ export async function getDistrictStats(req, res, next) {
           district,
           totalDonors: 0,
           availableDonors: 0,
+          medicallyEligible: 0,
+          coolingDownDonors: 0,
           verifiedDonors: 0,
           firstTimeDonors: 0,
           bloodGroups: {
@@ -119,8 +144,36 @@ export async function getDistrictStats(req, res, next) {
       d.totalDonors += 1;
       overallTotal += 1;
 
-      const isActive = row.is_active === 1 || row.is_active === true;
-      if (isActive) {
+      // 1. Dynamic Medical Cooldown Check:
+      // First-time donors have never donated, so they have 0 cooldown.
+      // Repeat donors must have donated at least 90 days ago to be medically eligible.
+      let isMedicallyEligible = false;
+      if (row.is_first_time === 1 || !row.last_donated_date) {
+        isMedicallyEligible = true;
+      } else {
+        const lastDonated = new Date(row.last_donated_date);
+        const daysSinceLast = Math.floor((now - lastDonated) / (1000 * 60 * 60 * 24));
+        if (daysSinceLast >= 90) {
+          isMedicallyEligible = true;
+        } else {
+          d.coolingDownDonors += 1;
+          overallCoolingDown += 1;
+        }
+      }
+
+      if (isMedicallyEligible) {
+        d.medicallyEligible += 1;
+      }
+
+      // 2. Real-Time Preferred Slot Check:
+      // Flexible donors are available anytime (24/7 emergency response).
+      // Otherwise, the donor's chosen slot (morning, afternoon, evening) must match current time.
+      const slot = (row.preferred_slot || 'flexible').toLowerCase();
+      const isSlotActive = (slot === 'flexible') || (slot === currentSlot);
+
+      // 3. Combined Dynamic Availability:
+      const isAvailableNow = isMedicallyEligible && isSlotActive;
+      if (isAvailableNow) {
         d.availableDonors += 1;
         overallAvailable += 1;
       }
@@ -140,8 +193,11 @@ export async function getDistrictStats(req, res, next) {
 
     return res.json({
       success: true,
+      currentSlot,
+      currentHour,
       totalDonors: overallTotal,
       availableDonors: overallAvailable,
+      coolingDownDonors: overallCoolingDown,
       districtsCount: GUJARAT_DISTRICTS_34.length,
       districts: districtStats
     });

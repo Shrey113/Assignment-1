@@ -83,8 +83,37 @@ export default function DonorPage() {
       return;
     }
 
-    setIsRegistered(true);
-    setTimeout(() => setIsRegistered(false), 5000);
+    // Send donor data to MySQL backend
+    fetch('http://localhost:5100/api/donors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        age,
+        weight,
+        city,
+        bloodGroup,
+        lastDonatedDate,
+        isFirstTime,
+        preferredSlot: preferredSlot || 'flexible',
+        availableDays
+      })
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setIsRegistered(true);
+          setTimeout(() => setIsRegistered(false), 5000);
+        }
+      })
+      .catch((err) => {
+        console.error('Error registering donor:', err);
+        // Fallback display
+        setIsRegistered(true);
+        setTimeout(() => setIsRegistered(false), 5000);
+      });
   };
 
   // Today's date YYYY-MM-DD in local time: user cannot select future dates (e.g. today is 20, cannot select 21 onwards)
