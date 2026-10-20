@@ -252,22 +252,21 @@ export default function App() {
       <section className="hero-viewport-section">
         {/* Navigation Bar */}
         <nav className="editorial-nav">
-          <a href="#" className="editorial-logo">
+          <Link to="/" className="editorial-logo">
             <img src="/bloodlink_logo.png" alt="BloodLink logo" className="editorial-logo-img" />
             <div className="logo-monogram">Blood<span>Link</span></div>
-          </a>
-
-          <div className="nav-links-row">
-            <a href="#why-donate" className="nav-link-editorial">Why Give</a>
-            <a href="#how-it-works" className="nav-link-editorial">How It Works</a>
-            <a href="#eligibility" className="nav-link-editorial">Eligibility</a>
-            <a href="#blood-types" className="nav-link-editorial">Blood Types</a>
-            <a href="#stories" className="nav-link-editorial">Stories</a>
-            <Link id="nav-our-area" to="/our-area" className="nav-link-editorial" style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Our Area</Link>
-            <Link to="/blood-banks" className="nav-link-editorial" style={{ color: 'var(--coral-accent)', fontWeight: 600 }}>Blood Banks</Link>
-          </div>
+          </Link>
 
           <div className="nav-actions-group">
+            <Link
+              id="nav-our-area"
+              to="/our-area"
+              className="btn-editorial-secondary"
+              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+            >
+              Our Area
+            </Link>
+
             <Link
               id="nav-request-blood"
               to="/requester"

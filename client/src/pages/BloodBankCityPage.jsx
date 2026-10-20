@@ -39,7 +39,12 @@ export default function BloodBankCityPage() {
 
   return (
     <div className="bb-page-container">
-      <PortalHeader pageTitle={`Blood Banks / ${currentCityName}`} />
+      <PortalHeader
+        breadcrumbs={[
+          { label: 'Blood Banks', to: '/blood-banks' },
+          { label: currentCityName }
+        ]}
+      />
 
       <main className="bb-page-content">
 

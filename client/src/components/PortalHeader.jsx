@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Droplet, Home, Heart, ShieldAlert, ArrowLeftRight, ChevronDown, MapPin, Building2 } from 'lucide-react';
 
-export default function PortalHeader({ pageTitle }) {
+export default function PortalHeader({ pageTitle, breadcrumbs }) {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -44,14 +44,32 @@ export default function PortalHeader({ pageTitle }) {
 
   return (
     <header className="portal-header">
-      {/* Left: {Logo} BloodLink / Donor */}
+      {/* Left: {Logo} BloodLink / Breadcrumbs */}
       <div className="portal-header-left">
         <Link to="/" className="editorial-logo">
           <img src="/bloodlink_logo.png" alt="BloodLink logo" className="editorial-logo-img" />
           <div className="logo-monogram">Blood<span>Link</span></div>
         </Link>
-        <span className="portal-breadcrumb-sep">/</span>
-        <span className="portal-breadcrumb-page">{pageName}</span>
+
+        {breadcrumbs && breadcrumbs.length > 0 ? (
+          breadcrumbs.map((crumb, idx) => (
+            <React.Fragment key={idx}>
+              <span className="portal-breadcrumb-sep">/</span>
+              {crumb.to ? (
+                <Link to={crumb.to} className="portal-breadcrumb-link">
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="portal-breadcrumb-page">{crumb.label}</span>
+              )}
+            </React.Fragment>
+          ))
+        ) : (
+          <>
+            <span className="portal-breadcrumb-sep">/</span>
+            <span className="portal-breadcrumb-page">{pageName}</span>
+          </>
+        )}
       </div>
 
       {/* Right: Switch Portal Button with Dropdown */}

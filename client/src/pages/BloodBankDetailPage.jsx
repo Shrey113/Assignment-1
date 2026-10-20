@@ -44,7 +44,13 @@ export default function BloodBankDetailPage() {
 
   return (
     <div className="bb-page-container">
-      <PortalHeader pageTitle={`Depot / ${bank?.name || id}`} />
+      <PortalHeader
+        breadcrumbs={[
+          { label: 'Blood Banks', to: '/blood-banks' },
+          { label: bank?.city || city, to: `/blood-banks/${encodeURIComponent(bank?.city || city)}` },
+          { label: bank?.name || id }
+        ]}
+      />
 
       <main className="bb-page-content">
         {loading ? (
@@ -104,55 +110,40 @@ export default function BloodBankDetailPage() {
               </div>
             </section>
 
-            {/* Cold Storage Reserve Matrix (8 Blood Groups) */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            {/* Cold Storage Reserve Inventory Box */}
+            <section className="bb-inventory-card">
+              <div className="bb-inventory-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Layers size={18} color="#EF4E4E" />
-                  <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, color: '#1C201D' }}>
-                    Live Cold Storage Reserve Inventory
-                  </h2>
+                  <h2 className="bb-inventory-title">Live Cold Storage Reserve Inventory</h2>
+                </div>
+                <div className="bb-inventory-summary">
+                  <span>Total Reserve: <strong>{bank.total_units} Units</strong></span>
                 </div>
               </div>
 
-              <div className="bb-stock-matrix-grid">
+              <div className="bb-inventory-grid">
                 {bank.stock_breakdown?.map((item) => {
                   const isCritical = item.units < 6;
                   const isWarning = item.units >= 6 && item.units < 15;
+                  const statusLabel = isCritical ? 'Critical' : isWarning ? 'Moderate' : 'Adequate';
                   const tier = isCritical ? 'critical' : isWarning ? 'warning' : 'good';
 
                   return (
-                    <div key={item.group} className={`bb-matrix-card ${tier}`}>
-                      <div className="bb-matrix-card-top">
-                        <div className="bb-matrix-group-pill">
-                          {item.group}
-                        </div>
-                        <div className="bb-matrix-units-wrap">
-                          <div className="bb-matrix-units-value" style={{ color: isCritical ? '#EF4E4E' : '#1C201D' }}>
-                            {item.units}
-                          </div>
-                          <div className="bb-matrix-units-sub">Units Available</div>
-                        </div>
+                    <div key={item.group} className={`bb-inventory-item ${tier}`}>
+                      <div className="bb-item-top">
+                        <span className="bb-item-group">{item.group}</span>
+                        <span className={`bb-item-status ${tier}`}>{statusLabel}</span>
                       </div>
-
-                      <div className="bb-matrix-bar-track">
-                        <div
-                          className={`bb-matrix-bar-fill ${tier}`}
-                          style={{ width: `${Math.max(8, item.pct)}%` }}
-                        ></div>
-                      </div>
-
-                      <div className="bb-matrix-status-label">
-                        <span style={{ color: isCritical ? '#EF4E4E' : isWarning ? '#B45309' : '#2E7D32' }}>
-                          {isCritical ? 'CRITICAL DEFICIT' : isWarning ? 'MODERATE RESERVE' : 'ADEQUATE STOCK'}
-                        </span>
-                        <span style={{ color: '#8E9690' }}>{item.pct}% Capacity</span>
+                      <div className="bb-item-units">
+                        <span className="bb-item-count">{item.units}</span>
+                        <span className="bb-item-label">Units Available</span>
                       </div>
                     </div>
                   );
                 })}
               </div>
-            </div>
+            </section>
           </div>
         )}
       </main>

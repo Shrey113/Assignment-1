@@ -671,98 +671,137 @@
   background: var(--bb-red-dark);
 }
 
-/* Full 8-Group Stock Matrix */
-.bb-stock-matrix-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.bb-matrix-card {
+/* Unified Cold Storage Reserve Inventory Box (Clean, Professional, Non-AI) */
+.bb-inventory-card {
   background: #FFFFFF;
   border: 1px solid var(--bb-border-subtle);
-  border-radius: var(--bb-radius-md);
-  padding: 20px;
+  border-radius: var(--bb-radius-lg);
+  padding: 26px 30px;
   box-shadow: var(--bb-shadow-sm);
+  margin-top: 24px;
+}
+
+.bb-inventory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--bb-border-subtle);
+  margin-bottom: 20px;
+}
+
+.bb-inventory-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--bb-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.bb-inventory-summary {
+  font-size: 0.88rem;
+  color: var(--bb-text-secondary);
+}
+
+.bb-inventory-summary strong {
+  color: var(--bb-text-primary);
+  font-weight: 700;
+}
+
+.bb-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.bb-inventory-item {
+  background: #FAF8F5;
+  border: 1px solid #EBE6E1;
+  border-radius: 12px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: transform 0.15s ease;
+  /* Strictly NO hover animation or transform */
 }
 
-.bb-matrix-card:hover {
-  transform: translateY(-2px);
+.bb-inventory-item:hover {
+  border-color: #D5CFC9;
 }
 
-.bb-matrix-card-top {
+.bb-item-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.bb-matrix-group-pill {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  font-weight: 800;
-  background: #FAF8F5;
-  color: var(--bb-text-primary);
-  border: 1px solid var(--bb-border-subtle);
-}
-
-.bb-matrix-card.critical .bb-matrix-group-pill {
-  background: var(--bb-red-soft);
-  color: var(--bb-red);
-  border-color: #FCA5A5;
-}
-
-.bb-matrix-units-wrap {
-  text-align: right;
-}
-
-.bb-matrix-units-value {
-  font-size: 1.4rem;
+.bb-item-group {
+  font-size: 1.35rem;
   font-weight: 800;
   color: var(--bb-text-primary);
   line-height: 1;
 }
 
-.bb-matrix-units-sub {
+.bb-item-status {
   font-size: 0.72rem;
-  color: var(--bb-text-muted);
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
   text-transform: uppercase;
-  font-weight: 600;
+  letter-spacing: 0.03em;
 }
 
-.bb-matrix-bar-track {
-  width: 100%;
-  height: 7px;
-  background: #EBE6E1;
-  border-radius: 4px;
-  overflow: hidden;
+.bb-item-status.good {
+  background: #E8F5E9;
+  color: #2E7D32;
 }
 
-.bb-matrix-bar-fill {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
+.bb-item-status.warning {
+  background: #FEF3C7;
+  color: #B45309;
 }
 
-.bb-matrix-bar-fill.good { background: #2E7D32; }
-.bb-matrix-bar-fill.warning { background: #B45309; }
-.bb-matrix-bar-fill.critical { background: #EF4E4E; }
+.bb-item-status.critical {
+  background: #FDE8E8;
+  color: #EF4E4E;
+}
 
-.bb-matrix-status-label {
+.bb-item-units {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 0.76rem;
-  font-weight: 600;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.bb-item-count {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--bb-text-primary);
+  line-height: 1;
+}
+
+.bb-inventory-item.critical .bb-item-count {
+  color: #EF4E4E;
+}
+
+.bb-item-label {
+  font-size: 0.8rem;
+  color: var(--bb-text-secondary);
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .bb-inventory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .bb-inventory-card {
+    padding: 20px 16px;
+  }
+  .bb-inventory-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Two Column Details: Hospital Requests + Local Backup Donors */
