@@ -12,7 +12,7 @@
   position: relative;
 }
 
-/* ── Unified Single Top Bar ─────────────────────────────────── */
+/* ── Minimalist Clean Top Bar ───────────────────────────────── */
 .our-area-topbar {
   display: flex;
   align-items: center;
@@ -48,50 +48,19 @@
   user-select: none;
 }
 
-/* Middle: State Metrics Summary */
-.our-area-metrics-summary {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  font-size: 0.84rem;
-}
-
-.metric-pill-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-secondary);
-  background: var(--bg-cream-pure);
-  padding: 5px 12px;
-  border-radius: var(--radius-full);
-  border: 1px solid rgba(35, 40, 36, 0.06);
-}
-
-.metric-pill-item strong {
-  color: var(--text-primary);
-  font-weight: 700;
-}
-
-/* Right: Filters & Search Controls */
-.our-area-controls-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-/* ── Blood Group Filter Chips ───────────────────────────────── */
+/* Right Top Side: Blood Group Filter Chips */
 .blood-filter-row {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   overflow-x: auto;
   padding: 2px 0;
 }
 
 .filter-chip {
-  padding: 5px 11px;
+  padding: 6px 13px;
   border-radius: var(--radius-full);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 600;
   border: 1px solid var(--bg-card-border);
   background: #FFFFFF;
@@ -113,57 +82,7 @@
   box-shadow: 0 2px 8px var(--coral-glow);
 }
 
-/* ── District Search Box ────────────────────────────────────── */
-.district-search-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.district-search-input {
-  padding: 6px 28px 6px 30px;
-  font-size: 0.82rem;
-  border-radius: var(--radius-full);
-  border: 1px solid var(--bg-card-border);
-  background: var(--bg-cream-pure);
-  color: var(--text-primary);
-  width: 175px;
-  transition: all var(--transition-fast);
-}
-
-.district-search-input:focus {
-  outline: none;
-  border-color: var(--coral-accent);
-  width: 215px;
-  background: #FFFFFF;
-  box-shadow: 0 0 0 3px var(--coral-glow);
-}
-
-.district-search-icon {
-  position: absolute;
-  left: 9px;
-  color: var(--text-tertiary);
-  pointer-events: none;
-}
-
-.search-clear-btn {
-  position: absolute;
-  right: 8px;
-  background: transparent;
-  border: none;
-  color: var(--text-tertiary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px;
-}
-
-.search-clear-btn:hover {
-  color: var(--text-primary);
-}
-
-/* ── Main Workspace Body (Map + Inspector) ──────────────────── */
+/* ── Main Workspace Body (Map + Floating Controls) ──────────── */
 .our-area-content {
   position: relative;
   flex: 1;
@@ -193,22 +112,204 @@
   cursor: grabbing;
 }
 
+.leaflet-top.leaflet-left {
+  top: 14px !important;
+  left: 14px !important;
+}
+
 .leaflet-control-zoom {
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
-  border-radius: 8px !important;
+  border-radius: 10px !important;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+  margin: 0 !important;
 }
 
 .leaflet-control-zoom a {
   background-color: #FFFFFF !important;
   color: var(--text-primary) !important;
+  width: 34px !important;
+  height: 34px !important;
+  line-height: 34px !important;
+  font-size: 15px !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: var(--coral-soft) !important;
+  color: var(--coral-accent) !important;
 }
 
 .leaflet-control-attribution {
   background: rgba(255, 255, 255, 0.75) !important;
   font-size: 10px !important;
   border-radius: 4px;
+}
+
+/* ── Floating Professional Map Search Bar (Right of +/- Buttons) ── */
+.map-floating-search {
+  position: absolute;
+  top: 14px;
+  left: 58px;
+  z-index: 1000;
+  width: 320px;
+}
+
+.map-search-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(35, 40, 36, 0.12);
+  border-radius: 10px;
+  padding: 0 12px;
+  height: 36px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: all var(--transition-fast);
+}
+
+.map-search-box:focus-within {
+  border-color: var(--coral-accent);
+  box-shadow: 0 4px 20px rgba(239, 78, 78, 0.22);
+  background: #FFFFFF;
+}
+
+.map-search-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-right: 8px;
+  transition: color var(--transition-fast);
+}
+
+.map-search-box:focus-within .map-search-icon {
+  color: var(--coral-accent);
+}
+
+.map-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  color: var(--text-primary);
+  outline: none;
+  width: 100%;
+}
+
+.map-search-input::placeholder {
+  color: var(--text-tertiary);
+  font-size: 0.82rem;
+}
+
+.map-search-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.map-search-clear:hover {
+  color: var(--text-primary);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* ── Search Suggestions Dropdown ────────────────────────────── */
+.map-search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(35, 40, 36, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  max-height: 290px;
+  overflow-y: auto;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 1002;
+  animation: dropdown-fade-in 0.16s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-sans);
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+  background: var(--coral-soft);
+}
+
+.suggestion-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.suggestion-icon {
+  color: var(--coral-accent);
+  flex-shrink: 0;
+}
+
+.suggestion-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.suggestion-name {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-sub {
+  font-size: 0.7rem;
+  color: var(--text-tertiary);
+}
+
+.suggestion-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--coral-accent);
+  background: rgba(239, 78, 78, 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.suggestion-empty {
+  padding: 14px;
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-tertiary);
 }
 
 /* Centroid Count Badge on each district */
@@ -584,8 +685,10 @@
     padding: 10px 16px;
   }
 
-  .our-area-metrics-summary {
-    display: none;
+  .map-floating-search {
+    left: 54px;
+    width: calc(100vw - 80px);
+    max-width: 290px;
   }
 
   .district-inspector-panel {

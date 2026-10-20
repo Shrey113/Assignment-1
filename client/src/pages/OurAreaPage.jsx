@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
   MapPin,
   Search,
-  Users,
-  HeartHandshake,
   X,
   Droplet,
   Heart,
@@ -29,23 +27,85 @@ const GUJARAT_PAN_BOUNDS = [
   [26.0, 76.0]
 ];
 
+// Gujarat Districts & Major Cities searchable directory for suggestions
+const SEARCHABLE_ENTRIES = [
+  // 34 Districts
+  { label: 'Ahmedabad', district: 'Ahmedabad', type: 'District' },
+  { label: 'Amreli', district: 'Amreli', type: 'District' },
+  { label: 'Anand', district: 'Anand', type: 'District' },
+  { label: 'Aravalli', district: 'Aravalli', type: 'District' },
+  { label: 'Banaskantha', district: 'Banaskantha', type: 'District' },
+  { label: 'Bharuch', district: 'Bharuch', type: 'District' },
+  { label: 'Bhavnagar', district: 'Bhavnagar', type: 'District' },
+  { label: 'Botad', district: 'Botad', type: 'District' },
+  { label: 'Chhota Udaipur', district: 'Chhota Udaipur', type: 'District' },
+  { label: 'Dahod', district: 'Dahod', type: 'District' },
+  { label: 'Dang', district: 'Dang', type: 'District' },
+  { label: 'Devbhumi Dwarka', district: 'Devbhumi Dwarka', type: 'District' },
+  { label: 'Gandhinagar', district: 'Gandhinagar', type: 'District' },
+  { label: 'Gir Somnath', district: 'Gir Somnath', type: 'District' },
+  { label: 'Jamnagar', district: 'Jamnagar', type: 'District' },
+  { label: 'Junagadh', district: 'Junagadh', type: 'District' },
+  { label: 'Kheda', district: 'Kheda', type: 'District' },
+  { label: 'Kutch', district: 'Kutch', type: 'District' },
+  { label: 'Mahisagar', district: 'Mahisagar', type: 'District' },
+  { label: 'Mehsana', district: 'Mehsana', type: 'District' },
+  { label: 'Morbi', district: 'Morbi', type: 'District' },
+  { label: 'Narmada', district: 'Narmada', type: 'District' },
+  { label: 'Navsari', district: 'Navsari', type: 'District' },
+  { label: 'Panchmahal', district: 'Panchmahal', type: 'District' },
+  { label: 'Patan', district: 'Patan', type: 'District' },
+  { label: 'Porbandar', district: 'Porbandar', type: 'District' },
+  { label: 'Rajkot', district: 'Rajkot', type: 'District' },
+  { label: 'Sabarkantha', district: 'Sabarkantha', type: 'District' },
+  { label: 'Surat', district: 'Surat', type: 'District' },
+  { label: 'Surendranagar', district: 'Surendranagar', type: 'District' },
+  { label: 'Tapi', district: 'Tapi', type: 'District' },
+  { label: 'Vadodara', district: 'Vadodara', type: 'District' },
+  { label: 'Valsad', district: 'Valsad', type: 'District' },
+  { label: 'Vav-Tharad', district: 'Vav-Tharad', type: '34th District' },
+
+  // Major Cities & Talukas
+  { label: 'Tharad', district: 'Vav-Tharad', type: 'City in Vav-Tharad' },
+  { label: 'Vav', district: 'Vav-Tharad', type: 'City in Vav-Tharad' },
+  { label: 'Bhabhar', district: 'Vav-Tharad', type: 'City in Vav-Tharad' },
+  { label: 'Palanpur', district: 'Banaskantha', type: 'City in Banaskantha' },
+  { label: 'Deesa', district: 'Banaskantha', type: 'City in Banaskantha' },
+  { label: 'Bhuj', district: 'Kutch', type: 'City in Kutch' },
+  { label: 'Godhra', district: 'Panchmahal', type: 'City in Panchmahal' },
+  { label: 'Gondal', district: 'Rajkot', type: 'City in Rajkot' },
+  { label: 'Jetpur', district: 'Rajkot', type: 'City in Rajkot' },
+  { label: 'Ankleshwar', district: 'Bharuch', type: 'City in Bharuch' },
+  { label: 'Vapi', district: 'Valsad', type: 'City in Valsad' },
+  { label: 'Veraval', district: 'Gir Somnath', type: 'City in Gir Somnath' },
+  { label: 'Himmatnagar', district: 'Sabarkantha', type: 'City in Sabarkantha' },
+  { label: 'Modasa', district: 'Aravalli', type: 'City in Aravalli' },
+  { label: 'Kalol', district: 'Gandhinagar', type: 'City in Gandhinagar' },
+  { label: 'Keshod', district: 'Junagadh', type: 'City in Junagadh' },
+  { label: 'Bilimora', district: 'Navsari', type: 'City in Navsari' },
+  { label: 'Vyara', district: 'Tapi', type: 'City in Tapi' },
+  { label: 'Wadhwan', district: 'Surendranagar', type: 'City in Surendranagar' },
+  { label: 'Nadiad', district: 'Kheda', type: 'City in Kheda' },
+  { label: 'Dwarka', district: 'Devbhumi Dwarka', type: 'City in Devbhumi Dwarka' },
+  { label: 'Rajpipla', district: 'Narmada', type: 'City in Narmada' },
+  { label: 'Lunawada', district: 'Mahisagar', type: 'City in Mahisagar' }
+];
+
 export default function OurAreaPage() {
-  const navigate = useNavigate();
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const geoJsonLayerRef = useRef(null);
   const badgesLayerRef = useRef(null);
+  const searchBoxRef = useRef(null);
 
-  // Data & UI states - initially no district is selected so user has full freedom
+  // Data & UI states
   const [districtStats, setDistrictStats] = useState({});
-  const [totalDonors, setTotalDonors] = useState(0);
-  const [availableDonors, setAvailableDonors] = useState(0);
-  const [currentSlot, setCurrentSlot] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [selectedBloodFilter, setSelectedBloodFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [inspectorOpen, setInspectorOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   // Keep ref of selectedDistrict to access cleanly in Leaflet event listeners
   const selectedDistrictRef = useRef(selectedDistrict);
@@ -61,17 +121,32 @@ export default function OurAreaPage() {
         const data = await res.json();
         if (data.success) {
           setDistrictStats(data.districts || {});
-          setTotalDonors(data.totalDonors || 0);
-          setAvailableDonors(data.availableDonors || 0);
-          setCurrentSlot(data.currentSlot || '');
         }
       } catch (err) {
         console.error('Failed to fetch district stats:', err);
-      } finally {
-        setLoading(false);
       }
     }
     fetchStats();
+  }, []);
+
+  // Filter suggestions based on searchQuery
+  const filteredSuggestions = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return SEARCHABLE_ENTRIES.filter(
+      (item) => item.label.toLowerCase().includes(q) || item.district.toLowerCase().includes(q)
+    ).slice(0, 8);
+  }, [searchQuery]);
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Compute max count for current filter to scale colors accurately
@@ -134,6 +209,7 @@ export default function OurAreaPage() {
     map.on('click', () => {
       setSelectedDistrict(null);
       setInspectorOpen(false);
+      setShowSuggestions(false);
     });
 
     mapInstanceRef.current = map;
@@ -273,20 +349,55 @@ export default function OurAreaPage() {
 
   }, [districtStats, selectedBloodFilter, selectedDistrict, maxCount]);
 
-  // Handle Search input
-  const handleSearchSelect = (distName) => {
+  // Handle Search Selection from Suggestions or Enter key
+  const handleSelectSuggestion = (item) => {
+    const targetDistrict = item.district;
     const match = gujaratGeoJson.features.find(
-      (f) => f.properties.district.toLowerCase() === distName.toLowerCase()
+      (f) => f.properties.district.toLowerCase() === targetDistrict.toLowerCase()
     );
-    if (match) {
-      setSelectedDistrict(match.properties.district);
-      setInspectorOpen(true);
-      setSearchQuery('');
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.flyTo([match.properties.lat, match.properties.lng], 8.5, {
-          duration: 1.0
-        });
+
+    setSelectedDistrict(targetDistrict);
+    setInspectorOpen(true);
+    setSearchQuery(item.label);
+    setShowSuggestions(false);
+    setHighlightedIndex(-1);
+
+    if (match && mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([match.properties.lat, match.properties.lng], 8.5, {
+        duration: 1.0
+      });
+    }
+  };
+
+  // Keyboard navigation for suggestions dropdown
+  const handleKeyDown = (e) => {
+    if (!showSuggestions || filteredSuggestions.length === 0) {
+      if (e.key === 'Enter' && searchQuery.trim()) {
+        const exact = SEARCHABLE_ENTRIES.find(
+          (s) => s.label.toLowerCase() === searchQuery.trim().toLowerCase()
+        );
+        if (exact) {
+          handleSelectSuggestion(exact);
+        }
       }
+      return;
+    }
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev < filteredSuggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : filteredSuggestions.length - 1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (highlightedIndex >= 0 && highlightedIndex < filteredSuggestions.length) {
+        handleSelectSuggestion(filteredSuggestions[highlightedIndex]);
+      } else if (filteredSuggestions.length > 0) {
+        handleSelectSuggestion(filteredSuggestions[0]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
     }
   };
 
@@ -305,7 +416,7 @@ export default function OurAreaPage() {
 
   return (
     <div className="our-area-page">
-      {/* ── Single Unified Header: [Logo] BloodLink / our area (Gujarat only) ── */}
+      {/* ── Minimalist Clean Top Bar: [Logo] BloodLink / our area (Gujarat only) on Left, Blood Group Chips on Right ── */}
       <header className="our-area-topbar">
         {/* Left: {app icon} BloodLink / our area (Gujarat only) */}
         <div className="our-area-brand-group">
@@ -317,64 +428,18 @@ export default function OurAreaPage() {
           <span className="our-area-breadcrumb-title">our area (Gujarat only)</span>
         </div>
 
-        {/* Middle: State Metrics Summary */}
-        <div className="our-area-metrics-summary">
-          <div className="metric-pill-item">
-            <Users size={15} color="var(--coral-accent)" />
-            <span>Total Donors: <strong>{totalDonors}</strong></span>
-          </div>
-          <div className="metric-pill-item" title="Dynamic real-time availability: >90 days cooldown & matching current time slot">
-            <HeartHandshake size={15} color="#2E7D32" />
-            <span>Currently Available: <strong>{availableDonors}</strong> {currentSlot && <small style={{ color: '#2E7D32', textTransform: 'capitalize', fontWeight: 600 }}>({currentSlot})</small>}</span>
-          </div>
-          <div className="metric-pill-item">
-            <MapPin size={15} color="var(--text-secondary)" />
-            <span>Districts: <strong>34 Covered</strong></span>
-          </div>
-        </div>
-
-        {/* Right: Controls (Blood Filter & Search) */}
-        <div className="our-area-controls-group">
-          {/* Blood Group Filter Chips */}
-          <div className="blood-filter-row">
-            {BLOOD_GROUPS.map((bg) => (
-              <button
-                key={bg}
-                type="button"
-                className={`filter-chip ${selectedBloodFilter === bg ? 'active' : ''}`}
-                onClick={() => setSelectedBloodFilter(bg)}
-              >
-                {bg}
-              </button>
-            ))}
-          </div>
-
-          {/* Quick District Search Bar */}
-          <div className="district-search-wrapper">
-            <Search size={14} className="district-search-icon" />
-            <input
-              type="text"
-              className="district-search-input"
-              placeholder="Search district..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && searchQuery.trim()) {
-                  handleSearchSelect(searchQuery.trim());
-                }
-              }}
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                className="search-clear-btn"
-                onClick={() => setSearchQuery('')}
-                title="Clear search"
-              >
-                <X size={13} />
-              </button>
-            )}
-          </div>
+        {/* Right Top Side: Blood Group Filter Chips */}
+        <div className="blood-filter-row">
+          {BLOOD_GROUPS.map((bg) => (
+            <button
+              key={bg}
+              type="button"
+              className={`filter-chip ${selectedBloodFilter === bg ? 'active' : ''}`}
+              onClick={() => setSelectedBloodFilter(bg)}
+            >
+              {bg}
+            </button>
+          ))}
         </div>
       </header>
 
@@ -386,6 +451,78 @@ export default function OurAreaPage() {
           className="gujarat-map-container"
           aria-label="Interactive Gujarat District Map"
         />
+
+        {/* ── Professional Floating Search Bar with Auto-Suggestions (Right of +/- Buttons) ── */}
+        <div className="map-floating-search" ref={searchBoxRef}>
+          <div className="map-search-box">
+            <Search size={15} className="map-search-icon" />
+            <input
+              type="text"
+              className="map-search-input"
+              placeholder="Search district or city..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSuggestions(true);
+                setHighlightedIndex(-1);
+              }}
+              onFocus={() => {
+                if (searchQuery.trim()) setShowSuggestions(true);
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="map-search-clear"
+                onClick={() => {
+                  setSearchQuery('');
+                  setShowSuggestions(false);
+                }}
+                title="Clear search"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Interactive Suggestions Dropdown */}
+          {showSuggestions && filteredSuggestions.length > 0 && (
+            <div className="map-search-suggestions">
+              {filteredSuggestions.map((item, index) => {
+                const dData = districtStats[item.district];
+                const count = selectedBloodFilter === 'ALL'
+                  ? (dData?.totalDonors || 0)
+                  : (dData?.bloodGroups?.[selectedBloodFilter] || 0);
+
+                return (
+                  <button
+                    key={`${item.label}-${item.district}`}
+                    type="button"
+                    className={`suggestion-item ${index === highlightedIndex ? 'highlighted' : ''}`}
+                    onClick={() => handleSelectSuggestion(item)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                  >
+                    <div className="suggestion-left">
+                      <MapPin size={13} className="suggestion-icon" />
+                      <div className="suggestion-text-col">
+                        <span className="suggestion-name">{item.label}</span>
+                        <span className="suggestion-sub">{item.type}</span>
+                      </div>
+                    </div>
+                    <span className="suggestion-badge">{count} donors</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {showSuggestions && searchQuery.trim() && filteredSuggestions.length === 0 && (
+            <div className="map-search-suggestions">
+              <div className="suggestion-empty">No matching district or city found</div>
+            </div>
+          )}
+        </div>
 
         {/* Editorial Choropleth Legend */}
         <div className="map-legend-card">
