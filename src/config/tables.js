@@ -109,7 +109,7 @@ export async function createAllTables() {
     throw error;
   } finally {
     if (adminConn) {
-      try { await adminConn.end(); } catch (_) {}
+      try { await adminConn.end(); } catch (_) { }
     }
   }
 }
@@ -134,7 +134,7 @@ export async function dropTable(tableName) {
     throw error;
   } finally {
     if (adminConn) {
-      try { await adminConn.end(); } catch (_) {}
+      try { await adminConn.end(); } catch (_) { }
     }
   }
 }
@@ -154,7 +154,7 @@ export async function getTableStatus() {
     throw error;
   } finally {
     if (adminConn) {
-      try { await adminConn.end(); } catch (_) {}
+      try { await adminConn.end(); } catch (_) { }
     }
   }
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import PortalHeader from '../components/PortalHeader';
 import { 
   Building2, 
@@ -7,9 +7,7 @@ import {
   Droplet, 
   Phone, 
   AlertCircle, 
-  ArrowLeft, 
   CheckCircle2, 
-  ShieldCheck, 
   Users, 
   RefreshCw,
   Clock,
@@ -22,7 +20,6 @@ import '../styles/blood-banks.css';
 
 export default function BloodBankDetailPage() {
   const { city, id } = useParams();
-  const navigate = useNavigate();
 
   const [depotData, setDepotData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,59 +48,14 @@ export default function BloodBankDetailPage() {
   }, [city, id]);
 
   const bank = depotData?.bank;
-  const siblingBanks = depotData?.sibling_banks || [];
   const backupDonors = depotData?.backup_donors || { donor_count: 0, o_neg_donors: 0, o_pos_donors: 0 };
   const requisitions = depotData?.requisitions || [];
-
-  const handleSiblingChange = (e) => {
-    const targetCode = e.target.value;
-    if (targetCode) {
-      navigate(`/blood-banks/${encodeURIComponent(bank.city)}/${targetCode}`);
-    }
-  };
 
   return (
     <div className="bb-page-container">
       <PortalHeader pageTitle={`Depot / ${bank?.name || id}`} />
 
       <main className="bb-page-content">
-        {/* Breadcrumb Bar */}
-        <div className="bb-breadcrumb-bar">
-          <div className="bb-breadcrumb-trail">
-            <Link to="/" className="bb-breadcrumb-link">BloodLink</Link>
-            <span>/</span>
-            <Link to="/blood-banks" className="bb-breadcrumb-link">Blood Banks</Link>
-            <span>/</span>
-            <Link to={`/blood-banks/${encodeURIComponent(bank?.city || city)}`} className="bb-breadcrumb-link">
-              {bank?.city || city}
-            </Link>
-            <span>/</span>
-            <span className="bb-breadcrumb-active">Depot {bank?.bank_code || id}</span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Link to={`/blood-banks/${encodeURIComponent(bank?.city || city)}`} className="bb-btn-back">
-              <ArrowLeft size={14} />
-              <span>Back to {bank?.city || city} Depots</span>
-            </Link>
-
-            {siblingBanks.length > 1 && (
-              <select
-                value={bank?.bank_code || ''}
-                onChange={handleSiblingChange}
-                className="bb-depot-select"
-                aria-label="Switch depot in this city"
-              >
-                {siblingBanks.map((s) => (
-                  <option key={s.id} value={s.bank_code}>
-                    Depot {s.bank_code} - {s.name.split(' ')[0]} ({s.total_units} Units)
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-        </div>
-
         {loading ? (
           <div style={{ textAlign: 'center', padding: '80px 0', color: '#8E9690' }}>
             <RefreshCw size={26} className="spin-slow" style={{ animation: 'spin 1s linear infinite' }} />
@@ -126,10 +78,6 @@ export default function BloodBankDetailPage() {
                 <div className="bb-depot-title-group">
                   <div className="bb-bank-header-meta">
                     <span className="bb-bank-id-badge">DEPOT CODE: {bank.bank_code}</span>
-                    <span className="bb-bank-category-badge">{bank.category}</span>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.78rem', color: '#2E7D32', fontWeight: 700 }}>
-                      <ShieldCheck size={16} color="#2E7D32" /> Government Certified & Verified Depot
-                    </span>
                   </div>
 
                   <h1 className="bb-depot-name">{bank.name}</h1>

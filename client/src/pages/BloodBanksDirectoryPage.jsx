@@ -2,16 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import PortalHeader from '../components/PortalHeader';
 import { 
-  Building2, 
-  MapPin, 
   Droplet, 
   Search, 
-  ShieldCheck, 
   ArrowRight, 
   Activity, 
-  AlertTriangle,
-  RefreshCw,
-  PhoneCall
+  AlertTriangle, 
+  RefreshCw, 
+  PhoneCall 
 } from 'lucide-react';
 import '../styles/blood-banks.css';
 
@@ -19,8 +16,7 @@ import '../styles/blood-banks.css';
 const REGION_MAP = {
   'Central Gujarat': ['Ahmedabad', 'Vadodara', 'Anand', 'Kheda', 'Panchmahal', 'Dahod', 'Mahisagar', 'Chhota Udaipur'],
   'North Gujarat': ['Gandhinagar', 'Banaskantha', 'Vav-Tharad', 'Patan', 'Mehsana', 'Sabarkantha', 'Aravalli'],
-  'South Gujarat': ['Surat', 'Bharuch', 'Narmada', 'Navsari', 'Valsad', 'Tapi', 'Dang'],
-  'Saurashtra & Kutch': ['Rajkot', 'Bhavnagar', 'Jamnagar', 'Junagadh', 'Kutch', 'Morbi', 'Surendranagar', 'Amreli', 'Porbandar', 'Gir Somnath', 'Devbhumi Dwarka', 'Botad']
+  'South Gujarat': ['Surat', 'Bharuch', 'Narmada', 'Navsari', 'Valsad', 'Tapi', 'Dang']
 };
 
 export default function BloodBanksDirectoryPage() {
@@ -67,61 +63,14 @@ export default function BloodBanksDirectoryPage() {
       <main className="bb-page-content">
         {/* Hero Banner */}
         <section className="bb-hero-banner">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '14px' }}>
-            <div className="bb-hero-badge" style={{ marginBottom: 0 }}>
-              <ShieldCheck size={14} />
-              <span>Official Gujarat Cold-Storage Network</span>
-            </div>
-
-            <Link to="/our-area" className="bb-btn-back">
-              <MapPin size={14} color="#EF4E4E" />
-              <span>Interactive Map View</span>
-            </Link>
-          </div>
-
           <h1 className="bb-hero-title">
             Verified Blood Banks & <br />
             <em>Cold Storage Reserves.</em>
           </h1>
-          <p className="bb-hero-subtitle">
+          <p className="bb-hero-subtitle" style={{ marginBottom: 0 }}>
             Direct monitoring of blood depots, cold-storage unit capacities, emergency hospital dispatch helplines,
             and live availability across all 34 official districts of Gujarat.
           </p>
-
-          {/* Metric Chips */}
-          <div className="bb-metrics-row">
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon red">
-                <Building2 size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">{data?.meta?.total_blood_banks || '111'}</span>
-                <span className="bb-metric-label">Verified Blood Banks</span>
-              </div>
-            </div>
-
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon green">
-                <MapPin size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">34 / 34</span>
-                <span className="bb-metric-label">Districts Covered</span>
-              </div>
-            </div>
-
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon blue">
-                <Droplet size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">
-                  {data?.meta?.total_units_in_cold_storage?.toLocaleString() || '10,000+'}
-                </span>
-                <span className="bb-metric-label">Units in Storage</span>
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* Search & Region Filter Toolbar */}
@@ -188,7 +137,7 @@ export default function BloodBanksDirectoryPage() {
                   <div className="bb-city-facilities">
                     {item.banks.slice(0, 3).map((b) => (
                       <span key={b.id} className="bb-facility-tag">
-                        {b.name.split(' ')[0]} {b.category.split('/')[0]}
+                        {b.name.split(' ')[0]} Depot
                       </span>
                     ))}
                     {item.banks.length > 3 && (

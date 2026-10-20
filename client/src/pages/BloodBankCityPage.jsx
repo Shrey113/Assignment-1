@@ -1,32 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import PortalHeader from '../components/PortalHeader';
 import { 
-  Building2, 
   MapPin, 
-  Droplet, 
   Phone, 
   AlertCircle, 
-  ArrowLeft, 
   ArrowRight, 
-  ShieldCheck, 
-  Users, 
   RefreshCw,
   Clock
 } from 'lucide-react';
 import '../styles/blood-banks.css';
 
-const GUJARAT_DISTRICTS = [
-  'Ahmedabad', 'Amreli', 'Anand', 'Aravalli', 'Banaskantha', 'Bharuch', 'Bhavnagar',
-  'Botad', 'Chhota Udaipur', 'Dahod', 'Dang', 'Devbhumi Dwarka', 'Gandhinagar',
-  'Gir Somnath', 'Jamnagar', 'Junagadh', 'Kheda', 'Kutch', 'Mahisagar', 'Mehsana',
-  'Morbi', 'Narmada', 'Navsari', 'Panchmahal', 'Patan', 'Porbandar', 'Rajkot',
-  'Sabarkantha', 'Surat', 'Surendranagar', 'Tapi', 'Vadodara', 'Valsad', 'Vav-Tharad'
-];
-
 export default function BloodBankCityPage() {
   const { city } = useParams();
-  const navigate = useNavigate();
   const [cityData, setCityData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,12 +34,6 @@ export default function BloodBankCityPage() {
     loadCityData();
   }, [city]);
 
-  const handleCityChange = (e) => {
-    const newCity = e.target.value;
-    if (newCity) {
-      navigate(`/blood-banks/${encodeURIComponent(newCity)}`);
-    }
-  };
 
   const currentCityName = cityData?.city || city;
 
@@ -62,77 +42,6 @@ export default function BloodBankCityPage() {
       <PortalHeader pageTitle={`Blood Banks / ${currentCityName}`} />
 
       <main className="bb-page-content">
-        {/* City Command Hero Banner */}
-        <section className="bb-hero-banner">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-            <div className="bb-hero-badge" style={{ marginBottom: 0 }}>
-              <MapPin size={14} />
-              <span>District Cold Storage Network</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <Link to="/blood-banks" className="bb-btn-back">
-                <ArrowLeft size={14} />
-                <span>All Gujarat Cities</span>
-              </Link>
-
-              <select
-                value={currentCityName}
-                onChange={handleCityChange}
-                className="bb-depot-select"
-                aria-label="Select Gujarat District"
-              >
-                {GUJARAT_DISTRICTS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <h1 className="bb-hero-title">
-            {currentCityName} <br />
-            <em>Blood Banks & Depots.</em>
-          </h1>
-          <p className="bb-hero-subtitle">
-            Verified cold storage reserves, direct dispatch hotlines, and inventory units 
-            across certified medical centers in {currentCityName}.
-          </p>
-
-          {/* Metric Chips Row */}
-          <div className="bb-metrics-row">
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon red">
-                <Building2 size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">{cityData?.aggregates?.bank_count || '0'}</span>
-                <span className="bb-metric-label">Verified Depots</span>
-              </div>
-            </div>
-
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon blue">
-                <Droplet size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">{cityData?.aggregates?.total_units || '0'}</span>
-                <span className="bb-metric-label">Total Units Stored</span>
-              </div>
-            </div>
-
-            <div className="bb-metric-chip">
-              <div className="bb-metric-icon green">
-                <Users size={18} />
-              </div>
-              <div className="bb-metric-content">
-                <span className="bb-metric-value">{cityData?.backup_donors_count || '0'}</span>
-                <span className="bb-metric-label">Active Backup Donors</span>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Stack of Blood Bank Cards in this City */}
         {loading ? (
@@ -160,10 +69,6 @@ export default function BloodBankCityPage() {
                     <div className="bb-bank-title-block">
                       <div className="bb-bank-header-meta">
                         <span className="bb-bank-id-badge">ID: {bank.bank_code}</span>
-                        <span className="bb-bank-category-badge">{bank.category}</span>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.74rem', color: '#2E7D32', fontWeight: 600 }}>
-                          <ShieldCheck size={14} color="#2E7D32" /> Verified Depot
-                        </span>
                       </div>
                       <h2 className="bb-bank-name">{bank.name}</h2>
                       <div className="bb-bank-address">
