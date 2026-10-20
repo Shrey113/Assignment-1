@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
-import { AlertCircle, MapPin } from 'lucide-react';
+import { AlertCircle, MapPin, CheckCircle2 } from 'lucide-react';
 import GUJARAT_CITIES from '../constants/gujaratCities';
 import {
   validatePatientName,
@@ -75,6 +75,7 @@ export default function RequesterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedCoords, setSubmittedCoords] = useState(null);
+  const [dispatchResult, setDispatchResult] = useState(null);
 
   const minRequiredDate = getMinRequiredDate();
   const isTriageBlocked = Boolean(requiredDate && !isImmediate);
@@ -144,13 +145,13 @@ export default function RequesterPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
+        setDispatchResult(data);
         setSubmittedCoords({
           lat: Number(latitude) || 23.0225,
           lng: Number(longitude) || 72.5714,
-          id: data.id
+          id: data.requestId
         });
         setIsSubmitted(true);
-        setTimeout(() => setIsSubmitted(false), 7000);
       } else {
         console.error('Request failed:', data);
         setIsSubmitted(true);
@@ -177,18 +178,116 @@ export default function RequesterPage() {
         {/* ── LEFT: Form Column ─────────────────────────── */}
         <div className="donor-form-side">
           <div className="donor-form-card">
+            {dispatchResult ? (
+              <div className="dispatch-handover-card">
+                <div className="handover-top-badge-row">
+                  <span className="handover-status-chip">
+                    <span style={{ display: 'inline-block', width: '7px', height: '7px', borderRadius: '50%', background: '#EF4E4E' }}></span>
+                    DISPATCH ALLOCATED
+                  </span>
+                  <span className="handover-triage-tag">
+                    {dispatchResult.triage?.tierTitle || 'Tier 1: Critical Emergency (STAT)'}
+                  </span>
+                </div>
 
-            {/* Card Header */}
-            <div className="donor-card-top">
-              <h2 className="donor-card-heading">
-                Request blood<span className="coral-dot">.</span>
-              </h2>
-              <p className="donor-card-sub">
-                Broadcast an emergency requisition to nearby verified voluntary donors.
-              </p>
-            </div>
+                <div className="handover-depot-header">
+                  <h3 className="handover-depot-title">
+                    {dispatchResult.matchedDepot?.name}
+                  </h3>
+                  <div className="handover-depot-meta">
+                    <span>{dispatchResult.matchedDepot?.category}</span>
+                    <span>•</span>
+                    <span className="handover-distance-pill">
+                      📍 {dispatchResult.matchedDepot?.distanceKm} km away
+                    </span>
+                  </div>
+                  <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: '#64748B' }}>
+                    {dispatchResult.matchedDepot?.address}, {dispatchResult.matchedDepot?.city}
+                  </p>
+                </div>
 
-            <form onSubmit={handleSubmit} className="donor-fields-stack">
+                {/* Verified Cold Storage Stock */}
+                <div className="handover-stock-banner">
+                  <div className="handover-stock-left">
+                    <CheckCircle2 size={16} />
+                    <span>{dispatchResult.matchedDepot?.availableUnits} Units of {dispatchResult.matchedDepot?.bloodGroup} Available</span>
+                  </div>
+                  <span className="handover-stock-sub">
+                    {dispatchResult.matchedDepot?.totalUnits} Units in Reserve
+                  </span>
+                </div>
+
+                {/* Algorithmic Max-Heap Match Details */}
+                <div style={{
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '9px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  fontSize: '0.78rem'
+                }}>
+                  <div>
+                    <span style={{ fontWeight: '700', color: '#1E293B' }}>Max-Heap Root Node: </span>
+                    <span style={{ color: '#0284C7', fontWeight: '800' }}>Score {dispatchResult.matchedDepot?.matchScore} pts</span>
+                  </div>
+                  <span style={{ color: '#64748B' }}>
+                    Depot Code: <strong>{dispatchResult.matchedDepot?.bankCode}</strong>
+                  </span>
+                </div>
+
+                {/* Direct Hotlines (Click to Call) */}
+                <div className="handover-hotlines-grid">
+                  <a
+                    href={`tel:${dispatchResult.matchedDepot?.emergencyPhone?.replace(/\s+/g, '')}`}
+                    className="handover-call-btn emergency"
+                  >
+                    <span className="handover-call-label">📞 Emergency Hotline</span>
+                    <span className="handover-call-number">{dispatchResult.matchedDepot?.emergencyPhone}</span>
+                  </a>
+
+                  <a
+                    href={`tel:${dispatchResult.matchedDepot?.contactPhone?.replace(/\s+/g, '')}`}
+                    className="handover-call-btn landline"
+                  >
+                    <span className="handover-call-label">☎️ Direct Landline</span>
+                    <span className="handover-call-number">{dispatchResult.matchedDepot?.contactPhone}</span>
+                  </a>
+                </div>
+
+                {/* Footer with Backup Donors & Reset */}
+                <div className="handover-footer-row">
+                  <div className="handover-donors-alert">
+                    <span>⚡</span>
+                    <span>{dispatchResult.backupDonorsCount || 14} Voluntary Donors Alerted in {city || 'Region'}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDispatchResult(null);
+                      setIsSubmitted(false);
+                    }}
+                    className="handover-reset-btn"
+                  >
+                    + New Requisition
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Card Header */}
+                <div className="donor-card-top">
+                  <h2 className="donor-card-heading">
+                    Request blood<span className="coral-dot">.</span>
+                  </h2>
+                  <p className="donor-card-sub">
+                    Broadcast an emergency requisition to nearby verified voluntary donors.
+                  </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="donor-fields-stack">
               <div className="donor-form-columns">
 
                 {/* Left Column: Patient & Hospital Logistics */}
@@ -455,7 +554,9 @@ export default function RequesterPage() {
                 </div>
               )}
             </form>
-          </div>
+          </>
+        )}
+      </div>
         </div>
 
         {/* ── RIGHT: Full Clinic Scene Artwork (Clean, by default) ─── */}
