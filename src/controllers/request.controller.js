@@ -14,20 +14,22 @@ export async function createRequest(req, res, next) {
       units,
       urgency,
       requiredDate,
-      isImmediate
+      isImmediate,
+      latitude,
+      longitude
     } = req.body;
 
     // Spying on the server side - log incoming request
     console.log('[Server Log: Request] Received request to add blood request:');
-    console.log({ patientName, hospital, city, bloodGroup, units, urgency, requiredDate, isImmediate });
+    console.log({ patientName, hospital, city, bloodGroup, units, urgency, requiredDate, isImmediate, latitude, longitude });
 
     const pool = getPool();
 
-    // Simple, direct INSERT query
+    // Direct INSERT query with latitude and longitude
     const query = `
       INSERT INTO requests (
-        patient_name, hospital, city, blood_group, units, urgency, required_date, is_immediate, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'PENDING');
+        patient_name, hospital, city, blood_group, units, urgency, required_date, is_immediate, latitude, longitude, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'PENDING');
     `;
 
     const values = [
@@ -38,7 +40,9 @@ export async function createRequest(req, res, next) {
       Number(units) || 1,
       urgency || null,
       isImmediate ? null : (requiredDate || null),
-      isImmediate ? 1 : 0
+      isImmediate ? 1 : 0,
+      latitude !== undefined && latitude !== null ? Number(latitude) : null,
+      longitude !== undefined && longitude !== null ? Number(longitude) : null
     ];
 
     const [result] = await pool.query(query, values);
@@ -48,7 +52,9 @@ export async function createRequest(req, res, next) {
     return res.status(201).json({
       success: true,
       message: 'Blood request added successfully',
-      id: result.insertId
+      id: result.insertId,
+      latitude: latitude || null,
+      longitude: longitude || null
     });
   } catch (error) {
     console.error('[Server Log: Request Error]', error.message);

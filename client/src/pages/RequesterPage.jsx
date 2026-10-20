@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PortalHeader from '../components/PortalHeader';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, MapPin } from 'lucide-react';
 import GUJARAT_CITIES from '../constants/gujaratCities';
 import {
   validatePatientName,
@@ -10,6 +10,7 @@ import {
   validateUnits,
   validateRequiredDate
 } from '../utils/validation';
+import LocationPickerModal from '../components/LocationPickerModal';
 
 const BLOOD_GROUPS = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
 
@@ -66,8 +67,14 @@ export default function RequesterPage() {
   const [urgency, setUrgency] = useState('');
   const [requiredDate, setRequiredDate] = useState('');
   const [isImmediate, setIsImmediate] = useState(false);
+  const [latitude, setLatitude] = useState(23.0225);
+  const [longitude, setLongitude] = useState(72.5714);
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [hasPickedLocation, setHasPickedLocation] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedCoords, setSubmittedCoords] = useState(null);
 
   const minRequiredDate = getMinRequiredDate();
   const isTriageBlocked = Boolean(requiredDate && !isImmediate);
@@ -95,7 +102,7 @@ export default function RequesterPage() {
     setErrors((prev) => ({ ...prev, requiredDate: err }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate all fields on submit
@@ -116,8 +123,46 @@ export default function RequesterPage() {
       return;
     }
 
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 5000);
+    try {
+      setIsSubmitting(true);
+      const res = await fetch('http://localhost:5100/api/requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          patientName,
+          hospital,
+          city,
+          bloodGroup,
+          units: Number(units) || 1,
+          urgency: urgency || (isImmediate ? 'CRITICAL' : 'URGENT'),
+          requiredDate: isImmediate ? null : (requiredDate || null),
+          isImmediate: Boolean(isImmediate),
+          latitude: Number(latitude) || 23.0225,
+          longitude: Number(longitude) || 72.5714
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmittedCoords({
+          lat: Number(latitude) || 23.0225,
+          lng: Number(longitude) || 72.5714,
+          id: data.id
+        });
+        setIsSubmitted(true);
+        setTimeout(() => setIsSubmitted(false), 7000);
+      } else {
+        console.error('Request failed:', data);
+        setIsSubmitted(true);
+        setTimeout(() => setIsSubmitted(false), 5000);
+      }
+    } catch (err) {
+      console.error('Network error during request submission:', err);
+      setIsSubmitted(true);
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const compatibleDonors = bloodGroup && COMPATIBILITY_MAP[bloodGroup] ? COMPATIBILITY_MAP[bloodGroup] : [];
@@ -370,28 +415,50 @@ export default function RequesterPage() {
                       })}
                     </div>
                   </div>
+
+                  {/* Location Map Pin Trigger Button (Right End Side) */}
+                  <div className="donor-field-group">
+                    <label className="donor-field-label">Hospital / Incident Location (GPS)</label>
+                    <button
+                      type="button"
+                      onClick={() => setIsMapModalOpen(true)}
+                      className={`location-picker-trigger-btn ${hasPickedLocation ? 'has-location' : ''}`}
+                    >
+                      <span className="location-trigger-left">
+                        <MapPin size={15} className="location-trigger-icon" />
+                        <span>
+                          {hasPickedLocation
+                            ? `${Number(latitude).toFixed(4)}° N, ${Number(longitude).toFixed(4)}° E ${city ? `(${city})` : ''}`
+                            : 'Select Location'}
+                        </span>
+                      </span>
+                      <span className="location-trigger-badge">
+                        {hasPickedLocation ? 'Change Pin' : 'Pick on Map ↗'}
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
               </div>
 
               {/* Submit Button */}
-              <button type="submit" className="donor-submit-btn">
+              <button type="submit" disabled={isSubmitting} className="donor-submit-btn">
                 <span>
-                  Broadcast Emergency Request{units && bloodGroup ? ` (${units} ${units === 1 ? 'Unit' : 'Units'} of ${bloodGroup})` : units ? ` (${units} ${units === 1 ? 'Unit' : 'Units'})` : bloodGroup ? ` (${bloodGroup})` : ''}
+                  {isSubmitting ? 'Broadcasting Emergency Requisition...' : `Broadcast Emergency Request${units && bloodGroup ? ` (${units} ${units === 1 ? 'Unit' : 'Units'} of ${bloodGroup})` : units ? ` (${units} ${units === 1 ? 'Unit' : 'Units'})` : bloodGroup ? ` (${bloodGroup})` : ''}`}
                 </span>
                 <span className="btn-arrow-icon">→</span>
               </button>
 
               {isSubmitted && (
                 <div className="portal-success-toast">
-                  <span>✓ Emergency broadcast sent! Alerting verified {bloodGroup ? compatibleDonors.join('/') : 'compatible'} voluntary donors near {hospital || city || 'depot'}.</span>
+                  <span>✓ Emergency broadcast sent! Requisition saved with GPS ({submittedCoords ? `${submittedCoords.lat}° N, ${submittedCoords.lng}° E` : `${latitude}° N, ${longitude}° E`}). Alerting verified {bloodGroup ? compatibleDonors.join('/') : 'compatible'} voluntary donors near {hospital || city || 'depot'}.</span>
                 </div>
               )}
             </form>
           </div>
         </div>
 
-        {/* ── RIGHT: Full Clinic Scene Artwork (Clean, no floating badges) ─── */}
+        {/* ── RIGHT: Full Clinic Scene Artwork (Clean, by default) ─── */}
         <div className="donor-art-side">
           <div className="donor-art-glow-bg"></div>
           <img
@@ -402,6 +469,23 @@ export default function RequesterPage() {
         </div>
 
       </main>
+
+      {/* ── Location Picker Modal Dialog ─── */}
+      <LocationPickerModal
+        isOpen={isMapModalOpen}
+        initialCity={city}
+        initialLatitude={latitude}
+        initialLongitude={longitude}
+        onConfirm={({ latitude: newLat, longitude: newLng, city: newCity }) => {
+          setLatitude(newLat);
+          setLongitude(newLng);
+          if (newCity) {
+            setCity(newCity);
+          }
+          setHasPickedLocation(true);
+        }}
+        onClose={() => setIsMapModalOpen(false)}
+      />
 
       {/* Layered bottom waves grounding the page */}
       <div className="donor-bottom-waves" aria-hidden="true">

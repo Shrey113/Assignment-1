@@ -461,9 +461,46 @@ function generateDistrictsBloodBanks(districtName) {
   return banks;
 }
 
+const GUJARAT_DISTRICT_CENTERS = {
+  'Ahmedabad': { lat: 23.0225, lng: 72.5714 },
+  'Amreli': { lat: 21.6032, lng: 71.2221 },
+  'Anand': { lat: 22.5645, lng: 72.9289 },
+  'Aravalli': { lat: 23.4623, lng: 73.3082 },
+  'Banaskantha': { lat: 24.1724, lng: 72.4346 },
+  'Bharuch': { lat: 21.7051, lng: 72.9959 },
+  'Bhavnagar': { lat: 21.7645, lng: 72.1519 },
+  'Botad': { lat: 22.1704, lng: 71.6668 },
+  'Chhota Udaipur': { lat: 22.3072, lng: 74.0128 },
+  'Dahod': { lat: 22.8344, lng: 74.2562 },
+  'Dang': { lat: 20.7534, lng: 73.6983 },
+  'Devbhumi Dwarka': { lat: 22.2442, lng: 68.9685 },
+  'Gandhinagar': { lat: 23.2156, lng: 72.6369 },
+  'Gir Somnath': { lat: 20.9009, lng: 70.3639 },
+  'Jamnagar': { lat: 22.4707, lng: 70.0577 },
+  'Junagadh': { lat: 21.5222, lng: 70.4579 },
+  'Kheda': { lat: 22.7533, lng: 72.6841 },
+  'Kutch': { lat: 23.2420, lng: 69.6669 },
+  'Mahisagar': { lat: 23.1367, lng: 73.6148 },
+  'Mehsana': { lat: 23.5880, lng: 72.3693 },
+  'Morbi': { lat: 22.8173, lng: 70.8370 },
+  'Narmada': { lat: 21.8711, lng: 73.5027 },
+  'Navsari': { lat: 20.9467, lng: 72.9520 },
+  'Panchmahal': { lat: 22.7756, lng: 73.6149 },
+  'Patan': { lat: 23.8493, lng: 72.1266 },
+  'Porbandar': { lat: 21.6417, lng: 69.6293 },
+  'Rajkot': { lat: 22.3039, lng: 70.8022 },
+  'Sabarkantha': { lat: 23.6022, lng: 72.9644 },
+  'Surat': { lat: 21.1702, lng: 72.8311 },
+  'Surendranagar': { lat: 22.7277, lng: 71.6370 },
+  'Tapi': { lat: 21.2464, lng: 73.3942 },
+  'Vadodara': { lat: 22.3072, lng: 73.1812 },
+  'Valsad': { lat: 20.5992, lng: 72.9342 },
+  'Vav-Tharad': { lat: 24.3940, lng: 71.6267 }
+};
+
 export async function seedAllBloodBanks() {
   const pool = getPool();
-  console.log('[*] Seeding Blood Banks for all 34 Gujarat Districts...');
+  console.log('[*] Seeding Blood Banks for all 34 Gujarat Districts with GPS coordinates...');
 
   // 1. Clear existing rows in blood_banks
   await pool.query('DELETE FROM blood_banks;');
@@ -473,18 +510,24 @@ export async function seedAllBloodBanks() {
   for (const district of GUJARAT_DISTRICTS_34) {
     const cleanSlug = district.toLowerCase().replace(/[^a-z0-9]/g, '-');
     const banks = CITY_TEMPLATES[district] || generateDistrictsBloodBanks(district);
+    const base = GUJARAT_DISTRICT_CENTERS[district] || { lat: 22.2587, lng: 71.1924 };
 
     for (const b of banks) {
       const bankId = `${cleanSlug}_${b.code}`;
       const s = b.stock;
       const totalUnits = s.o_pos + s.o_neg + s.a_pos + s.a_neg + s.b_pos + s.b_neg + s.ab_pos + s.ab_neg;
 
+      const codeNum = parseInt(b.code, 10) || 1;
+      const lat = b.latitude || Number((base.lat + (codeNum - 1) * 0.015 - 0.007).toFixed(5));
+      const lng = b.longitude || Number((base.lng + (codeNum - 1) * -0.012 + 0.006).toFixed(5));
+
       const sql = `
         INSERT INTO blood_banks (
           id, bank_code, name, city, category, address, contact_phone, emergency_phone, operating_hours,
+          latitude, longitude,
           stock_o_pos, stock_o_neg, stock_a_pos, stock_a_neg, stock_b_pos, stock_b_neg, stock_ab_pos, stock_ab_neg,
           total_units, is_verified
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
       `;
 
       await pool.query(sql, [
@@ -497,6 +540,8 @@ export async function seedAllBloodBanks() {
         b.contact_phone,
         b.emergency_phone,
         b.operating_hours || '24/7 Emergency Service',
+        lat,
+        lng,
         s.o_pos,
         s.o_neg,
         s.a_pos,

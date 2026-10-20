@@ -1,0 +1,391 @@
+/* ── Requester Black Gujarat Location Map & Modal Styles ────────────────────── */
+
+/* Modal Backdrop */
+.location-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 18, 16, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Window Container */
+.location-modal-window {
+  width: 100%;
+  max-width: 860px;
+  height: 88vh;
+  max-height: 640px;
+  background: #111513;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalScaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Modal Header */
+.location-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: #161B18;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.location-modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.location-modal-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(239, 78, 78, 0.15);
+  border: 1px solid rgba(239, 78, 78, 0.3);
+  color: #EF4E4E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.location-modal-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #F9FAFB;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.location-modal-sub {
+  font-size: 0.74rem;
+  color: #9CA3AF;
+  margin: 2px 0 0 0;
+}
+
+.location-modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.modal-header-btn.current-loc {
+  color: #FFFFFF;
+  background: #EF4E4E;
+  border: 1px solid #DC2626;
+  box-shadow: 0 2px 8px rgba(239, 78, 78, 0.3);
+}
+
+.modal-header-btn.current-loc:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+}
+
+.modal-header-btn.reset-btn {
+  color: #D1D5DB;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.modal-header-btn.reset-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.modal-close-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #9CA3AF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  margin-left: 6px;
+}
+
+.modal-close-icon-btn:hover {
+  background: rgba(239, 78, 78, 0.15);
+  color: #EF4E4E;
+  border-color: rgba(239, 78, 78, 0.3);
+}
+
+/* Modal Map Body */
+.location-modal-map-body {
+  width: 100%;
+  flex: 1;
+  min-height: 360px;
+  position: relative;
+  background: #0E1210 !important;
+  cursor: crosshair;
+}
+
+.location-modal-map-body .leaflet-container {
+  background: #0E1210 !important;
+  font-family: inherit;
+}
+
+/* Modal Footer */
+.location-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: #161B18;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.modal-footer-coords-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #34D399;
+  background: #0E1210;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.modal-footer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  display: inline-block;
+  box-shadow: 0 0 8px #10B981;
+  animation: blinkDot 1.6s infinite ease-in-out;
+}
+
+@keyframes blinkDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.modal-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-cancel-btn {
+  padding: 8px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #D1D5DB;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.modal-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+
+.modal-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: #EF4E4E;
+  border: 1px solid #DC2626;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(239, 78, 78, 0.4);
+  transition: all 0.18s ease;
+}
+
+.modal-confirm-btn:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239, 78, 78, 0.5);
+}
+
+/* ── In-Form Location Trigger Button (On the form card) ─────────────────── */
+.location-picker-trigger-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: #FAF7F2;
+  border: 1.5px dashed rgba(239, 78, 78, 0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  margin-top: 4px;
+}
+
+.location-picker-trigger-btn:hover {
+  background: #FEE4E2;
+  border-color: #EF4E4E;
+  transform: translateY(-1px);
+}
+
+.location-picker-trigger-btn.has-location {
+  background: #F0FDF4;
+  border: 1.5px solid #10B981;
+}
+
+.location-picker-trigger-btn.has-location:hover {
+  background: #DCFCE7;
+}
+
+.location-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.location-trigger-icon {
+  color: #EF4E4E;
+  flex-shrink: 0;
+}
+
+.location-trigger-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #EF4E4E;
+  background: #FFFFFF;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 78, 78, 0.25);
+}
+
+.location-picker-trigger-btn.has-location .location-trigger-badge {
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Tooltip on Dark Map */
+.dark-district-tooltip {
+  background: rgba(17, 21, 19, 0.94) !important;
+  color: #F9FAFB !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 6px !important;
+  padding: 3px 8px !important;
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark-district-tooltip:before {
+  border-top-color: rgba(17, 21, 19, 0.94) !important;
+}
+
+/* Custom Glowing Marker */
+.emergency-pin-wrapper {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emergency-pin-bubble {
+  width: 32px;
+  height: 32px;
+  background: #EF4E4E;
+  border: 3px solid #FFFFFF;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 0 20px rgba(239, 78, 78, 0.8), 0 4px 12px rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: transform 0.15s ease;
+  animation: beaconPulse 2s infinite ease-in-out;
+}
+
+@keyframes beaconPulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(239, 78, 78, 0.7), 0 4px 10px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(239, 78, 78, 0.95), 0 0 8px #FF8A8A;
+  }
+}
+
+.emergency-pin-bubble:active {
+  cursor: grabbing;
+  transform: rotate(-45deg) scale(1.15);
+}
+
+.emergency-pin-dot {
+  width: 9px;
+  height: 9px;
+  background: #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.emergency-pin-pulse {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 18px;
+  height: 8px;
+  background: rgba(239, 78, 78, 0.45);
+  border-radius: 50%;
+  filter: blur(2px);
+}

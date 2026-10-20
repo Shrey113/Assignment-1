@@ -290,7 +290,7 @@ export default function OurAreaPage() {
     // Create map with completely free drag area and smooth inertia
     const map = L.map(mapContainerRef.current, {
       center: [22.4, 71.4],
-      zoom: 7.2,
+      zoom: 5.2,
       minZoom: 5.5,
       maxZoom: 11,
       zoomControl: true,

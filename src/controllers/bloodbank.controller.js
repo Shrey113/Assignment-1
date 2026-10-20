@@ -14,6 +14,7 @@ export async function getAllCitiesBloodBanks(req, res, next) {
     const [rows] = await pool.query(`
       SELECT 
         id, bank_code, name, city, category, address, contact_phone, emergency_phone, operating_hours,
+        latitude, longitude,
         stock_o_pos, stock_o_neg, stock_a_pos, stock_a_neg, stock_b_pos, stock_b_neg, stock_ab_pos, stock_ab_neg,
         total_units, is_verified, last_updated
       FROM blood_banks
@@ -123,6 +124,7 @@ export async function getBloodBanksByCity(req, res, next) {
     const [banks] = await pool.query(`
       SELECT 
         id, bank_code, name, city, category, address, contact_phone, emergency_phone, operating_hours,
+        latitude, longitude,
         stock_o_pos, stock_o_neg, stock_a_pos, stock_a_neg, stock_b_pos, stock_b_neg, stock_ab_pos, stock_ab_neg,
         total_units, is_verified, last_updated
       FROM blood_banks
