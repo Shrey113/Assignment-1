@@ -48,27 +48,26 @@ export class MultilevelQueue {
   }
 
   classifyTier(req) {
-    // Priority 1: STAT Immediate Emergency or Explicitly Critical
+    // Priority 1
     if (req.isImmediate === true || req.urgency === 'CRITICAL') {
       return TRIAGE_TIERS.CRITICAL;
     }
 
-    // Priority 2: Inpatient Urgent Requirement (< 4h)
+    // Priority 2
     if (req.urgency === 'URGENT') {
       return TRIAGE_TIERS.URGENT;
     }
 
-    // Priority 3: Elective / Scheduled Surgery (< 24h)
+    // Priority 3
     if (req.urgency === 'SCHEDULED') {
       return TRIAGE_TIERS.SCHEDULED;
     }
 
-    // Priority 4: Specified Future Date Reservation
+    // Priority 4
     if (req.requiredDate && !req.isImmediate) {
       return TRIAGE_TIERS.FUTURE;
     }
 
-    // Fallback default: Urgent triage
     return TRIAGE_TIERS.URGENT;
   }
 
@@ -144,11 +143,6 @@ export class MultilevelQueue {
     };
   }
 
-  /**
-   * Peeks at the highest-priority request ready to be dispatched without removing it.
-   * Time Complexity: O(1)
-   * @returns {Object|null}
-   */
   peek() {
     if (!this.criticalQueue.isEmpty()) return this.criticalQueue.peek();
     if (!this.urgentQueue.isEmpty()) return this.urgentQueue.peek();
@@ -157,10 +151,6 @@ export class MultilevelQueue {
     return null;
   }
 
-  /**
-   * Checks if all 4 priority queues are empty.
-   * @returns {boolean}
-   */
   isEmpty() {
     return (
       this.criticalQueue.isEmpty() &&
@@ -170,11 +160,6 @@ export class MultilevelQueue {
     );
   }
 
-  /**
-   * Returns current count of requests for a specific tier.
-   * @param {string} tierId
-   * @returns {number}
-   */
   getQueueSizeForTier(tierId) {
     switch (tierId) {
       case 'CRITICAL': return this.criticalQueue.size();
@@ -185,10 +170,6 @@ export class MultilevelQueue {
     }
   }
 
-  /**
-   * Returns real-time statistics across all 4 queues.
-   * @returns {Object}
-   */
   getStatus() {
     return {
       critical: this.criticalQueue.size(),
@@ -205,10 +186,6 @@ export class MultilevelQueue {
     };
   }
 
-  /**
-   * Returns complete array snapshots of all 4 queues for audit and UI inspectors.
-   * @returns {Object}
-   */
   getSnapshot() {
     return {
       critical: this.criticalQueue.toArray(),
@@ -219,9 +196,6 @@ export class MultilevelQueue {
     };
   }
 
-  /**
-   * Drains and clears all 4 queues.
-   */
   clear() {
     this.criticalQueue.clear();
     this.urgentQueue.clear();
