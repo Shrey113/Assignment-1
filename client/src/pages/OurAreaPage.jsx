@@ -101,6 +101,7 @@ export default function OurAreaPage() {
   // Data & UI states
   const [districtStats, setDistrictStats] = useState({});
   const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [userLocationDistrict, setUserLocationDistrict] = useState(null);
   const [selectedBloodFilter, setSelectedBloodFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -127,6 +128,84 @@ export default function OurAreaPage() {
       }
     }
     fetchStats();
+  }, []);
+
+  // Silently detect user's current city via IP geolocation (Zero permission prompts required!)
+  useEffect(() => {
+    let isMounted = true;
+
+    async function detectUserLocation() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        if (!res.ok) throw new Error('ipapi failed');
+        const data = await res.json();
+        const city = data.city;
+        const lat = data.latitude;
+        const lng = data.longitude;
+
+        let matched = null;
+
+        // 1. Check if detected city matches a district or city in Gujarat
+        if (city) {
+          const direct = SEARCHABLE_ENTRIES.find(
+            (s) => s.label.toLowerCase() === city.toLowerCase() ||
+                   s.district.toLowerCase() === city.toLowerCase()
+          );
+          if (direct) matched = direct.district;
+        }
+
+        // 2. Fallback: Proximity match by coordinates to closest Gujarat district
+        if (!matched && lat && lng) {
+          let minDist = Infinity;
+          gujaratGeoJson.features.forEach((f) => {
+            const dLat = f.properties.lat;
+            const dLng = f.properties.lng;
+            const dist = Math.hypot(dLat - lat, dLng - lng);
+            if (dist < minDist) {
+              minDist = dist;
+              matched = f.properties.district;
+            }
+          });
+        }
+
+        if (matched && isMounted) {
+          setUserLocationDistrict(matched);
+          setSelectedDistrict(matched);
+          setInspectorOpen(true);
+
+          const feature = gujaratGeoJson.features.find((f) => f.properties.district === matched);
+          if (feature && mapInstanceRef.current) {
+            mapInstanceRef.current.flyTo([feature.properties.lat, feature.properties.lng], 8.5, {
+              duration: 1.2
+            });
+          }
+        }
+      } catch (err) {
+        // Backup fallback: ipwho.is
+        try {
+          const res2 = await fetch('https://ipwho.is/');
+          const data2 = await res2.json();
+          if (data2 && data2.success && isMounted) {
+            const city2 = data2.city;
+            const direct = SEARCHABLE_ENTRIES.find(
+              (s) => s.label.toLowerCase() === (city2 || '').toLowerCase() ||
+                     s.district.toLowerCase() === (city2 || '').toLowerCase()
+            );
+            if (direct) {
+              setUserLocationDistrict(direct.district);
+              setSelectedDistrict(direct.district);
+              setInspectorOpen(true);
+            }
+          }
+        } catch (fallbackErr) {
+          console.log('Location detection fallback error:', fallbackErr);
+        }
+      }
+    }
+
+    detectUserLocation();
+
+    return () => { isMounted = false; };
   }, []);
 
   // Filter suggestions based on searchQuery
@@ -566,6 +645,9 @@ export default function OurAreaPage() {
                 <div className="inspector-title-area">
                   <div className="inspector-badge-row">
                     <span className="inspector-tag district-type">District</span>
+                    {selectedDistrict === userLocationDistrict && (
+                      <span className="inspector-tag location-tag">📍 Your Location</span>
+                    )}
                     {isVavTharad && (
                       <span className="inspector-tag vav-tharad">✨ 34th District • Formed Oct 2025</span>
                     )}

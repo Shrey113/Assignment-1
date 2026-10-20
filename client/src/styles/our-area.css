@@ -505,6 +505,12 @@
   color: #4B5563;
 }
 
+.inspector-tag.location-tag {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
 .inspector-district-name {
   font-family: var(--font-serif);
   font-size: 1.55rem;
