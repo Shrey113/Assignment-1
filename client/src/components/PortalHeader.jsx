@@ -33,7 +33,7 @@ export default function PortalHeader({ pageTitle, breadcrumbs }) {
     const allLinks = [
       { to: '/', label: 'Home', icon: Home },
       { to: '/our-area', label: 'Our Area (Map)', icon: MapPin, color: '#EF4E4E' },
-      { to: '/blood-banks', label: 'Blood Banks Directory', icon: Building2, color: '#EF4E4E' },
+      { to: '/blood-banks', label: 'Blood Banks', icon: Building2, color: '#EF4E4E' },
       { to: '/donor', label: 'Donor Portal', icon: Heart, color: '#EF4E4E' },
       { to: '/requester', label: 'Requester Portal', icon: Droplet, color: '#EF4E4E' }
     ];

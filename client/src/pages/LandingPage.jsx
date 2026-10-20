@@ -262,27 +262,30 @@ export default function App() {
               id="nav-our-area"
               to="/our-area"
               className="btn-editorial-secondary"
-              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+              style={{ padding: '10px 20px', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              Our Area
+              <MapPin size={15} color="#EF4E4E" />
+              <span>Our Area</span>
             </Link>
 
             <Link
               id="nav-request-blood"
               to="/requester"
               className="btn-editorial-secondary"
-              style={{ padding: '10px 20px', fontSize: '0.88rem' }}
+              style={{ padding: '10px 20px', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              Find Blood
+              <Droplet size={15} color="#EF4E4E" />
+              <span>Find Blood</span>
             </Link>
 
             <Link
               id="nav-become-donor"
               to="/donor"
               className="btn-editorial-primary"
-              style={{ padding: '10px 22px', fontSize: '0.88rem' }}
+              style={{ padding: '10px 22px', fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
             >
-              Be a Donor
+              <Heart size={15} fill="#FFFFFF" color="#FFFFFF" />
+              <span>Be a Donor</span>
             </Link>
           </div>
         </nav>
@@ -290,11 +293,6 @@ export default function App() {
         {/* Hero Section (Matching "The Art of Hiring" Reference Style) */}
         <header className="editorial-hero">
           <div className="hero-text-block">
-            <div className="hero-tagline-badge">
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4E4E', display: 'inline-block' }}></span>
-              <span>{currentVariant.tagline}</span>
-            </div>
-
             <h1 className="hero-main-heading">
               <span>{typedLine1}</span>
               {!typedLine2 && !isTypingComplete && <span className="typewriter-cursor">|</span>}
@@ -324,16 +322,6 @@ export default function App() {
               >
                 <Heart size={17} fill="#EF4E4E" color="#EF4E4E" />
                 <span>BE A DONOR</span>
-              </Link>
-
-              <Link
-                id="hero-our-area-btn"
-                to="/our-area"
-                className="btn-editorial-secondary"
-                style={{ padding: '14px 22px', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
-              >
-                <MapPin size={17} color="#EF4E4E" />
-                <span>OUR AREA</span>
               </Link>
             </div>
 

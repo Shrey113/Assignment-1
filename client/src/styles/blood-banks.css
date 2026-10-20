@@ -301,15 +301,13 @@
   flex-direction: column;
   justify-content: space-between;
   box-shadow: var(--bb-shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   text-decoration: none;
   color: inherit;
   position: relative;
 }
 
 .bb-city-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--bb-shadow-md);
   border-color: var(--bb-red);
 }
 
@@ -406,11 +404,11 @@
 
 .bb-bank-card-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .bb-bank-title-block {

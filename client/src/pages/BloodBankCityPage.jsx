@@ -3,11 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import PortalHeader from '../components/PortalHeader';
 import { 
   MapPin, 
-  Phone, 
-  AlertCircle, 
   ArrowRight, 
-  RefreshCw,
-  Clock
+  RefreshCw
 } from 'lucide-react';
 import '../styles/blood-banks.css';
 
@@ -56,93 +53,32 @@ export default function BloodBankCityPage() {
           </div>
         ) : (
           <div className="bb-banks-stack">
-            {cityData?.banks?.map((bank) => {
-              const stockList = [
-                { grp: 'O-', val: bank.stock_o_neg },
-                { grp: 'O+', val: bank.stock_o_pos },
-                { grp: 'A-', val: bank.stock_a_neg },
-                { grp: 'A+', val: bank.stock_a_pos },
-                { grp: 'B-', val: bank.stock_b_neg },
-                { grp: 'B+', val: bank.stock_b_pos },
-                { grp: 'AB-', val: bank.stock_ab_neg },
-                { grp: 'AB+', val: bank.stock_ab_pos }
-              ];
-
-              return (
-                <div key={bank.id} className="bb-bank-card">
-                  <div className="bb-bank-card-top">
-                    <div className="bb-bank-title-block">
-                      <div className="bb-bank-header-meta">
-                        <span className="bb-bank-id-badge">ID: {bank.bank_code}</span>
-                      </div>
-                      <h2 className="bb-bank-name">{bank.name}</h2>
-                      <div className="bb-bank-address">
-                        <MapPin size={14} color="#8E9690" />
-                        <span>{bank.address}</span>
-                      </div>
+            {cityData?.banks?.map((bank) => (
+              <div key={bank.id} className="bb-bank-card">
+                <div className="bb-bank-card-top">
+                  <div className="bb-bank-title-block">
+                    <div className="bb-bank-header-meta">
+                      <span className="bb-bank-id-badge">ID: {bank.bank_code}</span>
                     </div>
-
-                    <div className="bb-bank-quick-actions">
-                      <Link
-                        to={`/blood-banks/${encodeURIComponent(currentCityName)}/${bank.bank_code}`}
-                        className="bb-btn-inspect"
-                      >
-                        <span>Inspect Depot Stock</span>
-                        <ArrowRight size={15} />
-                      </Link>
+                    <h2 className="bb-bank-name">{bank.name}</h2>
+                    <div className="bb-bank-address">
+                      <MapPin size={14} color="#8E9690" />
+                      <span>{bank.address}</span>
                     </div>
                   </div>
 
-                  {/* Contact Strip */}
-                  <div className="bb-bank-contact-strip">
-                    <a href={`tel:${bank.contact_phone}`} className="bb-contact-item">
-                      <Phone size={14} color="#5C625E" />
-                      <span>{bank.contact_phone}</span>
-                    </a>
-
-                    <a href={`tel:${bank.emergency_phone}`} className="bb-contact-item emergency">
-                      <AlertCircle size={14} color="#EF4E4E" />
-                      <span>24/7 Helpline: {bank.emergency_phone}</span>
-                    </a>
-
-                    <span className="bb-contact-item" style={{ marginLeft: 'auto', color: '#8E9690' }}>
-                      <Clock size={14} />
-                      <span>{bank.operating_hours || '24/7 Service'}</span>
-                    </span>
-                  </div>
-
-                  {/* Stock Mini-Grid Chips */}
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '0.78rem', fontWeight: 700, textTransform: 'uppercase', color: '#8E9690', letterSpacing: '0.04em' }}>
-                        Cold Storage Stock ({bank.total_units} Units Total)
-                      </span>
-                    </div>
-
-                    <div className="bb-stock-chips-grid">
-                      {stockList.map((s) => {
-                        const isCritical = s.val < 6;
-                        const isWarning = s.val >= 6 && s.val < 15;
-                        return (
-                          <div
-                            key={s.grp}
-                            className={`bb-stock-chip ${isCritical ? 'critical' : isWarning ? 'warning' : ''}`}
-                          >
-                            <div className="bb-stock-chip-top">
-                              <span className="bb-stock-group-label">{s.grp}</span>
-                              <span className="bb-stock-units-number">{s.val}</span>
-                            </div>
-                            <span className="bb-stock-status-text">
-                              {isCritical ? 'Critical' : isWarning ? 'Moderate' : 'Good'}
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <div className="bb-bank-quick-actions">
+                    <Link
+                      to={`/blood-banks/${encodeURIComponent(currentCityName)}/${bank.bank_code}`}
+                      className="bb-btn-inspect"
+                    >
+                      <span>Inspect Depot Stock</span>
+                      <ArrowRight size={15} />
+                    </Link>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         )}
       </main>
