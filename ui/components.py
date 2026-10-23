@@ -1,10 +1,9 @@
-# Part 8: Performance Tables and Comparison Graphs
 import streamlit as st
 import plotly.graph_objects as go
 
 def render_metrics_table(df):
     """
-    Renders styled process metrics dataframe with highlighted averages and KPI cards.
+    Renders styled process metrics dataframe with clean presentation.
     """
     if df.empty:
         st.warning("No metrics computed.")
@@ -19,24 +18,48 @@ def render_metrics_table(df):
 
 def render_summary_cards(summary):
     """
-    Displays quick metric cards for Avg WT, Avg TAT, Avg RT, and CPU Utilization.
+    Renders modern, lightweight KPI cards with clean typography.
     """
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.metric("Avg Waiting Time", f"{summary['avg_wt']} ms")
-    with col2:
-        st.metric("Avg Turnaround Time", f"{summary['avg_tat']} ms")
-    with col3:
-        st.metric("Avg Response Time", f"{summary['avg_rt']} ms")
-    with col4:
-        st.metric("CPU Utilization", f"{summary['cpu_utilization']}%")
-    with col5:
-        st.metric("Context Switches", f"{summary['context_switches']}")
+    c1, c2, c3, c4, c5 = st.columns(5)
+    with c1:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-label">Avg Waiting Time</div>
+            <div class="kpi-val" style="color: #2563EB;">{summary['avg_wt']} <span class="kpi-unit">ms</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-label">Avg Turnaround</div>
+            <div class="kpi-val" style="color: #7C3AED;">{summary['avg_tat']} <span class="kpi-unit">ms</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c3:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-label">Avg Response</div>
+            <div class="kpi-val" style="color: #059669;">{summary['avg_rt']} <span class="kpi-unit">ms</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c4:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-label">CPU Utilization</div>
+            <div class="kpi-val" style="color: #0284C7;">{summary['cpu_utilization']}%</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c5:
+        st.markdown(f"""
+        <div class="kpi-card">
+            <div class="kpi-label">Context Switches</div>
+            <div class="kpi-val" style="color: #D97706;">{summary['context_switches']}</div>
+        </div>
+        """, unsafe_allow_html=True)
 
 def render_comparison_charts(comparison_results):
     """
-    Given a dictionary of {algo_name: summary_dict},
-    renders comparative bar charts side-by-side.
+    Renders grouped bar charts contrasting Waiting, Turnaround, and Response Times side-by-side.
     """
     if not comparison_results:
         st.info("No comparative algorithms selected.")
@@ -50,47 +73,62 @@ def render_comparison_charts(comparison_results):
     fig = go.Figure()
 
     fig.add_trace(go.Bar(
-        name="Avg Waiting Time",
+        name="Avg Waiting Time (WT)",
         x=algos,
         y=wts,
-        marker_color="#6366F1",
-        text=wts,
-        textposition="auto"
+        marker_color="#2563EB",  # Royal Blue
+        text=[f"{v} ms" for v in wts],
+        textposition="auto",
+        textfont=dict(size=11, family="Segoe UI, sans-serif")
     ))
     fig.add_trace(go.Bar(
-        name="Avg Turnaround Time",
+        name="Avg Turnaround Time (TAT)",
         x=algos,
         y=tats,
-        marker_color="#EC4899",
-        text=tats,
-        textposition="auto"
+        marker_color="#7C3AED",  # Violet
+        text=[f"{v} ms" for v in tats],
+        textposition="auto",
+        textfont=dict(size=11, family="Segoe UI, sans-serif")
     ))
     fig.add_trace(go.Bar(
-        name="Avg Response Time",
+        name="Avg Response Time (RT)",
         x=algos,
         y=rts,
-        marker_color="#10B981",
-        text=rts,
-        textposition="auto"
+        marker_color="#059669",  # Emerald
+        text=[f"{v} ms" for v in rts],
+        textposition="auto",
+        textfont=dict(size=11, family="Segoe UI, sans-serif")
     ))
 
     fig.update_layout(
-        title="<b>Algorithm Performance Comparison (Lower is Better)</b>",
+        title=dict(
+            text="<b>Multi-Algorithm Performance Comparison (Lower Latency is Better)</b>",
+            font=dict(size=15, color="#0F172A", family="Segoe UI, sans-serif")
+        ),
         barmode="group",
-        height=380,
-        plot_bgcolor="rgba(15, 23, 42, 0.6)",
-        paper_bgcolor="rgba(0, 0, 0, 0)",
-        font=dict(color="#94A3B8"),
-        xaxis=dict(title="Algorithms", gridcolor="#334155"),
-        yaxis=dict(title="Time Units", gridcolor="#334155"),
+        height=360,
+        margin=dict(l=15, r=15, t=50, b=25),
+        plot_bgcolor="#F8FAFC",   # Soft clean light canvas
+        paper_bgcolor="#FFFFFF",  # Pure white background
+        font=dict(color="#334155", family="Segoe UI, sans-serif"),
+        xaxis=dict(
+            title=dict(text="Scheduling Algorithms", font=dict(size=12, color="#475569")),
+            gridcolor="#E2E8F0",
+            tickfont=dict(color="#334155", size=11)
+        ),
+        yaxis=dict(
+            title=dict(text="Time Units (ms)", font=dict(size=12, color="#475569")),
+            gridcolor="#E2E8F0",
+            tickfont=dict(color="#475569", size=11)
+        ),
         legend=dict(
             orientation="h",
             yanchor="bottom",
-            y=1.02,
+            y=1.03,
             xanchor="right",
             x=1,
-            font=dict(color="#E2E8F0")
+            font=dict(color="#334155", size=11)
         )
     )
 
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})

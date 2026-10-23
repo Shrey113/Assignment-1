@@ -11,87 +11,345 @@ from data.workloads import get_preset_workloads
 from ui.gantt import render_gantt_chart
 from ui.components import render_metrics_table, render_summary_cards, render_comparison_charts
 
-# Page Configuration
+# Page Configuration (Clean, light layout)
 st.set_page_config(
     page_title="Smart CPU Scheduler Simulator",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom High-End Styling
+# Custom High-End Styling: Clean, Modern, Professional Light/White Theme
 st.markdown("""
 <style>
+    /* Global Font & Canvas Polish */
+    html, body, [class*="css"] {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    
     .main-title {
-        font-size: 2.2rem;
+        color: #0F172A;
+        font-size: 2.1rem;
         font-weight: 800;
-        background: linear-gradient(90deg, #6366F1, #EC4899);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0.2rem;
+        letter-spacing: -0.5px;
+        margin: 0;
+        line-height: 1.2;
     }
     .sub-title {
-        color: #94A3B8;
-        font-size: 1.05rem;
-        margin-bottom: 1.5rem;
-    }
-    .smart-card {
-        background: rgba(30, 41, 59, 0.7);
-        border: 1px solid #334155;
-        border-radius: 12px;
-        padding: 1.2rem;
+        color: #64748B;
+        font-size: 0.95rem;
+        font-weight: 400;
+        margin-top: 4px;
         margin-bottom: 1.2rem;
     }
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.6rem;
+    
+    /* KPI Card Component */
+    .kpi-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-radius: 10px;
+        padding: 14px 18px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        text-align: left;
+        transition: all 0.2s ease;
+    }
+    .kpi-card:hover {
+        border-color: #CBD5E1;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+    }
+    .kpi-label {
+        color: #64748B;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+    .kpi-val {
+        font-size: 1.55rem;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .kpi-unit {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #94A3B8;
+    }
+    
+    /* Smart Recommender Card */
+    .smart-card {
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-left: 5px solid #2563EB;
+        border-radius: 10px;
+        padding: 18px 22px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+    .smart-title {
+        color: #0F172A;
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .badge-blue {
+        background: #EFF6FF;
+        color: #2563EB;
+        padding: 3px 10px;
         border-radius: 6px;
         font-size: 0.85rem;
         font-weight: 600;
+        display: inline-block;
+        border: 1px solid #BFDBFE;
     }
-    .badge-primary { background: #6366F1; color: white; }
-    .badge-success { background: #10B981; color: white; }
+    .badge-emerald {
+        background: #ECFDF5;
+        color: #059669;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        border: 1px solid #A7F3D0;
+    }
+
+    /* Highly Visible Selectboxes & Dropdowns for Light Theme */
+    div[data-testid="stSelectbox"] label,
+    div[data-testid="stSelectbox"] label p {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        font-size: 0.92rem !important;
+        letter-spacing: -0.2px;
+        margin-bottom: 4px !important;
+    }
+    
+    div[data-testid="stSelectbox"] div[role="group"],
+    div[data-baseweb="select"] > div {
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    div[data-testid="stSelectbox"] div[role="group"]:hover,
+    div[data-baseweb="select"] > div:hover {
+        border-color: #3B82F6 !important;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.16) !important;
+    }
+    
+    div[data-testid="stSelectbox"] div[role="group"]:focus-within,
+    div[data-baseweb="select"] > div:focus-within {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22) !important;
+    }
+    
+    div[data-testid="stSelectbox"] input {
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        font-size: 0.92rem !important;
+    }
+
+    div[data-testid="stSelectbox"] svg {
+        fill: #334155 !important;
+        color: #334155 !important;
+    }
+    
+    /* Dropdown Popover & Options Menu */
+    div[data-testid="stSelectboxVirtualDropdown"],
+    ul[role="listbox"],
+    div[role="listbox"] {
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
+    }
+    
+    div[data-testid="stSelectboxVirtualDropdown"] [role="option"],
+    ul[role="listbox"] li,
+    div[role="listbox"] div[role="option"] {
+        color: #1E293B !important;
+        font-weight: 500 !important;
+        border-radius: 6px !important;
+        margin: 2px 4px !important;
+        transition: background 0.15s ease !important;
+    }
+    
+    div[data-testid="stSelectboxVirtualDropdown"] [role="option"]:hover,
+    div[data-testid="stSelectboxVirtualDropdown"] [aria-selected="true"],
+    ul[role="listbox"] li:hover,
+    ul[role="listbox"] li[aria-selected="true"] {
+        background-color: #EFF6FF !important;
+        color: #1D4ED8 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Input Controls Visibility (Number Input, Sliders) */
+    div[data-testid="stNumberInput"] div[role="group"] {
+        background-color: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08) !important;
+    }
+    div[data-testid="stNumberInput"] div[role="group"]:hover {
+        border-color: #3B82F6 !important;
+    }
+    div[data-testid="stNumberInput"] div[role="group"]:focus-within {
+        border-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22) !important;
+    }
+
+    /* Sidebar Layout, Dimensions & Refinement */
+    section[data-testid="stSidebar"] {
+        width: 410px !important;
+        min-width: 390px !important;
+        background-color: #F8FAFC !important;
+        border-right: 1px solid #E2E8F0 !important;
+    }
+    section[data-testid="stSidebar"] > div:first-child {
+        padding-top: 1.5rem !important;
+        padding-left: 1.15rem !important;
+        padding-right: 1.15rem !important;
+    }
+
+    .sidebar-heading {
+        color: #0F172A;
+        font-size: 1.12rem;
+        font-weight: 700;
+        letter-spacing: -0.3px;
+        margin-bottom: 2px;
+    }
+    .sidebar-sub {
+        color: #64748B;
+        font-size: 0.8rem;
+        line-height: 1.35;
+        margin-bottom: 12px;
+    }
+    .sidebar-section-label {
+        color: #475569;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 14px;
+        margin-bottom: 6px;
+    }
+
+    div[data-testid="stRadio"] label p {
+        color: #1E293B !important;
+        font-size: 0.86rem !important;
+        font-weight: 500 !important;
+    }
+
 </style>
 """, unsafe_allow_html=True)
 
-# Header
+# Top Clean Header
 st.markdown('<div class="main-title">Smart CPU Scheduler Simulator</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">Innovative Assignment 1 | Operating Systems | Interactive Algorithm Analysis & Gantt Visualizer</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Interactive Algorithm Workbench • Real-Time Gantt Timeline Visualizer • Heuristic Workload Recommender</div>', unsafe_allow_html=True)
 
-# ----------------- SIDEBAR: PROCESS CONFIGURATION -----------------
-st.sidebar.header("Process Configuration")
+# ----------------- SIDEBAR: WORKLOAD CONFIGURATION -----------------
+st.sidebar.markdown("""
+<div class="sidebar-heading">Workload Setup</div>
+<div class="sidebar-sub">Configure benchmark or custom arrival and burst parameters</div>
+""", unsafe_allow_html=True)
 
 input_mode = st.sidebar.radio(
-    "Select Input Mode:",
-    ["Use Preset Workload (Test Cases)", "Custom Manual Input", "Random Workload Generator"]
+    "Workload Ingestion Mode:",
+    ["Preset Workloads (Test Cases)", "Custom Manual Input", "Random Workload Generator"],
+    index=0
 )
 
 preset_workloads = get_preset_workloads()
 processes = []
 
-if input_mode == "Use Preset Workload (Test Cases)":
-    selected_preset = st.sidebar.selectbox("Choose Test Case Workload:", list(preset_workloads.keys()))
+if input_mode == "Preset Workloads (Test Cases)":
+    selected_preset = st.sidebar.selectbox("Choose Benchmark Workload:", list(preset_workloads.keys()))
     preset_data = preset_workloads[selected_preset]
     processes = [p.copy() for p in preset_data["processes"]]
+    st.sidebar.caption(f"Loaded {len(processes)} processes from standard test suite.")
 
 elif input_mode == "Custom Manual Input":
-    num_processes = st.sidebar.number_input("Number of Processes:", min_value=1, max_value=10, value=4, step=1)
+    st.sidebar.markdown("<div class='sidebar-section-label'>Process Parameters Table</div>", unsafe_allow_html=True)
+    st.sidebar.caption("PIDs are auto-generated and can be added or edited directly in the table:")
     
-    st.sidebar.markdown("**Process Details (Arrival, Burst, Priority):**")
-    for i in range(int(num_processes)):
-        col1, col2, col3 = st.sidebar.columns(3)
-        with col1:
-            arr = st.number_input(f"P{i+1} Arrival", min_value=0, max_value=50, value=i, key=f"arr_{i}")
-        with col2:
-            burst = st.number_input(f"P{i+1} Burst", min_value=1, max_value=50, value=(i+2) if i%2==0 else 2, key=f"burst_{i}")
-        with col3:
-            prio = st.number_input(f"P{i+1} Priority", min_value=1, max_value=20, value=i+1, key=f"prio_{i}")
-        processes.append(make_process(f"P{i+1}", arr, burst, prio))
+    if "custom_procs_df" not in st.session_state or st.session_state["custom_procs_df"] is None or st.session_state["custom_procs_df"].empty:
+        st.session_state["custom_procs_df"] = pd.DataFrame([
+            {"PID": "P1", "Arrival": 0, "Burst": 2, "Priority": 1},
+            {"PID": "P2", "Arrival": 1, "Burst": 2, "Priority": 2},
+            {"PID": "P3", "Arrival": 2, "Burst": 4, "Priority": 3},
+            {"PID": "P4", "Arrival": 3, "Burst": 2, "Priority": 4},
+        ])
+    
+    col_btn1, col_btn2 = st.sidebar.columns(2)
+    with col_btn1:
+        if st.button("+ Add Process", use_container_width=True):
+            next_num = len(st.session_state["custom_procs_df"]) + 1
+            existing_pids = set(st.session_state["custom_procs_df"]["PID"].astype(str))
+            while f"P{next_num}" in existing_pids:
+                next_num += 1
+            new_row = pd.DataFrame([{"PID": f"P{next_num}", "Arrival": 0, "Burst": 2, "Priority": 1}])
+            st.session_state["custom_procs_df"] = pd.concat([st.session_state["custom_procs_df"], new_row], ignore_index=True)
+            st.rerun()
+    with col_btn2:
+        if st.button("Reset Defaults", use_container_width=True):
+            st.session_state["custom_procs_df"] = pd.DataFrame([
+                {"PID": "P1", "Arrival": 0, "Burst": 2, "Priority": 1},
+                {"PID": "P2", "Arrival": 1, "Burst": 2, "Priority": 2},
+                {"PID": "P3", "Arrival": 2, "Burst": 4, "Priority": 3},
+                {"PID": "P4", "Arrival": 3, "Burst": 2, "Priority": 4},
+            ])
+            st.rerun()
+
+    curr_len = len(st.session_state["custom_procs_df"])
+    auto_pid_default = f"P{curr_len + 1}"
+
+    edited_df = st.sidebar.data_editor(
+        st.session_state["custom_procs_df"],
+        key="custom_process_editor",
+        num_rows="dynamic",
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "PID": st.column_config.TextColumn("PID", width="small", default=auto_pid_default, required=True),
+            "Arrival": st.column_config.NumberColumn("Arrival", width="small", default=0, min_value=0, max_value=100, step=1, required=True),
+            "Burst": st.column_config.NumberColumn("Burst", width="small", default=2, min_value=1, max_value=100, step=1, required=True),
+            "Priority": st.column_config.NumberColumn("Priority", width="small", default=1, min_value=1, max_value=50, step=1, required=True),
+        }
+    )
+    
+    cleaned_rows = []
+    for idx, row in edited_df.iterrows():
+        pid = str(row.get("PID", "")).strip() if pd.notna(row.get("PID")) else ""
+        if not pid or pid.lower() == "none":
+            pid = f"P{idx + 1}"
+            
+        try:
+            arr = int(row.get("Arrival", 0)) if pd.notna(row.get("Arrival")) else 0
+        except (ValueError, TypeError):
+            arr = 0
+            
+        try:
+            burst = int(row.get("Burst", 1)) if pd.notna(row.get("Burst")) else 1
+            burst = max(1, burst)
+        except (ValueError, TypeError):
+            burst = 1
+            
+        try:
+            prio = int(row.get("Priority", 1)) if pd.notna(row.get("Priority")) else 1
+        except (ValueError, TypeError):
+            prio = 1
+            
+        cleaned_rows.append({"PID": pid, "Arrival": arr, "Burst": burst, "Priority": prio})
+        processes.append(make_process(pid, arr, burst, prio))
+        
+    st.session_state["custom_procs_df"] = pd.DataFrame(cleaned_rows)
 
 else: # Random Workload Generator
     import random
     num_procs = st.sidebar.slider("Number of Processes", 3, 8, 4)
-    max_b = st.sidebar.slider("Max Burst Time", 3, 15, 6)
-    if st.sidebar.button("Generate New Workload", use_container_width=True):
+    max_b = st.sidebar.slider("Maximum Burst Time", 3, 14, 6)
+    if st.sidebar.button("Generate Stochastic Workload", use_container_width=True):
         st.session_state["rand_seed"] = random.randint(1, 10000)
     
     seed = st.session_state.get("rand_seed", 42)
@@ -99,29 +357,32 @@ else: # Random Workload Generator
     for i in range(num_procs):
         processes.append(make_process(
             f"P{i+1}",
-            arrival=rng.randint(0, 5),
+            arrival=rng.randint(0, 4),
             burst=rng.randint(1, max_b),
             priority=rng.randint(1, 5)
         ))
 
-# Show Process Queue in Sidebar
-with st.sidebar.expander("View Current Process Table", expanded=True):
-    proc_df = pd.DataFrame([
-        {"PID": p["pid"], "Arrival": p["arrival"], "Burst": p["burst"], "Priority": p["priority"]}
-        for p in processes
-    ])
-    st.dataframe(proc_df, hide_index=True, use_container_width=True)
+if not processes:
+    processes = [make_process("P1", 0, 2, 1)]
+
+# Current Process Table in Sidebar (shown for Preset and Random modes)
+if input_mode != "Custom Manual Input":
+    with st.sidebar.expander("Active Process Queue", expanded=True):
+        proc_df = pd.DataFrame([
+            {"PID": p["pid"], "Arrival (ms)": p["arrival"], "Burst (ms)": p["burst"], "Priority Rank": p["priority"]}
+            for p in processes
+        ])
+        st.dataframe(proc_df, hide_index=True, use_container_width=True)
 
 # ----------------- MAIN CONTENT TABS -----------------
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3 = st.tabs([
     "Single Algorithm Analysis",
     "Comparative Benchmark",
-    "Smart Recommendation (Bonus Feature)",
-    "Assignment Report & Docs"
+    "Smart Recommendation"
 ])
 
-# Helper to run algorithm by name
 def execute_algorithm(name, procs, rr_quantum=2):
+    """Executes scheduling algorithm by name and returns timeline list."""
     if name == "FCFS":
         return run_fcfs(procs)
     elif name == "SJF (Non-Preemptive)":
@@ -154,31 +415,32 @@ with tab1:
     with col_param:
         quantum = 2
         if "Round Robin" in selected_algo:
-            quantum = st.slider("Time Quantum (Time Slice):", min_value=1, max_value=10, value=2, step=1)
+            quantum = st.slider("Round Robin Time Quantum (Q):", min_value=1, max_value=8, value=2, step=1)
         else:
-            st.write("") # Spacer
+            st.write("")
 
-    # Run
+    # Execute and compute
     timeline = execute_algorithm(selected_algo, processes, rr_quantum=quantum)
     metrics_df, summary = calculate_metrics(processes, timeline)
 
-    # 1. Summary Cards
+    # 1. Metric Summary Cards
     render_summary_cards(summary)
-    st.markdown("---")
+    st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
 
     # 2. Gantt Chart
-    st.markdown("##### Execution Gantt Chart")
-    render_gantt_chart(timeline, title=f"{selected_algo} Gantt Chart")
+    render_gantt_chart(timeline, title=f"{selected_algo} — Execution Gantt Chart Timeline")
 
-    # 3. Table
+    # 3. Process Table
     render_metrics_table(metrics_df)
 
 # ----------------- TAB 2: COMPARATIVE BENCHMARK -----------------
 with tab2:
-    st.markdown("#### Side-by-Side Algorithm Evaluation")
-    st.caption("Runs all 6 scheduling algorithms on the exact same workload to determine the best performer.")
+    st.markdown("##### Side-by-Side Performance Benchmark")
+    st.caption("Executes all six scheduling algorithms simultaneously across the active workload to contrast operational trade-offs.")
 
-    rr_q = st.slider("Round Robin Quantum for Benchmark:", 1, 6, 2, key="bm_quantum")
+    col_q, _ = st.columns([2, 3])
+    with col_q:
+        rr_q = st.slider("Round Robin Time Quantum for Benchmark:", 1, 6, 2, key="bm_quantum")
     
     all_algos = [
         "FCFS",
@@ -198,42 +460,47 @@ with tab2:
         benchmark_summaries[algo] = summ
         benchmark_table_rows.append({
             "Algorithm": algo,
-            "Avg Waiting Time (WT)": summ["avg_wt"],
-            "Avg Turnaround Time (TAT)": summ["avg_tat"],
-            "Avg Response Time (RT)": summ["avg_rt"],
+            "Avg WT (ms)": summ["avg_wt"],
+            "Avg TAT (ms)": summ["avg_tat"],
+            "Avg RT (ms)": summ["avg_rt"],
             "CPU Utilization": f"{summ['cpu_utilization']}%",
             "Context Switches": summ["context_switches"]
         })
 
-    # Comparative charts
+    # Render Grouped Bar Chart
     render_comparison_charts(benchmark_summaries)
 
-    st.markdown("##### Benchmark Summary Table")
+    st.markdown("<div style='height: 8px;'></div>", unsafe_allow_html=True)
+    st.markdown("##### Benchmark Metrics Master Table")
     bm_df = pd.DataFrame(benchmark_table_rows)
     st.dataframe(bm_df, hide_index=True, use_container_width=True)
 
 # ----------------- TAB 3: SMART RECOMMENDATION -----------------
 with tab3:
-    st.markdown("#### Intelligent Scheduling Recommender (Additional Feature)")
-    st.caption("Analyzes the variance of burst times, urgency tiers, and arrival distribution to recommend the best algorithm.")
+    st.markdown("##### Autonomous Workload-Based Recommender")
+    st.caption("Evaluates burst variance, priority spread, and arrival uniformity to suggest the optimal algorithm.")
 
     rec = analyze_and_recommend(processes)
 
     st.markdown(f"""
     <div class="smart-card">
-        <h3>Recommendation: <span class="badge badge-primary">{rec['recommended_algo']}</span></h3>
-        <p><b>Confidence Level:</b> <span class="badge badge-success">{rec['confidence']}</span></p>
-        <p><b>Decision Rationale:</b> {rec['reason']}</p>
+        <div class="smart-title">Recommended Strategy: <span class="badge-blue">{rec['recommended_algo']}</span></div>
+        <div style="margin-top: 4px; margin-bottom: 8px;">
+            <b>Confidence Score:</b> <span class="badge-emerald">{rec['confidence']}</span>
+        </div>
+        <div style="color: #334155; font-size: 0.92rem; line-height: 1.45;">
+            <b>Decision Rationale:</b> {rec['reason']}
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
     if rec["insights"]:
-        st.markdown("**Workload Characterization Insights:**")
+        st.markdown("**Workload Statistical Characterization:**")
         for ins in rec["insights"]:
             st.info(f"• {ins}")
 
-    # Run recommended algorithm immediately for user
-    st.markdown(f"##### Auto-Execution of Recommended: **{rec['recommended_algo']}**")
+    # Auto-execute recommendation
+    st.markdown(f"##### Automated Execution of Recommended: **{rec['recommended_algo']}**")
     rec_algo_name = rec['recommended_algo']
     if "SRTF" in rec_algo_name or "SJF" in rec_algo_name:
         rec_algo_exec = "SRTF (Preemptive SJF)"
@@ -247,28 +514,5 @@ with tab3:
     rec_timeline = execute_algorithm(rec_algo_exec, processes, rr_quantum=2)
     rec_df, rec_summ = calculate_metrics(processes, rec_timeline)
     render_summary_cards(rec_summ)
-    render_gantt_chart(rec_timeline, title=f"Gantt Chart for {rec_algo_exec}")
+    render_gantt_chart(rec_timeline, title=f"Gantt Timeline for {rec_algo_exec}")
 
-# ----------------- TAB 4: REPORT & DOCUMENTATION -----------------
-with tab4:
-    st.markdown("""
-    ### Innovative Assignment 1 Documentation & Report Helper
-    Use the data and screenshots from this dashboard to complete your 1–2 page submission report.
-
-    #### 1. Algorithms Implemented
-    - **FCFS (First-Come, First-Served):** Simplest FIFO scheme. Non-preemptive. Susceptible to the *Convoy Effect*.
-    - **SJF (Shortest Job First):** Non-preemptive. Chooses the process with minimum CPU burst time.
-    - **SRTF (Shortest Remaining Time First):** Preemptive version of SJF. Preempts if a newly arriving process has lower remaining time. Proven to yield minimum average waiting time.
-    - **Priority Scheduling (Non-Preemptive & Preemptive):** Processes are dispatched based on priority rank (lower numerical value = higher priority).
-    - **Round Robin (RR):** Preemptive time-sharing using a circular ready queue and fixed time quantum slice.
-
-    #### 2. Performance Metrics Equations
-    - **Turnaround Time (TAT)** = `Finish Time - Arrival Time`
-    - **Waiting Time (WT)** = `Turnaround Time - Burst Time`
-    - **Response Time (RT)** = `First CPU Allocation Time - Arrival Time`
-    - **CPU Utilization (%)** = `(Total Busy Time / Total Schedule Length) * 100`
-
-    #### 3. Additional Feature: Smart Workload-Based Algorithm Recommender
-    - Implemented in `scheduler/smart_suggest.py`.
-    - Automatically assesses statistical features (burst variance, priority range, arrival uniformity) to suggest the optimal algorithm.
-    """)
