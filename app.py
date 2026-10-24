@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import base64
 from pathlib import Path
 from scheduler.process import make_process
 from scheduler.fcfs import run_fcfs
@@ -293,6 +294,26 @@ with st.sidebar.container(key="reopen_tour_container"):
     st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
     if st.button("Show Feature Guides", key="reopen_tour_guides", use_container_width=True):
         pass
+
+def get_github_badge_html():
+    icon_path = Path(__file__).parent / "assets" / "icon" / "github-logo.png"
+    b64_img = ""
+    if icon_path.exists():
+        with open(icon_path, "rb") as f:
+            b64_img = base64.b64encode(f.read()).decode("utf-8")
+    return f"""
+    <div class="sidebar-footer-container">
+        <div class="built-by-label">Build by</div>
+        <a href="https://github.com/shrey113" target="_blank" rel="noopener noreferrer" class="github-log-btn">
+            <div class="github-icon-circle">
+                <img src="data:image/png;base64,{b64_img}" alt="GitHub" />
+            </div>
+            <span class="github-btn-text">shrey113</span>
+        </a>
+    </div>
+    """
+
+st.sidebar.markdown(get_github_badge_html(), unsafe_allow_html=True)
 
 # ----------------- MAIN CONTENT TABS -----------------
 tab1, tab2, tab3 = st.tabs([
