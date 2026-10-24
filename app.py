@@ -29,6 +29,118 @@ def load_css(file_name="style.css"):
 
 load_css("style.css")
 
+# Browser localStorage Tour State Manager: checks & persists tour dismissal on client browser
+st.html("""
+<script>
+(function() {
+    function checkAndApplyTourVisibility() {
+        try {
+            const storage = window.localStorage;
+            if (!storage) return;
+
+            const ingestionDone = storage.getItem('tour_ingestion_dismissed') === 'true';
+            const algoDone = storage.getItem('tour_algo_dismissed') === 'true';
+
+            let style = document.getElementById('tour-localstorage-sync-styles');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'tour-localstorage-sync-styles';
+                (document.head || document.body).appendChild(style);
+            }
+
+            let css = '';
+            if (ingestionDone) {
+                css += `
+                .st-key-tour_ingestion_container,
+                div[data-testid="stLayoutWrapper"]:has(.st-key-tour_ingestion_container),
+                div[data-testid="stElementContainer"]:has(.st-key-tour_ingestion_container),
+                div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_ingestion),
+                div[data-testid="stElementContainer"]:has(.st-key-dismiss_tour_ingestion),
+                .st-key-dismiss_tour_ingestion {
+                    display: none !important;
+                }
+                `;
+            }
+            if (algoDone) {
+                css += `
+                .st-key-tour_algo_container,
+                div[data-testid="stLayoutWrapper"]:has(.st-key-tour_algo_container),
+                div[data-testid="stElementContainer"]:has(.st-key-tour_algo_container),
+                div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_algo),
+                div[data-testid="stElementContainer"]:has(.st-key-dismiss_tour_algo),
+                .st-key-dismiss_tour_algo {
+                    display: none !important;
+                }
+                `;
+            }
+            if (ingestionDone && algoDone) {
+                css += `
+                .st-key-reopen_tour_container,
+                div[data-testid="stLayoutWrapper"]:has(.st-key-reopen_tour_container),
+                div[data-testid="stElementContainer"]:has(.st-key-reopen_tour_container),
+                .st-key-reopen_tour_guides {
+                    display: block !important;
+                }
+                `;
+            } else {
+                css += `
+                .st-key-reopen_tour_container,
+                div[data-testid="stLayoutWrapper"]:has(.st-key-reopen_tour_container),
+                div[data-testid="stElementContainer"]:has(.st-key-reopen_tour_container),
+                .st-key-reopen_tour_guides {
+                    display: none !important;
+                }
+                `;
+            }
+            style.textContent = css;
+        } catch(e) {
+            console.error('Tour localStorage sync error:', e);
+        }
+    }
+
+    checkAndApplyTourVisibility();
+
+    if (!window._tourStorageSyncInitialized) {
+        window._tourStorageSyncInitialized = true;
+
+        document.addEventListener('click', function(e) {
+            try {
+                const target = e.target;
+                if (!target) return;
+                const storage = window.localStorage;
+                if (!storage) return;
+
+                if (target.closest('.st-key-dismiss_tour_ingestion')) {
+                    storage.setItem('tour_ingestion_dismissed', 'true');
+                    checkAndApplyTourVisibility();
+                }
+
+                if (target.closest('.st-key-dismiss_tour_algo')) {
+                    storage.setItem('tour_algo_dismissed', 'true');
+                    checkAndApplyTourVisibility();
+                }
+
+                if (target.closest('.st-key-reopen_tour_guides')) {
+                    storage.removeItem('tour_ingestion_dismissed');
+                    storage.removeItem('tour_algo_dismissed');
+                    checkAndApplyTourVisibility();
+                }
+            } catch(e) {
+                console.error(e);
+            }
+        }, true);
+
+        const observer = new MutationObserver(function() {
+            checkAndApplyTourVisibility();
+        });
+        if (document.body) {
+            observer.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+})();
+</script>
+""", unsafe_allow_javascript=True)
+
 # Top Clean Header
 st.markdown('<div class="main-title">Smart CPU Scheduler Simulator</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Interactive Algorithm Workbench • Real-Time Gantt Timeline Visualizer • Heuristic Workload Recommender</div>', unsafe_allow_html=True)
@@ -46,6 +158,19 @@ input_mode = st.sidebar.radio(
     ["Preset Workloads (Test Cases)", "Custom Manual Input", "Random Workload Generator"],
     index=0
 )
+
+with st.sidebar.container(key="tour_ingestion_container"):
+    st.markdown("""
+    <div class="tour-card-header">
+        <span class="tour-card-title">Workload Ingestion Mode</span>
+        <span class="tour-card-badge">Guide</span>
+    </div>
+    <div class="tour-card-desc">
+        Configure how processes enter the scheduler: preset benchmarks, interactive table input, or random generator.
+    </div>
+    """, unsafe_allow_html=True)
+    if st.button("Yes, I understand", key="dismiss_tour_ingestion", type="primary", use_container_width=True):
+        pass
 
 st.sidebar.markdown("<div class='sidebar-divider'></div>", unsafe_allow_html=True)
 
@@ -164,6 +289,11 @@ if input_mode != "Custom Manual Input":
         ])
         st.dataframe(proc_df, hide_index=True, use_container_width=True)
 
+with st.sidebar.container(key="reopen_tour_container"):
+    st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+    if st.button("Show Feature Guides", key="reopen_tour_guides", use_container_width=True):
+        pass
+
 # ----------------- MAIN CONTENT TABS -----------------
 tab1, tab2, tab3 = st.tabs([
     "Single Algorithm Analysis",
@@ -189,7 +319,7 @@ def execute_algorithm(name, procs, rr_quantum=2):
 
 # ----------------- TAB 1: SINGLE ALGORITHM -----------------
 with tab1:
-    col_sel, col_param = st.columns([3, 2])
+    col_sel, col_param = st.columns([1, 1])
     with col_sel:
         selected_algo = st.selectbox(
             "Select Scheduling Algorithm to Inspect:",
@@ -202,12 +332,24 @@ with tab1:
                 "Round Robin (RR)"
             ]
         )
+
     with col_param:
         quantum = 2
         if "Round Robin" in selected_algo:
             quantum = st.slider("Round Robin Time Quantum (Q):", min_value=1, max_value=8, value=2, step=1)
         else:
-            st.write("")
+            with st.container(key="tour_algo_container"):
+                st.markdown("""
+                <div class="tour-card-header">
+                    <span class="tour-card-title">Select Scheduling Algorithm to Inspect</span>
+                    <span class="tour-card-badge">Guide</span>
+                </div>
+                <div class="tour-card-desc">
+                    Choose an algorithm (FCFS, SJF, SRTF, Priority, or Round Robin) to inspect the live Gantt execution timeline and performance metrics.
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("Yes, I understand", key="dismiss_tour_algo", type="primary", use_container_width=True):
+                    pass
 
     # Execute and compute
     timeline = execute_algorithm(selected_algo, processes, rr_quantum=quantum)

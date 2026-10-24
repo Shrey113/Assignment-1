@@ -241,3 +241,160 @@ div[data-testid="stRadio"] label p {
     border: none !important;
     border-radius: 1px !important;
 }
+
+/* Zero-Height Element Container for Sidebar Tour Popover (Takes Zero Layout Space) */
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_ingestion_container),
+div[data-testid="stElementContainer"]:has(.st-key-tour_ingestion_container),
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_ingestion),
+div[data-testid="stElementContainer"]:has(.st-key-dismiss_tour_ingestion) {
+    position: relative !important;
+    height: 0px !important;
+    min-height: 0px !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    overflow: visible !important;
+    z-index: 99999 !important;
+}
+
+/* Floating Tour Popover — Workload Ingestion Mode (Sidebar) */
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_ingestion_container) > div[data-testid="stVerticalBlock"],
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_ingestion) > div[data-testid="stVerticalBlock"],
+.stVerticalBlock:has(> .st-key-dismiss_tour_ingestion),
+.st-key-tour_ingestion_container > div[data-testid="stVerticalBlock"] {
+    position: absolute !important;
+    top: 8px !important;
+    left: 0px !important;
+    width: 310px !important;
+    box-sizing: border-box !important;
+    z-index: 999999 !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #2563EB !important;
+    border-radius: 9px !important;
+    padding: 12px 14px 10px 14px !important;
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.22), 0 4px 10px rgba(15, 23, 42, 0.10) !important;
+}
+
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_ingestion_container) > div[data-testid="stVerticalBlock"]::before,
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_ingestion) > div[data-testid="stVerticalBlock"]::before,
+.stVerticalBlock:has(> .st-key-dismiss_tour_ingestion)::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 28px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #2563EB;
+}
+
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_ingestion_container) > div[data-testid="stVerticalBlock"]::after,
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_ingestion) > div[data-testid="stVerticalBlock"]::after,
+.stVerticalBlock:has(> .st-key-dismiss_tour_ingestion)::after {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 29px;
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid #FFFFFF;
+}
+
+/* Non-blocking Side Tour Callout — Select Scheduling Algorithm (Main Workbench) */
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_algo_container) > div[data-testid="stVerticalBlock"],
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_algo) > div[data-testid="stVerticalBlock"],
+.stVerticalBlock:has(> .st-key-dismiss_tour_algo),
+.st-key-tour_algo_container > div[data-testid="stVerticalBlock"] {
+    position: relative !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    z-index: 999999 !important;
+    background: #FFFFFF !important;
+    border: 1.5px solid #2563EB !important;
+    border-radius: 9px !important;
+    padding: 12px 14px 10px 14px !important;
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.14), 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* Pointer arrow pointing LEFT towards the Algorithm selector */
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_algo_container) > div[data-testid="stVerticalBlock"]::before,
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_algo) > div[data-testid="stVerticalBlock"]::before,
+.stVerticalBlock:has(> .st-key-dismiss_tour_algo)::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 32px !important;
+    left: -8px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 8px solid transparent !important;
+    border-bottom: 8px solid transparent !important;
+    border-right: 8px solid #2563EB !important;
+    border-left: none !important;
+}
+
+div[data-testid="stLayoutWrapper"]:has(.st-key-tour_algo_container) > div[data-testid="stVerticalBlock"]::after,
+div[data-testid="stLayoutWrapper"]:has(.st-key-dismiss_tour_algo) > div[data-testid="stVerticalBlock"]::after,
+.stVerticalBlock:has(> .st-key-dismiss_tour_algo)::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 33px !important;
+    left: -6px !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 7px solid transparent !important;
+    border-bottom: 7px solid transparent !important;
+    border-right: 7px solid #FFFFFF !important;
+    border-left: none !important;
+}
+
+.tour-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.tour-card-title {
+    color: #0F172A;
+    font-size: 0.88rem;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+}
+
+.tour-card-badge {
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid #BFDBFE;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.tour-card-desc {
+    color: #475569;
+    font-size: 0.80rem;
+    line-height: 1.4;
+    margin-bottom: 8px;
+}
+
+/* Primary Dismiss Button Polish */
+button[data-testid="baseButton-primary"] {
+    background-color: #2563EB !important;
+    border-color: #2563EB !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    font-size: 0.84rem !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+}
+
+button[data-testid="baseButton-primary"]:hover {
+    background-color: #1D4ED8 !important;
+    border-color: #1D4ED8 !important;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25) !important;
+}
