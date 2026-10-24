@@ -1,0 +1,19 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Generated documents, presentations, and reports
+generate_docx.py
+generate_ppt.py
+Innovative Assignment 1.pdf
+Smart_CPU_Scheduler_Presentation.pptx
+Smart_CPU_Scheduler_Report.docx
+~$*
+*.docx
+*.pptx
+*.pdf
+
+# Local state & temporary files
+.tour_state.json
+data/temp/
